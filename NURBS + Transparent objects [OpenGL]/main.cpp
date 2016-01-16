@@ -3,11 +3,11 @@
 #pragma comment(lib, "Glaux.lib")
 
 #include <TCHAR.h>
-#include <windows.h>      //Заголовочный файл для Windows
+#include <windows.h>      //Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» РґР»СЏ Windows
 #include <direct.h>
 #include <gl\glut.h>
-#include <stdio.h>        //Заголовочный файл стандартного ввода/вывода
-#include <gl\glaux.h>     //Заголовочный файл библиотеки GLaux
+#include <stdio.h>        //Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РІРІРѕРґР°/РІС‹РІРѕРґР°
+#include <gl\glaux.h>     //Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» Р±РёР±Р»РёРѕС‚РµРєРё GLaux
 
 
 const int TextureCount = 10;
@@ -33,24 +33,24 @@ GLfloat ctrlpoints[4][4][3] = {
  {{-1.5, 1.0,  1.5},  {-0.5, 1.0, 1.5 }, {0.5, 1.0,  1.5 },   {1.5, 1.0, 1.5}}
 };
 
-float fogColor[4] = {0.5f, 0.5f, 0.5f, 1.0f}; // Цвет тумана 
+float fogColor[4] = {0.5f, 0.5f, 0.5f, 1.0f}; // Р¦РІРµС‚ С‚СѓРјР°РЅР° 
 
-GLuint  texture[TextureCount];     // Память для шести текстуры
+GLuint  texture[TextureCount];     // РџР°РјСЏС‚СЊ РґР»СЏ С€РµСЃС‚Рё С‚РµРєСЃС‚СѓСЂС‹
 
 GLuint CUBE_LIST = glGenLists(1);
 
-float zeroPos[3][4] = { // позиции источников света
+float zeroPos[3][4] = { // РїРѕР·РёС†РёРё РёСЃС‚РѕС‡РЅРёРєРѕРІ СЃРІРµС‚Р°
 	 0,  7, 0, 1,
 	-7, -5, 0, 1,
 	 7, -5, 0, 1
 };
 
-float LParam[3][4] = {								// Параметры света
+float LParam[3][4] = {								// РџР°СЂР°РјРµС‚СЂС‹ СЃРІРµС‚Р°
 	1.0, 1.0, 1.0, 1.0,
 	1.0, 1.0, 1.0, 1.0,
 	0.8, 0.4, 0.0, 0.0
 };
-double rotate_y=0;									// коэфициент смещения по оси X
+double rotate_y=0;									// РєРѕСЌС„РёС†РёРµРЅС‚ СЃРјРµС‰РµРЅРёСЏ РїРѕ РѕСЃРё X
 double rotate_x=0;	
 
 bool Fogi = false;
@@ -63,8 +63,8 @@ bool Light_2 = false;
 
 void drawScene()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);				// Очищаем "рисуемый" буфер и буфер глубины									
-	glLoadIdentity();												// ПереИнициализируем параметры (сохраняем изменения)
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);				// РћС‡РёС‰Р°РµРј "СЂРёСЃСѓРµРјС‹Р№" Р±СѓС„РµСЂ Рё Р±СѓС„РµСЂ РіР»СѓР±РёРЅС‹									
+	glLoadIdentity();												// РџРµСЂРµРРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РїР°СЂР°РјРµС‚СЂС‹ (СЃРѕС…СЂР°РЅСЏРµРј РёР·РјРµРЅРµРЅРёСЏ)
 
 	if (Fogi)
 		glEnable(GL_FOG);
@@ -73,7 +73,7 @@ void drawScene()
 
 	if (Blend)
 	{
-		glEnable(GL_BLEND); // прозрачность вкл
+		glEnable(GL_BLEND); // РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РІРєР»
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE);
 	}
 	else
@@ -82,7 +82,7 @@ void drawScene()
 	}
 
 
-	glPushMatrix();													// Запоминаем текущую систему координат перед вращением сцены
+	glPushMatrix();													// Р—Р°РїРѕРјРёРЅР°РµРј С‚РµРєСѓС‰СѓСЋ СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ РїРµСЂРµРґ РІСЂР°С‰РµРЅРёРµРј СЃС†РµРЅС‹
 	glLightfv(GL_LIGHT0, GL_POSITION, zeroPos[0] );
 	glLightfv(GL_LIGHT1, GL_POSITION, zeroPos[1] );
 	glLightfv(GL_LIGHT2, GL_POSITION, zeroPos[2] );
@@ -119,8 +119,8 @@ void drawScene()
 	glTranslatef(0.0, 3.0, -0.0);
 	//glScalef (2.0, 0.4, 1.0);
 	glRotatef( 90, 1.0, 0.0, 0.0 );
-	glRotatef( rotate_x, -1.0, 0.0, 0.0 );			// вращение по оси X
-	glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// вращение по оси Z
+	glRotatef( rotate_x, -1.0, 0.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё X
+	glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё Z
 	glCallList(1);
 	glPopMatrix();
 
@@ -128,8 +128,8 @@ void drawScene()
 	glPushMatrix();
 	glTranslatef(0.0, -2.0, 0.0);
 	glScalef (0.25, 0.25, 1.0);
-	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// вращение по оси X
-	glRotatef( rotate_y, 0.0, 1.0, 0.0 );			// вращение по оси Z
+	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё X
+	glRotatef( rotate_y, 0.0, 1.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё Z
 	glCallList(1);
 	glPopMatrix();
 	
@@ -140,8 +140,8 @@ void drawScene()
 	glTranslatef(0.0, 0.0, 0.0);
 	glScalef (0.65, 0.65, 1.0);
 	glRotatef( 90, 1.0, 0.0, 0.0 );
-	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// вращение по оси X
-	glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// вращение по оси Z
+	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё X
+	glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё Z
 	glCallList(1);
 	glPopMatrix();
 
@@ -150,8 +150,8 @@ void drawScene()
 	glTranslatef(3.0, 0.0, 0.0);
 	glScalef (0.25, 0.65, 1.0);
 	glRotatef( 90, 1.0, 0.0, 0.0 );
-	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// вращение по оси X
-	glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// вращение по оси Z
+	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё X
+	glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё Z
 	glCallList(2);
 	glPopMatrix();
 	
@@ -160,8 +160,8 @@ void drawScene()
 	glTranslatef(-3.0, 0.0, 0.0);
 	glScalef (0.4, 0.6, 1.0);
 	glRotatef( 90, 1.0, 0.0, 0.0 );
-	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// вращение по оси X
-	glRotatef( rotate_y, 0.0, 1.0, 0.0 );			// вращение по оси Z
+	glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё X
+	glRotatef( rotate_y, 0.0, 1.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё Z
 	glCallList(2);
 	glPopMatrix();
 
@@ -173,14 +173,14 @@ void drawScene()
 		//glTranslatef(3.0, 0.0, 0.0);
 		glScalef (0.65, 0.65, 1.0);
 		glRotatef( 90, 1.0, 0.0, 0.0 );
-		//glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// вращение по оси X
-		//glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// вращение по оси Z
+		//glRotatef( rotate_x, 1.0, 0.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё X
+		//glRotatef( rotate_y, 0.0, -1.0, 0.0 );			// РІСЂР°С‰РµРЅРёРµ РїРѕ РѕСЃРё Z
 		glCallList(2);
 		glPopMatrix();
 	}
 
     glFlush();
-    glutSwapBuffers();												// Ждём, пока всё не прорисуется
+    glutSwapBuffers();												// Р–РґС‘Рј, РїРѕРєР° РІСЃС‘ РЅРµ РїСЂРѕСЂРёСЃСѓРµС‚СЃСЏ
 
 }
 
@@ -211,10 +211,10 @@ void myKeyboardFunc( unsigned char key, int x, int y )
 	case '4':
 		Fogi=!Fogi;
 		break;
-	case 27:												// Нажат ESC
-		exit(1);											// Плановое завершение программы
+	case 27:												// РќР°Р¶Р°С‚ ESC
+		exit(1);											// РџР»Р°РЅРѕРІРѕРµ Р·Р°РІРµСЂС€РµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹
 	}
-	glutPostRedisplay();									// Обновляем дисплей
+	glutPostRedisplay();									// РћР±РЅРѕРІР»СЏРµРј РґРёСЃРїР»РµР№
 }
 
 void mySpecialKeys( int key, int x, int y ) 
@@ -228,14 +228,14 @@ void mySpecialKeys( int key, int x, int y )
 	else if (key == GLUT_KEY_DOWN)
 		rotate_x += 7;
 
-	glutPostRedisplay();								// Обновляем дисплей
+	glutPostRedisplay();								// РћР±РЅРѕРІР»СЏРµРј РґРёСЃРїР»РµР№
 }
 
 void CreateList()
 {
 	CUBE_LIST = glGenLists(1);
 	glNewList(CUBE_LIST, GL_COMPILE);
-	// рисуем куб
+	// СЂРёСЃСѓРµРј РєСѓР±
 
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glBegin (GL_QUADS);
@@ -319,7 +319,7 @@ void CreateList()
 
 	CUBE_LIST = glGenLists(2);
 	glNewList(CUBE_LIST, GL_COMPILE);
-	// рисуем куб
+	// СЂРёСЃСѓРµРј РєСѓР±
 
 	glBindTexture(GL_TEXTURE_2D, texture[8]);
 	glBegin (GL_QUADS);
@@ -399,17 +399,17 @@ void CreateList()
 		glVertex3f (-1.0, -1.0, 1.0);
 	glEnd();
 
-	//glDisable(GL_BLEND); // прозрачность выкл
+	//glDisable(GL_BLEND); // РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РІС‹РєР»
 	glEndList();
 }
 
 GLvoid LoadGLTextures(TCHAR* Path, unsigned int Index)
 {
-	// Загрузка картинки
+	// Р—Р°РіСЂСѓР·РєР° РєР°СЂС‚РёРЅРєРё
 	AUX_RGBImageRec *texture1;
 
 	texture1 = auxDIBImageLoad(Path);
-		// Создание текстуры
+		// РЎРѕР·РґР°РЅРёРµ С‚РµРєСЃС‚СѓСЂС‹
 	glGenTextures(1, &texture[Index]);
 	glBindTexture(GL_TEXTURE_2D, texture[Index]);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
@@ -419,19 +419,19 @@ GLvoid LoadGLTextures(TCHAR* Path, unsigned int Index)
 
 void initRendering()
 {
-    glEnable(GL_DEPTH_TEST);								// Включаем буфер глубины
-	glEnable(GL_ALPHA_TEST);								// Разрешаем смешение цветов (для прозрачности)
+    glEnable(GL_DEPTH_TEST);								// Р’РєР»СЋС‡Р°РµРј Р±СѓС„РµСЂ РіР»СѓР±РёРЅС‹
+	glEnable(GL_ALPHA_TEST);								// Р Р°Р·СЂРµС€Р°РµРј СЃРјРµС€РµРЅРёРµ С†РІРµС‚РѕРІ (РґР»СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё)
 	glEnable(GL_LIGHTING);	
 	
-	glEnable(GL_TEXTURE_2D);		// Разрешение наложение текстуры
+	glEnable(GL_TEXTURE_2D);		// Р Р°Р·СЂРµС€РµРЅРёРµ РЅР°Р»РѕР¶РµРЅРёРµ С‚РµРєСЃС‚СѓСЂС‹
 	
-	glEnable(GL_FOG);				// Включает туман (GL_FOG) 
-	glFogi(GL_FOG_MODE, GL_LINEAR);// Выбираем тип тумана 
-	glFogfv(GL_FOG_COLOR, fogColor); // Устанавливаем цвет тумана 
-	glFogi(GL_FOG_MODE, GL_EXP2); // Насколько густым будет туман 
-	glHint(GL_FOG_HINT, GL_DONT_CARE); // Вспомогательная установка тумана 
-	glFogf(GL_FOG_START, 0.0); // Глубина, с которой начинается туман 
-	glFogf(GL_FOG_END, 5.0); // Глубина, где туман заканчивается. 
+	glEnable(GL_FOG);				// Р’РєР»СЋС‡Р°РµС‚ С‚СѓРјР°РЅ (GL_FOG) 
+	glFogi(GL_FOG_MODE, GL_LINEAR);// Р’С‹Р±РёСЂР°РµРј С‚РёРї С‚СѓРјР°РЅР° 
+	glFogfv(GL_FOG_COLOR, fogColor); // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚ С‚СѓРјР°РЅР° 
+	glFogi(GL_FOG_MODE, GL_EXP2); // РќР°СЃРєРѕР»СЊРєРѕ РіСѓСЃС‚С‹Рј Р±СѓРґРµС‚ С‚СѓРјР°РЅ 
+	glHint(GL_FOG_HINT, GL_DONT_CARE); // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР° С‚СѓРјР°РЅР° 
+	glFogf(GL_FOG_START, 0.0); // Р“Р»СѓР±РёРЅР°, СЃ РєРѕС‚РѕСЂРѕР№ РЅР°С‡РёРЅР°РµС‚СЃСЏ С‚СѓРјР°РЅ 
+	glFogf(GL_FOG_END, 5.0); // Р“Р»СѓР±РёРЅР°, РіРґРµ С‚СѓРјР°РЅ Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ. 
 	
 	TCHAR current_work_dir[FILENAME_MAX];
 	_getcwd(current_work_dir, sizeof(current_work_dir));
@@ -443,22 +443,22 @@ void initRendering()
 		_tcscat(Path, "\\Textures\\");
 		_tcscat(Path, TextureName[i]);
 	
-		LoadGLTextures(Path,i);			// Загрузка текстур
+		LoadGLTextures(Path,i);			// Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ
 		delete [] Path;
 	}
 	
 	CreateList();
 	
-	glLightfv(GL_LIGHT0, GL_AMBIENT, LParam[0]);			// источник света 0 - настройка света
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, LParam[0]);			// источник света 0 - настройка рассеянного света
-	glLightfv(GL_LIGHT0, GL_SPECULAR, LParam[0]);			// источник света 0 - настройка отражаемого света
+	glLightfv(GL_LIGHT0, GL_AMBIENT, LParam[0]);			// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 0 - РЅР°СЃС‚СЂРѕР№РєР° СЃРІРµС‚Р°
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, LParam[0]);			// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 0 - РЅР°СЃС‚СЂРѕР№РєР° СЂР°СЃСЃРµСЏРЅРЅРѕРіРѕ СЃРІРµС‚Р°
+	glLightfv(GL_LIGHT0, GL_SPECULAR, LParam[0]);			// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 0 - РЅР°СЃС‚СЂРѕР№РєР° РѕС‚СЂР°Р¶Р°РµРјРѕРіРѕ СЃРІРµС‚Р°
 	
-	glLightfv(GL_LIGHT1, GL_AMBIENT, LParam[1]);			// источник света 1 - настройка света
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, LParam[1]);			// источник света 1 - настройка рассеянного света
-	glLightfv(GL_LIGHT1, GL_SPECULAR, LParam[1]);				// источник света 1 - настройка отражаемого света
+	glLightfv(GL_LIGHT1, GL_AMBIENT, LParam[1]);			// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 1 - РЅР°СЃС‚СЂРѕР№РєР° СЃРІРµС‚Р°
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, LParam[1]);			// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 1 - РЅР°СЃС‚СЂРѕР№РєР° СЂР°СЃСЃРµСЏРЅРЅРѕРіРѕ СЃРІРµС‚Р°
+	glLightfv(GL_LIGHT1, GL_SPECULAR, LParam[1]);				// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 1 - РЅР°СЃС‚СЂРѕР№РєР° РѕС‚СЂР°Р¶Р°РµРјРѕРіРѕ СЃРІРµС‚Р°
 	
-	glLightfv(GL_LIGHT2, GL_AMBIENT, LParam[2]);			// источник света 2 - настройка света
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, LParam[2]);			// источник света 2 - настройка рассеянного света
+	glLightfv(GL_LIGHT2, GL_AMBIENT, LParam[2]);			// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 2 - РЅР°СЃС‚СЂРѕР№РєР° СЃРІРµС‚Р°
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, LParam[2]);			// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° 2 - РЅР°СЃС‚СЂРѕР№РєР° СЂР°СЃСЃРµСЏРЅРЅРѕРіРѕ СЃРІРµС‚Р°
 	glLightfv(GL_LIGHT2, GL_SPECULAR, LParam[2]);	
 
 	if (Light_0) glEnable(GL_LIGHT0);
@@ -481,33 +481,33 @@ void resizeWindow(int width, int height)
     gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0,0.0);
 	glMatrixMode(GL_MODELVIEW);
 	/**/
-	// Предупредим деление на нуль;
+	// РџСЂРµРґСѓРїСЂРµРґРёРј РґРµР»РµРЅРёРµ РЅР° РЅСѓР»СЊ;
     if (height == 0) height = 1;
-    // Сбрасываем текущую область просмотра;
+    // РЎР±СЂР°СЃС‹РІР°РµРј С‚РµРєСѓС‰СѓСЋ РѕР±Р»Р°СЃС‚СЊ РїСЂРѕСЃРјРѕС‚СЂР°;
     glViewport(0, 0, width, height);
-    // Выбираем матрицу проекций;
+    // Р’С‹Р±РёСЂР°РµРј РјР°С‚СЂРёС†Сѓ РїСЂРѕРµРєС†РёР№;
     glMatrixMode(GL_PROJECTION);
-    // Сбрасываем выбранную матрицу;
+    // РЎР±СЂР°СЃС‹РІР°РµРј РІС‹Р±СЂР°РЅРЅСѓСЋ РјР°С‚СЂРёС†Сѓ;
     glLoadIdentity();
-    // Вычисляем новые геометрические размеры сцены;
+    // Р’С‹С‡РёСЃР»СЏРµРј РЅРѕРІС‹Рµ РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРёРµ СЂР°Р·РјРµСЂС‹ СЃС†РµРЅС‹;
 	glOrtho(-5.0, 5.0, -5.0, 5.0, 2.0, 12.0);
     gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0,0.0);
     //gluPerspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
-    // Выбираем матрицу вида модели;
+    // Р’С‹Р±РёСЂР°РµРј РјР°С‚СЂРёС†Сѓ РІРёРґР° РјРѕРґРµР»Рё;
     glMatrixMode(GL_MODELVIEW);
-    // Сбрасываем ее;
+    // РЎР±СЂР°СЃС‹РІР°РµРј РµРµ;
     glLoadIdentity();
 }
 
 /*GLuint create_shader(GLenum shaderType, source)
 {
-    //# Создаем пустой объект шейдера
+    //# РЎРѕР·РґР°РµРј РїСѓСЃС‚РѕР№ РѕР±СЉРµРєС‚ С€РµР№РґРµСЂР°
     shader = glCreateShader(shader_type)
-    //# Привязываем текст шейдера к пустому объекту шейдера
+    //# РџСЂРёРІСЏР·С‹РІР°РµРј С‚РµРєСЃС‚ С€РµР№РґРµСЂР° Рє РїСѓСЃС‚РѕРјСѓ РѕР±СЉРµРєС‚Сѓ С€РµР№РґРµСЂР°
     glShaderSource(shader, source)
-    //# Компилируем шейдер
+    //# РљРѕРјРїРёР»РёСЂСѓРµРј С€РµР№РґРµСЂ
     glCompileShader(shader)
-    //# Возвращаем созданный шейдер
+    //# Р’РѕР·РІСЂР°С‰Р°РµРј СЃРѕР·РґР°РЅРЅС‹Р№ С€РµР№РґРµСЂ
     return shader;
 }
 
@@ -519,22 +519,22 @@ void draw_shader()
 int main( int argc, char** argv )
 {
 	//glewInit(&argc,argv);
-	glutInit(&argc,argv);																// инициализируем glut
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );							// Инициализируем режим прорисовки
+	glutInit(&argc,argv);																// РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј glut
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );							// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј СЂРµР¶РёРј РїСЂРѕСЂРёСЃРѕРІРєРё
 
-	glutInitWindowSize(800, 600);														// устанавливаем размер окна
-	glutInitWindowPosition(200, 200);													// устанавливаем позицию окна
-    glutCreateWindow("OpenGL");															// создаём окно
+	glutInitWindowSize(800, 600);														// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂР°Р·РјРµСЂ РѕРєРЅР°
+	glutInitWindowPosition(200, 200);													// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР·РёС†РёСЋ РѕРєРЅР°
+    glutCreateWindow("OpenGL");															// СЃРѕР·РґР°С‘Рј РѕРєРЅРѕ
 
-    initRendering();																	// Инициализируем параметры OpenGL
+    initRendering();																	// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РїР°СЂР°РјРµС‚СЂС‹ OpenGL
 
-	glutKeyboardFunc(myKeyboardFunc);													// Назначаем функцию отбработки клафиш
-	glutSpecialFunc(mySpecialKeys);														// Назначаем функцию отбработки специальных клафиш
+	glutKeyboardFunc(myKeyboardFunc);													// РќР°Р·РЅР°С‡Р°РµРј С„СѓРЅРєС†РёСЋ РѕС‚Р±СЂР°Р±РѕС‚РєРё РєР»Р°С„РёС€
+	glutSpecialFunc(mySpecialKeys);														// РќР°Р·РЅР°С‡Р°РµРј С„СѓРЅРєС†РёСЋ РѕС‚Р±СЂР°Р±РѕС‚РєРё СЃРїРµС†РёР°Р»СЊРЅС‹С… РєР»Р°С„РёС€
 
-    glutReshapeFunc(resizeWindow);														// Назначаем функцию перестроения после изменения размеров окна
-    glutDisplayFunc(drawScene);															// Назначаем функцию "отрисовки"
+    glutReshapeFunc(resizeWindow);														// РќР°Р·РЅР°С‡Р°РµРј С„СѓРЅРєС†РёСЋ РїРµСЂРµСЃС‚СЂРѕРµРЅРёСЏ РїРѕСЃР»Рµ РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂРѕРІ РѕРєРЅР°
+    glutDisplayFunc(drawScene);															// РќР°Р·РЅР°С‡Р°РµРј С„СѓРЅРєС†РёСЋ "РѕС‚СЂРёСЃРѕРІРєРё"
 
-	glutMainLoop();																		// "цикл" рендеренга
+	glutMainLoop();																		// "С†РёРєР»" СЂРµРЅРґРµСЂРµРЅРіР°
 
     return(0);	// This line is never reached.
 }

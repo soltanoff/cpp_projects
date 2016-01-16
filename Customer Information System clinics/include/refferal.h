@@ -1,144 +1,144 @@
-/* == Список (циклический, однонаправленный). Выдача/возврат направлений == */
+п»ї/* == РЎРїРёСЃРѕРє (С†РёРєР»РёС‡РµСЃРєРёР№, РѕРґРЅРѕРЅР°РїСЂР°РІР»РµРЅРЅС‹Р№). Р’С‹РґР°С‡Р°/РІРѕР·РІСЂР°С‚ РЅР°РїСЂР°РІР»РµРЅРёР№ == */
 #pragma once
 #include "hospital.h"
-/* =================== Структуры данных =================== */
-// структура данных направления
+/* =================== РЎС‚СЂСѓРєС‚СѓСЂС‹ РґР°РЅРЅС‹С… =================== */
+// СЃС‚СЂСѓРєС‚СѓСЂР° РґР°РЅРЅС‹С… РЅР°РїСЂР°РІР»РµРЅРёСЏ
 struct refferal
 {
-	string key_patient;// ключ формата: MM-NNNNNN
+	string key_patient;// РєР»СЋС‡ С„РѕСЂРјР°С‚Р°: MM-NNNNNN
 	char namedoctor[SIZE_NAME];
 	SYSTEMTIME time;
-	refferal *next; // указатель на следующий элемент списка
+	refferal *next; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°
 };
-// вектор найденных данных, помещенных функцией поиска
+// РІРµРєС‚РѕСЂ РЅР°Р№РґРµРЅРЅС‹С… РґР°РЅРЅС‹С…, РїРѕРјРµС‰РµРЅРЅС‹С… С„СѓРЅРєС†РёРµР№ РїРѕРёСЃРєР°
 typedef vector<struct refferal*> svector_ref;
-/* ================== Циклический список =================== */
-// запрос на список пациентов
+/* ================== Р¦РёРєР»РёС‡РµСЃРєРёР№ СЃРїРёСЃРѕРє =================== */
+// Р·Р°РїСЂРѕСЃ РЅР° СЃРїРёСЃРѕРє РїР°С†РёРµРЅС‚РѕРІ
 void htab_list_query(hash_tab *htab)
 {
 	string answer;
-	cout << "Вывести список пациентов? д/н ";
+	cout << "Р’С‹РІРµСЃС‚Рё СЃРїРёСЃРѕРє РїР°С†РёРµРЅС‚РѕРІ? Рґ/РЅ ";
 	answer_control(answer);
-	if (answer[0] == 'д')
+	if (answer[0] == 'Рґ')
 	{
 		pat_out(htab);
 		system("pause");
 	}
 }
-// запрос на список врачей
+// Р·Р°РїСЂРѕСЃ РЅР° СЃРїРёСЃРѕРє РІСЂР°С‡РµР№
 void doc_list_query(node *p)
 {
 	string answer;
-	cout << "Вывести список врачей? д/н ";
+	cout << "Р’С‹РІРµСЃС‚Рё СЃРїРёСЃРѕРє РІСЂР°С‡РµР№? Рґ/РЅ ";
 	answer_control(answer);
-	if (answer[0] == 'д')
+	if (answer[0] == 'Рґ')
 	{
 		doc_out(p);
 		system("pause");
 	}
 }
-// функция анализирующая занятость врача
-// Возвращает true если дата определена
+// С„СѓРЅРєС†РёСЏ Р°РЅР°Р»РёР·РёСЂСѓСЋС‰Р°СЏ Р·Р°РЅСЏС‚РѕСЃС‚СЊ РІСЂР°С‡Р°
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё РґР°С‚Р° РѕРїСЂРµРґРµР»РµРЅР°
 bool employment_analyzing(SYSTEMTIME &earliest_date, refferal *phead, node *p);
-// функция анализирующая дату приема
-// Возвращает true если дата не занята
+// С„СѓРЅРєС†РёСЏ Р°РЅР°Р»РёР·РёСЂСѓСЋС‰Р°СЏ РґР°С‚Сѓ РїСЂРёРµРјР°
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё РґР°С‚Р° РЅРµ Р·Р°РЅСЏС‚Р°
 bool vacant_day_analyzing(SYSTEMTIME picked_time, refferal *phead, node *p);
-// функция заполнения данных о выписке
+// С„СѓРЅРєС†РёСЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ РґР°РЅРЅС‹С… Рѕ РІС‹РїРёСЃРєРµ
 refferal *ref_init(refferal *phead, node *p, hash_tab *htab, svector_doc &search)
 {
-	SYSTEMTIME cur_time; // дата направления
-	GetSystemTime(&cur_time); // текущая дата
+	SYSTEMTIME cur_time; // РґР°С‚Р° РЅР°РїСЂР°РІР»РµРЅРёСЏ
+	GetSystemTime(&cur_time); // С‚РµРєСѓС‰Р°СЏ РґР°С‚Р°
 
-	refferal *temp = new refferal; // новая выписка
-	int choice(0); // выбор нужного врача
-	string answer; // ответ на вопрос да/нет
-	string val; // имя врача
+	refferal *temp = new refferal; // РЅРѕРІР°СЏ РІС‹РїРёСЃРєР°
+	int choice(0); // РІС‹Р±РѕСЂ РЅСѓР¶РЅРѕРіРѕ РІСЂР°С‡Р°
+	string answer; // РѕС‚РІРµС‚ РЅР° РІРѕРїСЂРѕСЃ РґР°/РЅРµС‚
+	string val; // РёРјСЏ РІСЂР°С‡Р°
 
-	bool retry(false); // флаг повторения действий
-	do // выбор пациента
+	bool retry(false); // С„Р»Р°Рі РїРѕРІС‚РѕСЂРµРЅРёСЏ РґРµР№СЃС‚РІРёР№
+	do // РІС‹Р±РѕСЂ РїР°С†РёРµРЅС‚Р°
 	{
-		int index(0); // индекс пациента в таблице
+		int index(0); // РёРЅРґРµРєСЃ РїР°С†РёРµРЅС‚Р° РІ С‚Р°Р±Р»РёС†Рµ
 		retry = false;
-		cout << "Введите регистрационный номер пациента[MM-NNNNNN]: ";
+		cout << "Р’РІРµРґРёС‚Рµ СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ РїР°С†РёРµРЅС‚Р°[MM-NNNNNN]: ";
 		key_input(temp->key_patient);
-		retry = !find_htab(htab, temp->key_patient, index); // поиск ключа в таблице, если найден, то retry = false
-		if (retry) // если не найден пациент, то повторить ввод
+		retry = !find_htab(htab, temp->key_patient, index); // РїРѕРёСЃРє РєР»СЋС‡Р° РІ С‚Р°Р±Р»РёС†Рµ, РµСЃР»Рё РЅР°Р№РґРµРЅ, С‚Рѕ retry = false
+		if (retry) // РµСЃР»Рё РЅРµ РЅР°Р№РґРµРЅ РїР°С†РёРµРЅС‚, С‚Рѕ РїРѕРІС‚РѕСЂРёС‚СЊ РІРІРѕРґ
 		{
-			cout << "\nНесуществующий регистрационный номер!\n";
-			htab_list_query(htab); // запрос на вывод таблицы пациентов
+			cout << "\nРќРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ!\n";
+			htab_list_query(htab); // Р·Р°РїСЂРѕСЃ РЅР° РІС‹РІРѕРґ С‚Р°Р±Р»РёС†С‹ РїР°С†РёРµРЅС‚РѕРІ
 		}
-		else // если найден пациент, то
+		else // РµСЃР»Рё РЅР°Р№РґРµРЅ РїР°С†РёРµРЅС‚, С‚Рѕ
 		{
-			cout << "\nВыбрана запись: "
+			cout << "\nР’С‹Р±СЂР°РЅР° Р·Р°РїРёСЃСЊ: "
 				<< htab[index].pat.name << ", ";
 			htab[index].pat.bday[0] < 10 ? cout << "0" << htab[index].pat.bday[0] : cout << htab[index].pat.bday[0];
 			htab[index].pat.bday[1] < 10 ? cout << ".0" << htab[index].pat.bday[1] : cout << "." << htab[index].pat.bday[1];
 			cout << "." << htab[index].pat.bday[2];
-			cout << "\nНазначить этому пациенту врача? д/н ";
-			answer_control(answer); // тот ли пациент найден?
-			if (answer[0] != 'д') // если не тот, то повторяем ввод
+			cout << "\nРќР°Р·РЅР°С‡РёС‚СЊ СЌС‚РѕРјСѓ РїР°С†РёРµРЅС‚Сѓ РІСЂР°С‡Р°? Рґ/РЅ ";
+			answer_control(answer); // С‚РѕС‚ Р»Рё РїР°С†РёРµРЅС‚ РЅР°Р№РґРµРЅ?
+			if (answer[0] != 'Рґ') // РµСЃР»Рё РЅРµ С‚РѕС‚, С‚Рѕ РїРѕРІС‚РѕСЂСЏРµРј РІРІРѕРґ
 			{
-				htab_list_query(htab); // запрос на вывод таблицы пациентов
+				htab_list_query(htab); // Р·Р°РїСЂРѕСЃ РЅР° РІС‹РІРѕРґ С‚Р°Р±Р»РёС†С‹ РїР°С†РёРµРЅС‚РѕРІ
 				retry = true;
 			}
-			else cout << "\n=== Пациент выбран ===\n";
+			else cout << "\n=== РџР°С†РёРµРЅС‚ РІС‹Р±СЂР°РЅ ===\n";
 		}
 	} while (retry);
 
-	do // выбор врача
+	do // РІС‹Р±РѕСЂ РІСЂР°С‡Р°
 	{
 		retry = false;
-		cout << "Введите ФИО врача: ";
+		cout << "Р’РІРµРґРёС‚Рµ Р¤РРћ РІСЂР°С‡Р°: ";
 		input_control(val);
-		search_doc_name(p, search, val); // ищем врача
+		search_doc_name(p, search, val); // РёС‰РµРј РІСЂР°С‡Р°
 
-		if (!search.empty()) // если не нашли, то повторяем ввод
+		if (!search.empty()) // РµСЃР»Рё РЅРµ РЅР°С€Р»Рё, С‚Рѕ РїРѕРІС‚РѕСЂСЏРµРј РІРІРѕРґ
 		{
-			doc_out(search); // выводим список найденых врачей
-			if (search.size() >= 2) // если врачей больше чем 2, то делаем запрос
+			doc_out(search); // РІС‹РІРѕРґРёРј СЃРїРёСЃРѕРє РЅР°Р№РґРµРЅС‹С… РІСЂР°С‡РµР№
+			if (search.size() >= 2) // РµСЃР»Рё РІСЂР°С‡РµР№ Р±РѕР»СЊС€Рµ С‡РµРј 2, С‚Рѕ РґРµР»Р°РµРј Р·Р°РїСЂРѕСЃ
 			{
-				cout << "Выберите номер записи: ";
+				cout << "Р’С‹Р±РµСЂРёС‚Рµ РЅРѕРјРµСЂ Р·Р°РїРёСЃРё: ";
 				choice = input_control(search.size(), 1);
 			}
-			else choice = 1; // иначе врач 1, и нет смысла запрашивать выбор врача
+			else choice = 1; // РёРЅР°С‡Рµ РІСЂР°С‡ 1, Рё РЅРµС‚ СЃРјС‹СЃР»Р° Р·Р°РїСЂР°С€РёРІР°С‚СЊ РІС‹Р±РѕСЂ РІСЂР°С‡Р°
 
-			cout << "\nВыбрана запись: "
+			cout << "\nР’С‹Р±СЂР°РЅР° Р·Р°РїРёСЃСЊ: "
 				<< search[choice - 1]->key.name << " "
 				<< search[choice - 1]->key.noun << "\n";
 
-			cout << "\nНазначить пациенту этого врача? д/н ";
-			answer_control(answer); // тот ли врач найден?
-			if (answer[0] == 'д')
+			cout << "\nРќР°Р·РЅР°С‡РёС‚СЊ РїР°С†РёРµРЅС‚Сѓ СЌС‚РѕРіРѕ РІСЂР°С‡Р°? Рґ/РЅ ";
+			answer_control(answer); // С‚РѕС‚ Р»Рё РІСЂР°С‡ РЅР°Р№РґРµРЅ?
+			if (answer[0] == 'Рґ')
 			{
 				strcpy(temp->namedoctor, search[choice - 1]->key.name);
-				cout << "\n=== Врач назначен ===\n";
+				cout << "\n=== Р’СЂР°С‡ РЅР°Р·РЅР°С‡РµРЅ ===\n";
 			}
-			else // если не тот, то повторяем ввод
+			else // РµСЃР»Рё РЅРµ С‚РѕС‚, С‚Рѕ РїРѕРІС‚РѕСЂСЏРµРј РІРІРѕРґ
 			{
 				search.clear();
-				doc_list_query(p); // запрос на вывод таблицы врачей
+				doc_list_query(p); // Р·Р°РїСЂРѕСЃ РЅР° РІС‹РІРѕРґ С‚Р°Р±Р»РёС†С‹ РІСЂР°С‡РµР№
 				retry = true;
 			}
 		}
 		else
 		{
-			cout << "\n=== Врач не найден! ===\n";
+			cout << "\n=== Р’СЂР°С‡ РЅРµ РЅР°Р№РґРµРЅ! ===\n";
 			doc_list_query(p);
-			retry = true; // если не нашли, то повторяем ввод
+			retry = true; // РµСЃР»Рё РЅРµ РЅР°С€Р»Рё, С‚Рѕ РїРѕРІС‚РѕСЂСЏРµРј РІРІРѕРґ
 		}
 	} while (retry);
 
-	show_reception(search[choice - 1]->key.reception); // вывод графика работы врача
+	show_reception(search[choice - 1]->key.reception); // РІС‹РІРѕРґ РіСЂР°С„РёРєР° СЂР°Р±РѕС‚С‹ РІСЂР°С‡Р°
 
-	SYSTEMTIME time; // Ближайшее время приема
+	SYSTEMTIME time; // Р‘Р»РёР¶Р°Р№С€РµРµ РІСЂРµРјСЏ РїСЂРёРµРјР°
 	GetSystemTime(&time);
-	bool picked_time(false); // выбрана ли определенная анализатором ближайшая дата?
-	bool analyz_success = employment_analyzing(time, phead, search[choice - 1]); // если y врача заняты дни, то нужно определить границы
-	bool time_control(false); // нужны ли границы времени НН:ММ
-	int hour(0), minute(0); // границы времени НН:ММ
+	bool picked_time(false); // РІС‹Р±СЂР°РЅР° Р»Рё РѕРїСЂРµРґРµР»РµРЅРЅР°СЏ Р°РЅР°Р»РёР·Р°С‚РѕСЂРѕРј Р±Р»РёР¶Р°Р№С€Р°СЏ РґР°С‚Р°?
+	bool analyz_success = employment_analyzing(time, phead, search[choice - 1]); // РµСЃР»Рё y РІСЂР°С‡Р° Р·Р°РЅСЏС‚С‹ РґРЅРё, С‚Рѕ РЅСѓР¶РЅРѕ РѕРїСЂРµРґРµР»РёС‚СЊ РіСЂР°РЅРёС†С‹
+	bool time_control(false); // РЅСѓР¶РЅС‹ Р»Рё РіСЂР°РЅРёС†С‹ РІСЂРµРјРµРЅРё РќРќ:РњРњ
+	int hour(0), minute(0); // РіСЂР°РЅРёС†С‹ РІСЂРµРјРµРЅРё РќРќ:РњРњ
 	if (analyz_success)
 	{
-		cout << "Ближайшее время приема: "
+		cout << "Р‘Р»РёР¶Р°Р№С€РµРµ РІСЂРµРјСЏ РїСЂРёРµРјР°: "
 			<< time.wDay << " "
 			<< get_month(time) << " "
 			<< time.wYear << " - ";
@@ -146,9 +146,9 @@ refferal *ref_init(refferal *phead, node *p, hash_tab *htab, svector_doc &search
 		cout << ":";
 		time.wMinute < 10 ? cout << "0" << time.wMinute : cout << time.wMinute;
 		cout << endl;
-		cout << "\nНазначить пациента эту дату? д/н ";
+		cout << "\nРќР°Р·РЅР°С‡РёС‚СЊ РїР°С†РёРµРЅС‚Р° СЌС‚Сѓ РґР°С‚Сѓ? Рґ/РЅ ";
 		answer_control(answer);
-		if (answer[0] == 'д')
+		if (answer[0] == 'Рґ')
 		{
 			picked_time = true;
 			temp->time = timecpy(time);
@@ -162,7 +162,7 @@ refferal *ref_init(refferal *phead, node *p, hash_tab *htab, svector_doc &search
 	}
 	if (!picked_time)
 	{
-		do // назначение даты приема
+		do // РЅР°Р·РЅР°С‡РµРЅРёРµ РґР°С‚С‹ РїСЂРёРµРјР°
 		{
 			if (!retry && !analyz_success)
 			{
@@ -174,7 +174,7 @@ refferal *ref_init(refferal *phead, node *p, hash_tab *htab, svector_doc &search
 					diff_compensate(search[choice - 1]->key.reception.work_day, time);
 				}
 			}
-			cout << "\nВрач может принять начиная с: "
+			cout << "\nР’СЂР°С‡ РјРѕР¶РµС‚ РїСЂРёРЅСЏС‚СЊ РЅР°С‡РёРЅР°СЏ СЃ: "
 				<< time.wDay << " "
 				<< get_month(time) << " "
 				<< time.wYear << " - ";
@@ -182,17 +182,17 @@ refferal *ref_init(refferal *phead, node *p, hash_tab *htab, svector_doc &search
 			cout << ":";
 			time.wMinute < 10 ? cout << "0" << time.wMinute : cout << time.wMinute;
 			cout << endl;
-			short min_day(0), min_month(0); // минимальный допустимый день и месяц
+			short min_day(0), min_month(0); // РјРёРЅРёРјР°Р»СЊРЅС‹Р№ РґРѕРїСѓСЃС‚РёРјС‹Р№ РґРµРЅСЊ Рё РјРµСЃСЏС†
 			retry = false;
-			cout << "Введите дату приема: "
-				<< "\n  Год: ";
+			cout << "Р’РІРµРґРёС‚Рµ РґР°С‚Сѓ РїСЂРёРµРјР°: "
+				<< "\n  Р“РѕРґ: ";
 			temp->time.wYear = input_control(cur_time.wYear + 200, cur_time.wYear);
-			if (temp->time.wYear > cur_time.wYear) // если введенный год больше текущего, то граница = 1
+			if (temp->time.wYear > cur_time.wYear) // РµСЃР»Рё РІРІРµРґРµРЅРЅС‹Р№ РіРѕРґ Р±РѕР»СЊС€Рµ С‚РµРєСѓС‰РµРіРѕ, С‚Рѕ РіСЂР°РЅРёС†Р° = 1
 			{
 				min_day = 1;
 				min_month = 1;
 			}
-			else // иначе границы = текущая дата
+			else // РёРЅР°С‡Рµ РіСЂР°РЅРёС†С‹ = С‚РµРєСѓС‰Р°СЏ РґР°С‚Р°
 			{
 				if (!analyz_success)
 				{
@@ -205,36 +205,36 @@ refferal *ref_init(refferal *phead, node *p, hash_tab *htab, svector_doc &search
 					min_month = cur_time.wMonth;
 				}
 			}
-			cout << "  Номер месяца: ";
+			cout << "  РќРѕРјРµСЂ РјРµСЃСЏС†Р°: ";
 			temp->time.wMonth = input_control(12, min_month);
 			if (temp->time.wMonth > min_month) min_day = 1;
-			cout << "  День: ";
+			cout << "  Р”РµРЅСЊ: ";
 			temp->time.wDay = input_control(31, min_day);
 
-			int week = what_day(temp->time); // определяем по дате день недели
+			int week = what_day(temp->time); // РѕРїСЂРµРґРµР»СЏРµРј РїРѕ РґР°С‚Рµ РґРµРЅСЊ РЅРµРґРµР»Рё
 			for (int i = 0; i < WORKDAY_SIZE; i++)
 			{
-				if (week != search[choice - 1]->key.reception.work_day[i]) retry = true; // если дня недели нет в графике работы, то ищем дальше
-				else { retry = false; break; } // если нашли день недели в графике, то завершаем поиск
+				if (week != search[choice - 1]->key.reception.work_day[i]) retry = true; // РµСЃР»Рё РґРЅСЏ РЅРµРґРµР»Рё РЅРµС‚ РІ РіСЂР°С„РёРєРµ СЂР°Р±РѕС‚С‹, С‚Рѕ РёС‰РµРј РґР°Р»СЊС€Рµ
+				else { retry = false; break; } // РµСЃР»Рё РЅР°С€Р»Рё РґРµРЅСЊ РЅРµРґРµР»Рё РІ РіСЂР°С„РёРєРµ, С‚Рѕ Р·Р°РІРµСЂС€Р°РµРј РїРѕРёСЃРє
 			}
-			if (retry) cout << "В это время врач не работает!\n";
+			if (retry) cout << "Р’ СЌС‚Рѕ РІСЂРµРјСЏ РІСЂР°С‡ РЅРµ СЂР°Р±РѕС‚Р°РµС‚!\n";
 		} while (retry);
 
 		do
 		{
 			retry = false;
-			cout << "Введите время приема: "
-				<< "\n  Часы: ";
+			cout << "Р’РІРµРґРёС‚Рµ РІСЂРµРјСЏ РїСЂРёРµРјР°: "
+				<< "\n  Р§Р°СЃС‹: ";
 			temp->time.wHour = input_control(20, 9);
-			cout << "  Минуты: ";
+			cout << "  РњРёРЅСѓС‚С‹: ";
 			temp->time.wMinute = input_control(59, 0);
 
 			if (!is_time_visit(search[choice - 1]->key.reception.time, temp->time)) retry = true;
 
-			if (retry) cout << "В это время врач не работает!\n";
+			if (retry) cout << "Р’ СЌС‚Рѕ РІСЂРµРјСЏ РІСЂР°С‡ РЅРµ СЂР°Р±РѕС‚Р°РµС‚!\n";
 			if (analyz_success && !vacant_day_analyzing(temp->time, phead, search[choice - 1]))
 			{
-				cout << "Это время занято!\n";
+				cout << "Р­С‚Рѕ РІСЂРµРјСЏ Р·Р°РЅСЏС‚Рѕ!\n";
 				retry = true;
 			}
 		} while (retry);
@@ -244,19 +244,19 @@ refferal *ref_init(refferal *phead, node *p, hash_tab *htab, svector_doc &search
 	search.shrink_to_fit();
 	return temp;
 }
-// функция вывода таблицы с информацией о выписках
+// С„СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° С‚Р°Р±Р»РёС†С‹ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ РІС‹РїРёСЃРєР°С…
 void print_list(refferal *phead, hash_tab *pat)
 {
 	int i(0), index(0);
     refferal *current = phead;
-	// данные для формирования шапки
-	const short COUNT_COL(5); // число столбцов
-	string name_col[] = { " ## ", "Рег.номер", "ФИО пациента", "ФИО врача ", "Дата приема" }; // имена столбцов
-	short size_col[COUNT_COL] = { 4, 11, 38, 28, 30 }; // размеры столбцов
+	// РґР°РЅРЅС‹Рµ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ С€Р°РїРєРё
+	const short COUNT_COL(5); // С‡РёСЃР»Рѕ СЃС‚РѕР»Р±С†РѕРІ
+	string name_col[] = { " ## ", "Р РµРі.РЅРѕРјРµСЂ", "Р¤РРћ РїР°С†РёРµРЅС‚Р°", "Р¤РРћ РІСЂР°С‡Р° ", "Р”Р°С‚Р° РїСЂРёРµРјР°" }; // РёРјРµРЅР° СЃС‚РѕР»Р±С†РѕРІ
+	short size_col[COUNT_COL] = { 4, 11, 38, 28, 30 }; // СЂР°Р·РјРµСЂС‹ СЃС‚РѕР»Р±С†РѕРІ
 
-	short size_tab = print_head(name_col, size_col, COUNT_COL); // вывод шапки таблицы
-    // вывод строк таблицы
-	if (!current) cout<<"Список пуст!\n";
+	short size_tab = print_head(name_col, size_col, COUNT_COL); // РІС‹РІРѕРґ С€Р°РїРєРё С‚Р°Р±Р»РёС†С‹
+    // РІС‹РІРѕРґ СЃС‚СЂРѕРє С‚Р°Р±Р»РёС†С‹
+	if (!current) cout<<"РЎРїРёСЃРѕРє РїСѓСЃС‚!\n";
 	else
 	{
 		do
@@ -282,9 +282,9 @@ void print_list(refferal *phead, hash_tab *pat)
 		}
 		while(current != phead);
 	}
-	print_end(size_tab); // вывод нижней границы таблицы
+	print_end(size_tab); // РІС‹РІРѕРґ РЅРёР¶РЅРµР№ РіСЂР°РЅРёС†С‹ С‚Р°Р±Р»РёС†С‹
 }
-// подсчет кол-ва выданных направлений (нужно для сортировки)
+// РїРѕРґСЃС‡РµС‚ РєРѕР»-РІР° РІС‹РґР°РЅРЅС‹С… РЅР°РїСЂР°РІР»РµРЅРёР№ (РЅСѓР¶РЅРѕ РґР»СЏ СЃРѕСЂС‚РёСЂРѕРІРєРё)
 int list_count(refferal *phead)
 {
 	int count(0);
@@ -300,7 +300,7 @@ int list_count(refferal *phead)
 	}
 	return count;
 }
-// получаем адрес предыдущего элемента для р
+// РїРѕР»СѓС‡Р°РµРј Р°РґСЂРµСЃ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р° РґР»СЏ СЂ
 refferal *get_before(refferal *p)
 {
 	refferal *current = p;
@@ -308,28 +308,28 @@ refferal *get_before(refferal *p)
 		current = current->next;
 	return current;
 }
-// сортировка списка методом извлечения
+// СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРїРёСЃРєР° РјРµС‚РѕРґРѕРј РёР·РІР»РµС‡РµРЅРёСЏ
 void sort_list(refferal **phead, refferal **ptail)
 {
-	if (*phead) // если список существует, то
+	if (*phead) // РµСЃР»Рё СЃРїРёСЃРѕРє СЃСѓС‰РµСЃС‚РІСѓРµС‚, С‚Рѕ
 	{
-		int count = list_count(*phead); // получаем кол-во элементов списка
-		if (count > 2) // если элементов больше чем 2
+		int count = list_count(*phead); // РїРѕР»СѓС‡Р°РµРј РєРѕР»-РІРѕ СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР°
+		if (count > 2) // РµСЃР»Рё СЌР»РµРјРµРЅС‚РѕРІ Р±РѕР»СЊС€Рµ С‡РµРј 2
 		{
-			refferal *link; // звено для реализации перестановки элементов
-			refferal *max; // элемент с максимальным значением(поле ФИО врача)
-			refferal *before_m; // элемент стоящий за *max
-			refferal *tail; // элемент указывающий на границу рассматриваемых элементов списка
-			refferal *before_t; // элемент стоящий за *tail
+			refferal *link; // Р·РІРµРЅРѕ РґР»СЏ СЂРµР°Р»РёР·Р°С†РёРё РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё СЌР»РµРјРµРЅС‚РѕРІ
+			refferal *max; // СЌР»РµРјРµРЅС‚ СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј(РїРѕР»Рµ Р¤РРћ РІСЂР°С‡Р°)
+			refferal *before_m; // СЌР»РµРјРµРЅС‚ СЃС‚РѕСЏС‰РёР№ Р·Р° *max
+			refferal *tail; // СЌР»РµРјРµРЅС‚ СѓРєР°Р·С‹РІР°СЋС‰РёР№ РЅР° РіСЂР°РЅРёС†Сѓ СЂР°СЃСЃРјР°С‚СЂРёРІР°РµРјС‹С… СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР°
+			refferal *before_t; // СЌР»РµРјРµРЅС‚ СЃС‚РѕСЏС‰РёР№ Р·Р° *tail
 			refferal *current = *phead;
 
-			tail = *ptail; // начальная граница: конец списка
-			// рассматриваем элементы списка, причем с каждым разом кол-во рассмотренных элементов уменьшается на 1
+			tail = *ptail; // РЅР°С‡Р°Р»СЊРЅР°СЏ РіСЂР°РЅРёС†Р°: РєРѕРЅРµС† СЃРїРёСЃРєР°
+			// СЂР°СЃСЃРјР°С‚СЂРёРІР°РµРј СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР°, РїСЂРёС‡РµРј СЃ РєР°Р¶РґС‹Рј СЂР°Р·РѕРј РєРѕР»-РІРѕ СЂР°СЃСЃРјРѕС‚СЂРµРЅРЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ СѓРјРµРЅСЊС€Р°РµС‚СЃСЏ РЅР° 1
 			for(int i = count; i > 0; i--)
 			{
 				max = *phead;
 				current = (*phead);
-				// определяем максимальный элемент
+				// РѕРїСЂРµРґРµР»СЏРµРј РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚
 				for(int j = 0; j < i; j++)
 				{
 					if (toupperstr(current->namedoctor) >= toupperstr(max->namedoctor))
@@ -337,13 +337,13 @@ void sort_list(refferal **phead, refferal **ptail)
 					current = current->next;
 				}
 
-				before_m = get_before(max); // элемент стоящий за *max
-				before_t = get_before(tail); // элемент стоящий за *tail
+				before_m = get_before(max); // СЌР»РµРјРµРЅС‚ СЃС‚РѕСЏС‰РёР№ Р·Р° *max
+				before_t = get_before(tail); // СЌР»РµРјРµРЅС‚ СЃС‚РѕСЏС‰РёР№ Р·Р° *tail
 			
-				if (max != tail) // если хвост равен максимальному элементу, то пропускаем его и смещаемся, иначе
+				if (max != tail) // РµСЃР»Рё С…РІРѕСЃС‚ СЂР°РІРµРЅ РјР°РєСЃРёРјР°Р»СЊРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ, С‚Рѕ РїСЂРѕРїСѓСЃРєР°РµРј РµРіРѕ Рё СЃРјРµС‰Р°РµРјСЃСЏ, РёРЅР°С‡Рµ
 				{
-					if (max == *phead && tail == *ptail) // если максимальный элемент первый и граница равна концу списка, то
-					{// меняем элементы местами
+					if (max == *phead && tail == *ptail) // РµСЃР»Рё РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚ РїРµСЂРІС‹Р№ Рё РіСЂР°РЅРёС†Р° СЂР°РІРЅР° РєРѕРЅС†Сѓ СЃРїРёСЃРєР°, С‚Рѕ
+					{// РјРµРЅСЏРµРј СЌР»РµРјРµРЅС‚С‹ РјРµСЃС‚Р°РјРё
 						before_t->next = max; 
 						link = max->next;
 						max->next = tail;
@@ -351,10 +351,10 @@ void sort_list(refferal **phead, refferal **ptail)
 
 						*phead = tail;
 					}
-					else // иначе
+					else // РёРЅР°С‡Рµ
 					{
-						if (max->next == tail) // если максимальный элемент предпоследний, то
-						{// реализуем смещение
+						if (max->next == tail) // РµСЃР»Рё РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚ РїСЂРµРґРїРѕСЃР»РµРґРЅРёР№, С‚Рѕ
+						{// СЂРµР°Р»РёР·СѓРµРј СЃРјРµС‰РµРЅРёРµ
 							link = tail->next;
 							before_m->next = tail;
 							tail->next = max;
@@ -363,8 +363,8 @@ void sort_list(refferal **phead, refferal **ptail)
 							if (max == *phead) *phead = tail;
 
 						}
-						else // иначе
-						{// реализуем смещение
+						else // РёРЅР°С‡Рµ
+						{// СЂРµР°Р»РёР·СѓРµРј СЃРјРµС‰РµРЅРёРµ
 							before_t->next = max;
 							link = max->next;
 							max->next = tail->next;
@@ -374,12 +374,12 @@ void sort_list(refferal **phead, refferal **ptail)
 						}
 					}
 				}
-				tail = before_t; // смещаем границу рассматриваемой области
-				*ptail = get_before(*phead); // обновляем хвост списка
+				tail = before_t; // СЃРјРµС‰Р°РµРј РіСЂР°РЅРёС†Сѓ СЂР°СЃСЃРјР°С‚СЂРёРІР°РµРјРѕР№ РѕР±Р»Р°СЃС‚Рё
+				*ptail = get_before(*phead); // РѕР±РЅРѕРІР»СЏРµРј С…РІРѕСЃС‚ СЃРїРёСЃРєР°
 			}
 		}
-		else // если элементов меньше чем 2, то
-		{// реализуем смещение
+		else // РµСЃР»Рё СЌР»РµРјРµРЅС‚РѕРІ РјРµРЅСЊС€Рµ С‡РµРј 2, С‚Рѕ
+		{// СЂРµР°Р»РёР·СѓРµРј СЃРјРµС‰РµРЅРёРµ
 			if (toupperstr((*phead)->namedoctor) > toupperstr((*ptail)->namedoctor))
 			{
 				refferal *temp = *phead;
@@ -392,20 +392,20 @@ void sort_list(refferal **phead, refferal **ptail)
 		}
 	}
 }
-// функция регистрации направления
+// С„СѓРЅРєС†РёСЏ СЂРµРіРёСЃС‚СЂР°С†РёРё РЅР°РїСЂР°РІР»РµРЅРёСЏ
 void add_to_list(refferal **phead, refferal **ptail, node *p, hash_tab *htab, svector_doc &search)
 {
-    refferal *current = ref_init(*phead, p, htab, search); // заполняем данные о выписке
+    refferal *current = ref_init(*phead, p, htab, search); // Р·Р°РїРѕР»РЅСЏРµРј РґР°РЅРЅС‹Рµ Рѕ РІС‹РїРёСЃРєРµ
 	current->next = NULL;
 
     if (!(*phead)) *phead = current;
     else (*ptail)->next = current;
     (*ptail) = current;
 
-	(*ptail)->next = *phead; // зацикливаем список
-	sort_list(phead, ptail); // сортируем
+	(*ptail)->next = *phead; // Р·Р°С†РёРєР»РёРІР°РµРј СЃРїРёСЃРѕРє
+	sort_list(phead, ptail); // СЃРѕСЂС‚РёСЂСѓРµРј
 }
-// функция добавления направления при чтении из файла
+// С„СѓРЅРєС†РёСЏ РґРѕР±Р°РІР»РµРЅРёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ РїСЂРё С‡С‚РµРЅРёРё РёР· С„Р°Р№Р»Р°
 void add_to_list(refferal **phead, refferal **ptail, refferal *ref)
 {
 	refferal *current = ref;
@@ -415,17 +415,17 @@ void add_to_list(refferal **phead, refferal **ptail, refferal *ref)
 	else (*ptail)->next = current;
 	(*ptail) = current;
 
-	(*ptail)->next = *phead; // зацикливаем
-	sort_list(phead, ptail); // сортируем
+	(*ptail)->next = *phead; // Р·Р°С†РёРєР»РёРІР°РµРј
+	sort_list(phead, ptail); // СЃРѕСЂС‚РёСЂСѓРµРј
 }
-// удаление одной выписки из списка 
+// СѓРґР°Р»РµРЅРёРµ РѕРґРЅРѕР№ РІС‹РїРёСЃРєРё РёР· СЃРїРёСЃРєР° 
 void del_ref(refferal **phead, refferal **ptail, svector_ref &search, string val, bool key = false)
 {
-	int choice(0); // номер элемента на удаление
-	string answer; // ответ на запрос да/нет
+	int choice(0); // РЅРѕРјРµСЂ СЌР»РµРјРµРЅС‚Р° РЅР° СѓРґР°Р»РµРЅРёРµ
+	string answer; // РѕС‚РІРµС‚ РЅР° Р·Р°РїСЂРѕСЃ РґР°/РЅРµС‚
 	refferal *current = *phead;
 
-	if (key) // если поиск элемента на удаление идет по ключу, то ищем по ключу
+	if (key) // РµСЃР»Рё РїРѕРёСЃРє СЌР»РµРјРµРЅС‚Р° РЅР° СѓРґР°Р»РµРЅРёРµ РёРґРµС‚ РїРѕ РєР»СЋС‡Сѓ, С‚Рѕ РёС‰РµРј РїРѕ РєР»СЋС‡Сѓ
 	{
 		do
 		{
@@ -434,7 +434,7 @@ void del_ref(refferal **phead, refferal **ptail, svector_ref &search, string val
 			current = current->next;
 		} while (current != (*phead));
 	}
-	else // иначе ищем по фамилии врача
+	else // РёРЅР°С‡Рµ РёС‰РµРј РїРѕ С„Р°РјРёР»РёРё РІСЂР°С‡Р°
 	{
 		do
 		{
@@ -443,37 +443,37 @@ void del_ref(refferal **phead, refferal **ptail, svector_ref &search, string val
 			current = current->next;
 		} while (current != (*phead));
 	}
-	if (!search.empty()) // если нашли, то
+	if (!search.empty()) // РµСЃР»Рё РЅР°С€Р»Рё, С‚Рѕ
 	{
-		cout << "Результат: \n";
+		cout << "Р РµР·СѓР»СЊС‚Р°С‚: \n";
 		for (unsigned int i = 0; i < search.size(); i++)
 		{
-			cout << i + 1 << ") " << "\n\tРег. номер: "
-				<< search[i]->key_patient << "\n\tФИО врача: "
-				<< search[i]->namedoctor << "\n\tДата приема: "
+			cout << i + 1 << ") " << "\n\tР РµРі. РЅРѕРјРµСЂ: "
+				<< search[i]->key_patient << "\n\tР¤РРћ РІСЂР°С‡Р°: "
+				<< search[i]->namedoctor << "\n\tР”Р°С‚Р° РїСЂРёРµРјР°: "
 				<< " "
 				<< search[i]->time.wDay << " "
 				<< get_month(search[i]->time) << " "
 				<< search[i]->time.wYear << endl;
 		}
-		if (search.size() >= 2) // если найденных записей больше чем 2, то запрашиваем
+		if (search.size() >= 2) // РµСЃР»Рё РЅР°Р№РґРµРЅРЅС‹С… Р·Р°РїРёСЃРµР№ Р±РѕР»СЊС€Рµ С‡РµРј 2, С‚Рѕ Р·Р°РїСЂР°С€РёРІР°РµРј
 		{
-			cout << "Выберите номер записи для дальнейшего удаления: ";
+			cout << "Р’С‹Р±РµСЂРёС‚Рµ РЅРѕРјРµСЂ Р·Р°РїРёСЃРё РґР»СЏ РґР°Р»СЊРЅРµР№С€РµРіРѕ СѓРґР°Р»РµРЅРёСЏ: ";
 			choice = input_control(search.size(), 1);
 		}
-		else choice = 1; // иначе зачем выбирать если запись одна?
+		else choice = 1; // РёРЅР°С‡Рµ Р·Р°С‡РµРј РІС‹Р±РёСЂР°С‚СЊ РµСЃР»Рё Р·Р°РїРёСЃСЊ РѕРґРЅР°?
 
-		cout << "\nВыбрана запись: \n Рег. номер: "
-			<< search[choice - 1]->key_patient << "\n ФИО врача: "
-			<< search[choice - 1]->namedoctor << "\n Дата приема: "
+		cout << "\nР’С‹Р±СЂР°РЅР° Р·Р°РїРёСЃСЊ: \n Р РµРі. РЅРѕРјРµСЂ: "
+			<< search[choice - 1]->key_patient << "\n Р¤РРћ РІСЂР°С‡Р°: "
+			<< search[choice - 1]->namedoctor << "\n Р”Р°С‚Р° РїСЂРёРµРјР°: "
 			<< " "
 			<< search[choice - 1]->time.wDay << " "
 			<< get_month(search[choice - 1]->time) << " "
 			<< search[choice - 1]->time.wYear << endl;
 
-		cout << "\nСобираетесь ли вы удалить запись? д/н ";
+		cout << "\nРЎРѕР±РёСЂР°РµС‚РµСЃСЊ Р»Рё РІС‹ СѓРґР°Р»РёС‚СЊ Р·Р°РїРёСЃСЊ? Рґ/РЅ ";
 		answer_control(answer);
-		if (answer[0] == 'д')
+		if (answer[0] == 'Рґ')
 		{
 			refferal *temp = get_before(search[choice - 1]);
 			if (search[choice - 1]->next == search[choice - 1])
@@ -487,35 +487,35 @@ void del_ref(refferal **phead, refferal **ptail, svector_ref &search, string val
 				(*ptail) = get_before(*phead);
 				delete search[choice - 1];
 			}
-			cout << "\n=== Запись удалена ===\n";
+			cout << "\n=== Р—Р°РїРёСЃСЊ СѓРґР°Р»РµРЅР° ===\n";
 		}
-		else cout << "\n=== Запись не удалена ===\n";
+		else cout << "\n=== Р—Р°РїРёСЃСЊ РЅРµ СѓРґР°Р»РµРЅР° ===\n";
 	}
 	cout << endl;
 }
-// меню возврата выписки
+// РјРµРЅСЋ РІРѕР·РІСЂР°С‚Р° РІС‹РїРёСЃРєРё
 void del_ref_menu(refferal **phead, refferal **ptail)
 {
-	svector_ref search; // вектор данных выписок
-	int s_choice(0); // выбор критерия
-	string val; // фио врача
-	if (*phead) // если список существует, то 
+	svector_ref search; // РІРµРєС‚РѕСЂ РґР°РЅРЅС‹С… РІС‹РїРёСЃРѕРє
+	int s_choice(0); // РІС‹Р±РѕСЂ РєСЂРёС‚РµСЂРёСЏ
+	string val; // С„РёРѕ РІСЂР°С‡Р°
+	if (*phead) // РµСЃР»Рё СЃРїРёСЃРѕРє СЃСѓС‰РµСЃС‚РІСѓРµС‚, С‚Рѕ 
 	{
-		cout << "Выберите критерий для возврата выписки:\n"
-			<< " 1. ФИО врача\n"
-			<< " 2. Рег. номер пациента\n"
-			<< " 0. Отмена действий\n"
-			<< "\nВведите номер выбранного критерия: ";
+		cout << "Р’С‹Р±РµСЂРёС‚Рµ РєСЂРёС‚РµСЂРёР№ РґР»СЏ РІРѕР·РІСЂР°С‚Р° РІС‹РїРёСЃРєРё:\n"
+			<< " 1. Р¤РРћ РІСЂР°С‡Р°\n"
+			<< " 2. Р РµРі. РЅРѕРјРµСЂ РїР°С†РёРµРЅС‚Р°\n"
+			<< " 0. РћС‚РјРµРЅР° РґРµР№СЃС‚РІРёР№\n"
+			<< "\nР’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РєСЂРёС‚РµСЂРёСЏ: ";
 		s_choice = input_control(4, 0);
 		switch (s_choice)
 		{
 		case 1:
-			cout << "\n Введите ФИО врача: ";
+			cout << "\n Р’РІРµРґРёС‚Рµ Р¤РРћ РІСЂР°С‡Р°: ";
 			input_control(val);
 			del_ref(phead, ptail, search, val);
 			break;
 		case 2:
-			cout << "\n Введите рег. номер пациента[MM-NNNNNN]: ";
+			cout << "\n Р’РІРµРґРёС‚Рµ СЂРµРі. РЅРѕРјРµСЂ РїР°С†РёРµРЅС‚Р°[MM-NNNNNN]: ";
 			key_input(val);
 			del_ref(phead, ptail, search, val, true);
 			break;
@@ -523,9 +523,9 @@ void del_ref_menu(refferal **phead, refferal **ptail)
 			break;
 		}
 	}
-	else cout << " Список пуст.\n"; // иначе сообщаем об отсутсвии элементов
+	else cout << " РЎРїРёСЃРѕРє РїСѓСЃС‚.\n"; // РёРЅР°С‡Рµ СЃРѕРѕР±С‰Р°РµРј РѕР± РѕС‚СЃСѓС‚СЃРІРёРё СЌР»РµРјРµРЅС‚РѕРІ
 }
-// удаление и освобождение памяти списка
+// СѓРґР°Р»РµРЅРёРµ Рё РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё СЃРїРёСЃРєР°
 void del_list(refferal **phead, refferal **ptail)
 {
 	if (*phead)
@@ -542,8 +542,8 @@ void del_list(refferal **phead, refferal **ptail)
 	}
 	*phead = *ptail = NULL;
 }
-/* =============== Работа с файлом =================== */
-// считываем данные из файла и заполняем ими список
+/* =============== Р Р°Р±РѕС‚Р° СЃ С„Р°Р№Р»РѕРј =================== */
+// СЃС‡РёС‚С‹РІР°РµРј РґР°РЅРЅС‹Рµ РёР· С„Р°Р№Р»Р° Рё Р·Р°РїРѕР»РЅСЏРµРј РёРјРё СЃРїРёСЃРѕРє
 void read_ref_base(refferal **phead, refferal **ptail)
 {
 	fstream fin;
@@ -551,11 +551,11 @@ void read_ref_base(refferal **phead, refferal **ptail)
 
 	if (fin)
 	{
-		// смотрим на количество символов в файле
-		fin.seekg(0, ios_base::end); // смещаемся в конец
-		int j = int(fin.tellg()); // получаем количество символов, которые мы прошли при продвежению к концу файла
-		fin.seekg(43, ios::beg); // смещаемся в начало файла пропуская шапку
-		// 43 - размер шапки файла, если в файле больше 43 символов, то
+		// СЃРјРѕС‚СЂРёРј РЅР° РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ РІ С„Р°Р№Р»Рµ
+		fin.seekg(0, ios_base::end); // СЃРјРµС‰Р°РµРјСЃСЏ РІ РєРѕРЅРµС†
+		int j = int(fin.tellg()); // РїРѕР»СѓС‡Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ, РєРѕС‚РѕСЂС‹Рµ РјС‹ РїСЂРѕС€Р»Рё РїСЂРё РїСЂРѕРґРІРµР¶РµРЅРёСЋ Рє РєРѕРЅС†Сѓ С„Р°Р№Р»Р°
+		fin.seekg(43, ios::beg); // СЃРјРµС‰Р°РµРјСЃСЏ РІ РЅР°С‡Р°Р»Рѕ С„Р°Р№Р»Р° РїСЂРѕРїСѓСЃРєР°СЏ С€Р°РїРєСѓ
+		// 43 - СЂР°Р·РјРµСЂ С€Р°РїРєРё С„Р°Р№Р»Р°, РµСЃР»Рё РІ С„Р°Р№Р»Рµ Р±РѕР»СЊС€Рµ 43 СЃРёРјРІРѕР»РѕРІ, С‚Рѕ
 		//fin.seekg(0, ios::beg);
 		if (j > 43)
 		{
@@ -570,17 +570,17 @@ void read_ref_base(refferal **phead, refferal **ptail)
 					>> temp->time.wYear
 					>> temp->time.wHour
 					>> temp->time.wMinute;
-				add_to_list(phead, ptail, temp); // заполняем список
+				add_to_list(phead, ptail, temp); // Р·Р°РїРѕР»РЅСЏРµРј СЃРїРёСЃРѕРє
 				if (!fin.eof()) fin.get();
 			}
 		}
 	}
-	else { cout << "\nВнимание: Не удалось открыть Базу Данных направлений!\n\n"; system("pause"); }
+	else { cout << "\nР’РЅРёРјР°РЅРёРµ: РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ Р‘Р°Р·Сѓ Р”Р°РЅРЅС‹С… РЅР°РїСЂР°РІР»РµРЅРёР№!\n\n"; system("pause"); }
 	fin.sync();
 	fin.clear();
 	fin.close();
 }
-// вывод всех элементов списка в файл
+// РІС‹РІРѕРґ РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР° РІ С„Р°Р№Р»
 void ref_to_file(fstream &fout, refferal *phead)
 {
 	refferal *current = phead;
@@ -596,16 +596,16 @@ void ref_to_file(fstream &fout, refferal *phead)
 		current = current->next;
 	} while (current != phead);
 }
-// вывод списка в файл
+// РІС‹РІРѕРґ СЃРїРёСЃРєР° РІ С„Р°Р№Р»
 void fill_ref_base(refferal *phead)
 {
 	fstream fout;
 	fout.open(_REF_FILENAME, ios_base::out);
 	if(fout)
 	{
-		fout << "==========База данных выписок============";
+		fout << "==========Р‘Р°Р·Р° РґР°РЅРЅС‹С… РІС‹РїРёСЃРѕРє============";
 		if (phead) ref_to_file(fout, phead);
 	}
-	else { cout<<"\nВнимание: Не удалось открыть Базу Данных Выписок!\n\n"; system("pause"); }
+	else { cout<<"\nР’РЅРёРјР°РЅРёРµ: РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ Р‘Р°Р·Сѓ Р”Р°РЅРЅС‹С… Р’С‹РїРёСЃРѕРє!\n\n"; system("pause"); }
 	fout.close();
 }

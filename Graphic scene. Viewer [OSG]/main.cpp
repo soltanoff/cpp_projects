@@ -64,9 +64,9 @@ osg::MatrixTransform *set_matrix_transform(osg::Group *group, osg::ShapeDrawable
 int main()
 {
     osgViewer::Viewer viewer;
-	osg::Group *group = new osg::Group(); // Êîðåíü äåðåâà
+	osg::Group *group = new osg::Group(); // ÐšÐ¾Ñ€ÐµÐ½ÑŒ Ð´ÐµÑ€ÐµÐ²Ð°
 	// ==========================================================================================
-	// Ñîçäàíèå ìàòåðèàëîâ
+	// Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ð¾Ð²
 	osg::Material *material_cone = new osg::Material();
 	material_cone->setDiffuse(osg::Material::FRONT,  osg::Vec4(1.0, 1.0, 1.0, 1.0));
 	material_cone->setSpecular(osg::Material::FRONT, osg::Vec4(0.0, 0.0, 0.0, 1.0));
@@ -88,7 +88,7 @@ int main()
 	material_cylinder->setEmission(osg::Material::FRONT, osg::Vec4(0.0, 0.0, 0.0, 1.0));
 	material_cylinder->setShininess(osg::Material::FRONT, 10.0);
 	// ==========================================================================================
-	// Ñîçäàíèå îáúåêòîâ
+	// Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²
     osg::Sphere *shape = new osg::Sphere(osg::Vec3(2.0f, 0.0f, 0.0f), 2.0f);
     osg::ShapeDrawable *drawable_shape = new osg::ShapeDrawable(shape);
 	drawable_shape->setColor(osg::Vec4(0.22f, 0.5f, 0.5f, 1.0f));
@@ -101,8 +101,8 @@ int main()
 	osg::ShapeDrawable *drawable_cylinder = new osg::ShapeDrawable(cylinder);
 	drawable_cone->setColor(osg::Vec4(0.4f, 1.0f, 0.8f, 0.0f));
 	// ==========================================================================================
-	// Ñîçäàíèå äåðåâà îáúåêòîâ ñöåíû
-	group->addChild(set_light(group)); // Çàäàåì ñâåò
+	// Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð´ÐµÑ€ÐµÐ²Ð° Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² ÑÑ†ÐµÐ½Ñ‹
+	group->addChild(set_light(group)); // Ð—Ð°Ð´Ð°ÐµÐ¼ ÑÐ²ÐµÑ‚
     viewer.addEventHandler(new RotationHandler(set_matrix_transform(group, drawable_cone, material_cone)));
     viewer.addEventHandler(new RotationHandler(set_matrix_transform(group, drawable_cylinder, material_cylinder), true));
 	group->addChild(set_geode_obj(drawable_shape, material_shape));

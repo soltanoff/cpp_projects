@@ -1,30 +1,30 @@
-/* ============ Поиск во всех структурах ============= */
+/* ============ РџРѕРёСЃРє РІРѕ РІСЃРµС… СЃС‚СЂСѓРєС‚СѓСЂР°С… ============= */
 #pragma once
 #include "doctor.h"
 #include "patient.h"
 #include "refferal.h"
 #include "anytools.h"
-/* ======= Определения ближайшей даты выписки ======= */
-// коллекция выписок
+/* ======= РћРїСЂРµРґРµР»РµРЅРёСЏ Р±Р»РёР¶Р°Р№С€РµР№ РґР°С‚С‹ РІС‹РїРёСЃРєРё ======= */
+// РєРѕР»Р»РµРєС†РёСЏ РІС‹РїРёСЃРѕРє
 struct ref_collect
 {
-	refferal *ref; // указатель на выписку
-	ref_collect *next; // указатель на следующий элемент коллекции
-	ref_collect(refferal *reffer) // параметрический конструктор
+	refferal *ref; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РІС‹РїРёСЃРєСѓ
+	ref_collect *next; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚ РєРѕР»Р»РµРєС†РёРё
+	ref_collect(refferal *reffer) // РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	{
 		ref = reffer;
 		next = NULL;
 	}
 };
-// список приемных дней врача
+// СЃРїРёСЃРѕРє РїСЂРёРµРјРЅС‹С… РґРЅРµР№ РІСЂР°С‡Р°
 struct busy_day
 {
-	bool is_full; // заполнен ли день
-	SYSTEMTIME current_date; // текущая дата
-	SYSTEMTIME earliest_date; // ближайшее время на прием
-	ref_collect *collection; // текущие пациенты на этот день
-	busy_day *next; // указатель на следующую структуру
-	busy_day(refferal *reffer) // параметрический конструктор
+	bool is_full; // Р·Р°РїРѕР»РЅРµРЅ Р»Рё РґРµРЅСЊ
+	SYSTEMTIME current_date; // С‚РµРєСѓС‰Р°СЏ РґР°С‚Р°
+	SYSTEMTIME earliest_date; // Р±Р»РёР¶Р°Р№С€РµРµ РІСЂРµРјСЏ РЅР° РїСЂРёРµРј
+	ref_collect *collection; // С‚РµРєСѓС‰РёРµ РїР°С†РёРµРЅС‚С‹ РЅР° СЌС‚РѕС‚ РґРµРЅСЊ
+	busy_day *next; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ СЃС‚СЂСѓРєС‚СѓСЂСѓ
+	busy_day(refferal *reffer) // РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	{
 		next = NULL;
 		is_full = false;
@@ -32,8 +32,8 @@ struct busy_day
 		collection = new ref_collect(reffer);
 	}
 };
-// освобождение памяти от списка приемных дней врача
-// как создали, так и удаляем
+// РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё РѕС‚ СЃРїРёСЃРєР° РїСЂРёРµРјРЅС‹С… РґРЅРµР№ РІСЂР°С‡Р°
+// РєР°Рє СЃРѕР·РґР°Р»Рё, С‚Р°Рє Рё СѓРґР°Р»СЏРµРј
 void del_busy_time(busy_day **current_work)
 {
 	busy_day *cur_w = *current_work;
@@ -42,7 +42,7 @@ void del_busy_time(busy_day **current_work)
 		busy_day *cur_w = *current_work;
 		while (*current_work)
 		{
-			// удаляем коллекцию выписок
+			// СѓРґР°Р»СЏРµРј РєРѕР»Р»РµРєС†РёСЋ РІС‹РїРёСЃРѕРє
 			cur_w = *current_work;
 			ref_collect *cur_r = cur_w->collection;
 			if (cur_r)
@@ -54,13 +54,13 @@ void del_busy_time(busy_day **current_work)
 					delete cur_r;
 				}
 			}
-			// удаляем элемент списка
+			// СѓРґР°Р»СЏРµРј СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°
 			*current_work = cur_w->next;
 			delete cur_w;
 		}
 	}
 }
-// функция копирования адресов ячеек памяти всех элементов списка Т в вектор 
+// С„СѓРЅРєС†РёСЏ РєРѕРїРёСЂРѕРІР°РЅРёСЏ Р°РґСЂРµСЃРѕРІ СЏС‡РµРµРє РїР°РјСЏС‚Рё РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР° Рў РІ РІРµРєС‚РѕСЂ 
 template<class T>void trans_to_vector(T *phead, vector<T*> &vec)
 {
 	T *current = phead;
@@ -70,7 +70,7 @@ template<class T>void trans_to_vector(T *phead, vector<T*> &vec)
 		current = current->next;
 	}
 }
-// функция переопределения указателей списка Т согласно упорядочности вектора
+// С„СѓРЅРєС†РёСЏ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРёСЏ СѓРєР°Р·Р°С‚РµР»РµР№ СЃРїРёСЃРєР° Рў СЃРѕРіР»Р°СЃРЅРѕ СѓРїРѕСЂСЏРґРѕС‡РЅРѕСЃС‚Рё РІРµРєС‚РѕСЂР°
 template<class T>void back_links(T **phead, vector<T*> &vec)
 {
 	*phead = vec[0];
@@ -80,18 +80,18 @@ template<class T>void back_links(T **phead, vector<T*> &vec)
 		else vec[i]->next = vec[i + 1];
 	}
 }
-// функция сортировки коллекции направлений врача по времени
-// сортировка усовершенственным пузырьком :D
+// С„СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё РєРѕР»Р»РµРєС†РёРё РЅР°РїСЂР°РІР»РµРЅРёР№ РІСЂР°С‡Р° РїРѕ РІСЂРµРјРµРЅРё
+// СЃРѕСЂС‚РёСЂРѕРІРєР° СѓСЃРѕРІРµСЂС€РµРЅСЃС‚РІРµРЅРЅС‹Рј РїСѓР·С‹СЂСЊРєРѕРј :D
 void sort_refcollect(ref_collect **ref)
 {
 	if (*ref)
 	{
-		vector<ref_collect*> vec; // вектор хранящий в себе элементы списка
-		bool changed(true); // флаг изменений в векторе(были ли перестановки элементов)
-		ref_collect *temp; // временный элемент(для перестановки)
-		// копируем адреса элементов из списка в вектор
+		vector<ref_collect*> vec; // РІРµРєС‚РѕСЂ С…СЂР°РЅСЏС‰РёР№ РІ СЃРµР±Рµ СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР°
+		bool changed(true); // С„Р»Р°Рі РёР·РјРµРЅРµРЅРёР№ РІ РІРµРєС‚РѕСЂРµ(Р±С‹Р»Рё Р»Рё РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё СЌР»РµРјРµРЅС‚РѕРІ)
+		ref_collect *temp; // РІСЂРµРјРµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚(РґР»СЏ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё)
+		// РєРѕРїРёСЂСѓРµРј Р°РґСЂРµСЃР° СЌР»РµРјРµРЅС‚РѕРІ РёР· СЃРїРёСЃРєР° РІ РІРµРєС‚РѕСЂ
 		trans_to_vector(*ref, vec);
-		// сортируем пока есть какие-либо изменения
+		// СЃРѕСЂС‚РёСЂСѓРµРј РїРѕРєР° РµСЃС‚СЊ РєР°РєРёРµ-Р»РёР±Рѕ РёР·РјРµРЅРµРЅРёСЏ
 		while (changed)
 		{
 			changed = false;
@@ -113,22 +113,22 @@ void sort_refcollect(ref_collect **ref)
 				}
 			}
 		}
-		// реконструируем список упорядочными элементами
+		// СЂРµРєРѕРЅСЃС‚СЂСѓРёСЂСѓРµРј СЃРїРёСЃРѕРє СѓРїРѕСЂСЏРґРѕС‡РЅС‹РјРё СЌР»РµРјРµРЅС‚Р°РјРё
 		back_links(ref, vec);
 	}
 }
-// функция сортировки список приемных дней врача по дате
-// сортировка усовершенственным пузырьком :D
+// С„СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё СЃРїРёСЃРѕРє РїСЂРёРµРјРЅС‹С… РґРЅРµР№ РІСЂР°С‡Р° РїРѕ РґР°С‚Рµ
+// СЃРѕСЂС‚РёСЂРѕРІРєР° СѓСЃРѕРІРµСЂС€РµРЅСЃС‚РІРµРЅРЅС‹Рј РїСѓР·С‹СЂСЊРєРѕРј :D
 void sort_busyday(busy_day **current_work)
 {
 	if (*current_work)
 	{
-		vector<busy_day*> vec; // вектор хранящий в себе элементы списка
-		bool changed(true); // флаг изменений в векторе(были ли перестановки элементов)
-		busy_day *temp; // временный элемент(для перестановки)
-		// копируем адреса элементов из списка в вектор
+		vector<busy_day*> vec; // РІРµРєС‚РѕСЂ С…СЂР°РЅСЏС‰РёР№ РІ СЃРµР±Рµ СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР°
+		bool changed(true); // С„Р»Р°Рі РёР·РјРµРЅРµРЅРёР№ РІ РІРµРєС‚РѕСЂРµ(Р±С‹Р»Рё Р»Рё РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё СЌР»РµРјРµРЅС‚РѕРІ)
+		busy_day *temp; // РІСЂРµРјРµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚(РґР»СЏ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё)
+		// РєРѕРїРёСЂСѓРµРј Р°РґСЂРµСЃР° СЌР»РµРјРµРЅС‚РѕРІ РёР· СЃРїРёСЃРєР° РІ РІРµРєС‚РѕСЂ
 		trans_to_vector(*current_work, vec);
-		// сортируем пока есть какие-либо изменения
+		// СЃРѕСЂС‚РёСЂСѓРµРј РїРѕРєР° РµСЃС‚СЊ РєР°РєРёРµ-Р»РёР±Рѕ РёР·РјРµРЅРµРЅРёСЏ
 		while (changed)
 		{
 			changed = false;
@@ -150,25 +150,25 @@ void sort_busyday(busy_day **current_work)
 				}
 			}
 		}
-		// реконструируем список упорядочными элементами
+		// СЂРµРєРѕРЅСЃС‚СЂСѓРёСЂСѓРµРј СЃРїРёСЃРѕРє СѓРїРѕСЂСЏРґРѕС‡РЅС‹РјРё СЌР»РµРјРµРЅС‚Р°РјРё
 		back_links(current_work, vec);
 	}
 }
-// функция создания списка приемных дней врача
+// С„СѓРЅРєС†РёСЏ СЃРѕР·РґР°РЅРёСЏ СЃРїРёСЃРєР° РїСЂРёРµРјРЅС‹С… РґРЅРµР№ РІСЂР°С‡Р°
 void create_reception(busy_day **current_work, refferal *ref)
 {
-	if (!(*current_work)) // если список пуст, то создадим первый элемент
+	if (!(*current_work)) // РµСЃР»Рё СЃРїРёСЃРѕРє РїСѓСЃС‚, С‚Рѕ СЃРѕР·РґР°РґРёРј РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚
 	{
 		(*current_work) = new busy_day(ref);
 	}
-	else// иначе
+	else// РёРЅР°С‡Рµ
 	{
-		bool writted(false); // флаг указываеющий на то, что была произведена запись
+		bool writted(false); // С„Р»Р°Рі СѓРєР°Р·С‹РІР°РµСЋС‰РёР№ РЅР° С‚Рѕ, С‡С‚Рѕ Р±С‹Р»Р° РїСЂРѕРёР·РІРµРґРµРЅР° Р·Р°РїРёСЃСЊ
 		busy_day *cur_w = *current_work;
-		while (cur_w) // гуляем по списку пока не дойдем до конца
+		while (cur_w) // РіСѓР»СЏРµРј РїРѕ СЃРїРёСЃРєСѓ РїРѕРєР° РЅРµ РґРѕР№РґРµРј РґРѕ РєРѕРЅС†Р°
 		{
-			if (date_cmp(cur_w->current_date, ref->time) == 0) // если дата выписки совпадает с полем списка приемных дней, то
-			{// то пополняем коллекцию выписок
+			if (date_cmp(cur_w->current_date, ref->time) == 0) // РµСЃР»Рё РґР°С‚Р° РІС‹РїРёСЃРєРё СЃРѕРІРїР°РґР°РµС‚ СЃ РїРѕР»РµРј СЃРїРёСЃРєР° РїСЂРёРµРјРЅС‹С… РґРЅРµР№, С‚Рѕ
+			{// С‚Рѕ РїРѕРїРѕР»РЅСЏРµРј РєРѕР»Р»РµРєС†РёСЋ РІС‹РїРёСЃРѕРє
 				ref_collect *cur_r = cur_w->collection;
 				while (cur_r->next)
 					cur_r = cur_r->next;
@@ -178,7 +178,7 @@ void create_reception(busy_day **current_work, refferal *ref)
 			}
 			cur_w = cur_w->next;
 		}
-		if (!writted) // если выписка не попала ни в какую коллекцию, то создаем новый элемент списка приемных дней
+		if (!writted) // РµСЃР»Рё РІС‹РїРёСЃРєР° РЅРµ РїРѕРїР°Р»Р° РЅРё РІ РєР°РєСѓСЋ РєРѕР»Р»РµРєС†РёСЋ, С‚Рѕ СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР° РїСЂРёРµРјРЅС‹С… РґРЅРµР№
 		{
 			busy_day *cur_w = *current_work;
 			while (cur_w->next)
@@ -188,7 +188,7 @@ void create_reception(busy_day **current_work, refferal *ref)
 	}
 	
 }
-// debug-вывод результатов формирования занятости
+// debug-РІС‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ Р·Р°РЅСЏС‚РѕСЃС‚Рё
 void debugout_of_analyzing(busy_day *current_work, bool with_earl_date = false)
 {
 	if (current_work)
@@ -204,7 +204,7 @@ void debugout_of_analyzing(busy_day *current_work, bool with_earl_date = false)
 				<< cur->current_date.wYear;
 			if (with_earl_date)
 			{
-				cout << " Ближайшее время приема: "
+				cout << " Р‘Р»РёР¶Р°Р№С€РµРµ РІСЂРµРјСЏ РїСЂРёРµРјР°: "
 					<< cur->earliest_date.wDay << " "
 					<< get_month(cur->earliest_date) << " "
 					<< cur->earliest_date.wYear << " - ";
@@ -233,36 +233,36 @@ void debugout_of_analyzing(busy_day *current_work, bool with_earl_date = false)
 		}
 	}
 }/**/
-// функция определяющая ближайшую дату приема пациента врачем. 
-// Возвращает true если дата определена
+// С„СѓРЅРєС†РёСЏ РѕРїСЂРµРґРµР»СЏСЋС‰Р°СЏ Р±Р»РёР¶Р°Р№С€СѓСЋ РґР°С‚Сѓ РїСЂРёРµРјР° РїР°С†РёРµРЅС‚Р° РІСЂР°С‡РµРј. 
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё РґР°С‚Р° РѕРїСЂРµРґРµР»РµРЅР°
 bool def_earliest_date(node *p, ref_collect *collection, SYSTEMTIME &earliest_date)
 {
-	ref_collect *current = collection; // коллекция направлений врача
-	bool diff_fail(false); // ошибка при подсчете разницы между датами
+	ref_collect *current = collection; // РєРѕР»Р»РµРєС†РёСЏ РЅР°РїСЂР°РІР»РµРЅРёР№ РІСЂР°С‡Р°
+	bool diff_fail(false); // РѕС€РёР±РєР° РїСЂРё РїРѕРґСЃС‡РµС‚Рµ СЂР°Р·РЅРёС†С‹ РјРµР¶РґСѓ РґР°С‚Р°РјРё
 
 	SYSTEMTIME temp = diff_time(current->ref->time, p->key.reception.time[0], &diff_fail);
-	if (temp.wMinute > 30 || temp.wHour >= 1) // если разница между началом раб. дня и первой выпиской больше 30 мин или более, то
+	if (temp.wMinute > 30 || temp.wHour >= 1) // РµСЃР»Рё СЂР°Р·РЅРёС†Р° РјРµР¶РґСѓ РЅР°С‡Р°Р»РѕРј СЂР°Р±. РґРЅСЏ Рё РїРµСЂРІРѕР№ РІС‹РїРёСЃРєРѕР№ Р±РѕР»СЊС€Рµ 30 РјРёРЅ РёР»Рё Р±РѕР»РµРµ, С‚Рѕ
 	{
-		earliest_date = timecpy(p->key.reception.time[0]); // определяем ближайшую дату(начало раб. дня)
+		earliest_date = timecpy(p->key.reception.time[0]); // РѕРїСЂРµРґРµР»СЏРµРј Р±Р»РёР¶Р°Р№С€СѓСЋ РґР°С‚Сѓ(РЅР°С‡Р°Р»Рѕ СЂР°Р±. РґРЅСЏ)
 		return true;
 	}
-	else // иначе смотрим далее
+	else // РёРЅР°С‡Рµ СЃРјРѕС‚СЂРёРј РґР°Р»РµРµ
 	{
-		while (current->next) // гуляем по списку, пока не попадем в последний элемент
+		while (current->next) // РіСѓР»СЏРµРј РїРѕ СЃРїРёСЃРєСѓ, РїРѕРєР° РЅРµ РїРѕРїР°РґРµРј РІ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚
 		{
 			temp = diff_time((current->next)->ref->time, current->ref->time, &diff_fail);
-			if (temp.wMinute > 30 || temp.wHour >= 1)// если разница между одной выпиской и другой выпиской больше 30 мин или более, то
+			if (temp.wMinute > 30 || temp.wHour >= 1)// РµСЃР»Рё СЂР°Р·РЅРёС†Р° РјРµР¶РґСѓ РѕРґРЅРѕР№ РІС‹РїРёСЃРєРѕР№ Рё РґСЂСѓРіРѕР№ РІС‹РїРёСЃРєРѕР№ Р±РѕР»СЊС€Рµ 30 РјРёРЅ РёР»Рё Р±РѕР»РµРµ, С‚Рѕ
 			{
-				earliest_date = timecpy(current->ref->time); // то назначем время ближайшей выписки
+				earliest_date = timecpy(current->ref->time); // С‚Рѕ РЅР°Р·РЅР°С‡РµРј РІСЂРµРјСЏ Р±Р»РёР¶Р°Р№С€РµР№ РІС‹РїРёСЃРєРё
 				datecpy(current->ref->time, earliest_date);
-				half_hour_increase(earliest_date); // причем увеличиваем время на 30 мин
+				half_hour_increase(earliest_date); // РїСЂРёС‡РµРј СѓРІРµР»РёС‡РёРІР°РµРј РІСЂРµРјСЏ РЅР° 30 РјРёРЅ
 
 				temp = diff_time((current->next)->ref->time, earliest_date, &diff_fail);
-				if (temp.wMinute > 30 || temp.wHour >= 1) return true; // если после увелечения время осталось с прежней разницей, то сообщаем о том, что дата найдена
+				if (temp.wMinute > 30 || temp.wHour >= 1) return true; // РµСЃР»Рё РїРѕСЃР»Рµ СѓРІРµР»РµС‡РµРЅРёСЏ РІСЂРµРјСЏ РѕСЃС‚Р°Р»РѕСЃСЊ СЃ РїСЂРµР¶РЅРµР№ СЂР°Р·РЅРёС†РµР№, С‚Рѕ СЃРѕРѕР±С‰Р°РµРј Рѕ С‚РѕРј, С‡С‚Рѕ РґР°С‚Р° РЅР°Р№РґРµРЅР°
 			}
 			current = current->next;
 		}
-		// если мы ничего не нашли до этого, про аналогично проверяем последний элемент
+		// РµСЃР»Рё РјС‹ РЅРёС‡РµРіРѕ РЅРµ РЅР°С€Р»Рё РґРѕ СЌС‚РѕРіРѕ, РїСЂРѕ Р°РЅР°Р»РѕРіРёС‡РЅРѕ РїСЂРѕРІРµСЂСЏРµРј РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚
 		temp = diff_time(p->key.reception.time[1], current->ref->time, &diff_fail);
 		if (temp.wMinute >= 30 || temp.wHour >= 1)
 		{
@@ -276,20 +276,20 @@ bool def_earliest_date(node *p, ref_collect *collection, SYSTEMTIME &earliest_da
 		return false;
 	}
 }
-// функция определяющая вхождение даты приема пациента
-// Возвращает true если дата не занята
+// С„СѓРЅРєС†РёСЏ РѕРїСЂРµРґРµР»СЏСЋС‰Р°СЏ РІС…РѕР¶РґРµРЅРёРµ РґР°С‚С‹ РїСЂРёРµРјР° РїР°С†РёРµРЅС‚Р°
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё РґР°С‚Р° РЅРµ Р·Р°РЅСЏС‚Р°
 bool def_vacant_date(ref_collect *collection, SYSTEMTIME picked_time)
 {
-	ref_collect *current = collection; // коллекция направлений врача
-	bool diff_fail(false); // ошибка при подсчете разницы между датами
+	ref_collect *current = collection; // РєРѕР»Р»РµРєС†РёСЏ РЅР°РїСЂР°РІР»РµРЅРёР№ РІСЂР°С‡Р°
+	bool diff_fail(false); // РѕС€РёР±РєР° РїСЂРё РїРѕРґСЃС‡РµС‚Рµ СЂР°Р·РЅРёС†С‹ РјРµР¶РґСѓ РґР°С‚Р°РјРё
 	while (current)
 	{
-		if (time_cmp(current->ref->time, picked_time) == 0) // если выбранное время пользователем совпадает с временем выписки, то
+		if (time_cmp(current->ref->time, picked_time) == 0) // РµСЃР»Рё РІС‹Р±СЂР°РЅРЅРѕРµ РІСЂРµРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј СЃРѕРІРїР°РґР°РµС‚ СЃ РІСЂРµРјРµРЅРµРј РІС‹РїРёСЃРєРё, С‚Рѕ
 		{
-			return false; // дата занята
+			return false; // РґР°С‚Р° Р·Р°РЅСЏС‚Р°
 		}
 		else
-		{// если выбранное время пользователем лежит в окресности (время выписки - 30 мин; время выписки + 30 мин), то дата занята
+		{// РµСЃР»Рё РІС‹Р±СЂР°РЅРЅРѕРµ РІСЂРµРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј Р»РµР¶РёС‚ РІ РѕРєСЂРµСЃРЅРѕСЃС‚Рё (РІСЂРµРјСЏ РІС‹РїРёСЃРєРё - 30 РјРёРЅ; РІСЂРµРјСЏ РІС‹РїРёСЃРєРё + 30 РјРёРЅ), С‚Рѕ РґР°С‚Р° Р·Р°РЅСЏС‚Р°
 			if (time_cmp(current->ref->time, picked_time) == 1) 
 			{
 				SYSTEMTIME temp = diff_time(current->ref->time, picked_time, &diff_fail);
@@ -311,8 +311,8 @@ bool def_vacant_date(ref_collect *collection, SYSTEMTIME picked_time)
 	}
 	return true;
 }
-// функция анализирующая дату приема
-// Возвращает true если дата не занята
+// С„СѓРЅРєС†РёСЏ Р°РЅР°Р»РёР·РёСЂСѓСЋС‰Р°СЏ РґР°С‚Сѓ РїСЂРёРµРјР°
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё РґР°С‚Р° РЅРµ Р·Р°РЅСЏС‚Р°
 bool vacant_day_analyzing(SYSTEMTIME picked_time, refferal *phead, node *p)
 {
 	bool vacant(true);
@@ -321,12 +321,12 @@ bool vacant_day_analyzing(SYSTEMTIME picked_time, refferal *phead, node *p)
 		SYSTEMTIME cur_time;
 		GetSystemTime(&cur_time);
 
-		bool result(false); // true если дата определена
-		busy_day *current_work = NULL; // список приемных дней врача
+		bool result(false); // true РµСЃР»Рё РґР°С‚Р° РѕРїСЂРµРґРµР»РµРЅР°
+		busy_day *current_work = NULL; // СЃРїРёСЃРѕРє РїСЂРёРµРјРЅС‹С… РґРЅРµР№ РІСЂР°С‡Р°
 
-		refferal *cur = phead; // список направлений
-		do // ищем выписки относящиеся к нужному врачу
-		{	// если нашли выписку, то заполняем список приемных дней
+		refferal *cur = phead; // СЃРїРёСЃРѕРє РЅР°РїСЂР°РІР»РµРЅРёР№
+		do // РёС‰РµРј РІС‹РїРёСЃРєРё РѕС‚РЅРѕСЃСЏС‰РёРµСЃСЏ Рє РЅСѓР¶РЅРѕРјСѓ РІСЂР°С‡Сѓ
+		{	// РµСЃР»Рё РЅР°С€Р»Рё РІС‹РїРёСЃРєСѓ, С‚Рѕ Р·Р°РїРѕР»РЅСЏРµРј СЃРїРёСЃРѕРє РїСЂРёРµРјРЅС‹С… РґРЅРµР№
 			if (string_cmp(p->key.name, cur->namedoctor)) create_reception(&current_work, cur);
 			cur = cur->next;
 		} while (cur != phead);
@@ -339,7 +339,7 @@ bool vacant_day_analyzing(SYSTEMTIME picked_time, refferal *phead, node *p)
 		}
 
 		cur_w = current_work;
-		if (current_work) // если список создан, то определяем ближайшую дату приема
+		if (current_work) // РµСЃР»Рё СЃРїРёСЃРѕРє СЃРѕР·РґР°РЅ, С‚Рѕ РѕРїСЂРµРґРµР»СЏРµРј Р±Р»РёР¶Р°Р№С€СѓСЋ РґР°С‚Сѓ РїСЂРёРµРјР°
 		{
 			while (cur_w)
 			{
@@ -355,31 +355,31 @@ bool vacant_day_analyzing(SYSTEMTIME picked_time, refferal *phead, node *p)
 	}
 	return vacant;
 }
-// функция анализирующая ближайшую дату приема
-// Возвращает true если дата определена
+// С„СѓРЅРєС†РёСЏ Р°РЅР°Р»РёР·РёСЂСѓСЋС‰Р°СЏ Р±Р»РёР¶Р°Р№С€СѓСЋ РґР°С‚Сѓ РїСЂРёРµРјР°
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё РґР°С‚Р° РѕРїСЂРµРґРµР»РµРЅР°
 bool employment_analyzing(SYSTEMTIME &earliest_date, refferal *phead, node *p)
 { 
-	bool result(false); // true если дата определена
+	bool result(false); // true РµСЃР»Рё РґР°С‚Р° РѕРїСЂРµРґРµР»РµРЅР°
 	if (phead)
 	{
 		SYSTEMTIME cur_time, earliest_date_from_diff;
 		GetSystemTime(&cur_time);
 		GetSystemTime(&earliest_date);
-		// определяем дату через смещения
+		// РѕРїСЂРµРґРµР»СЏРµРј РґР°С‚Сѓ С‡РµСЂРµР· СЃРјРµС‰РµРЅРёСЏ
 		earliest_date_from_diff = timecpy(p->key.reception.time[0]);
 		diff_compensate(p->key.reception.work_day, earliest_date_from_diff);
-		// проверяем эту дату на вхождение после чего выясняем нужно ли сравнивать эту дату с датой получаемой из списка
+		// РїСЂРѕРІРµСЂСЏРµРј СЌС‚Сѓ РґР°С‚Сѓ РЅР° РІС…РѕР¶РґРµРЅРёРµ РїРѕСЃР»Рµ С‡РµРіРѕ РІС‹СЏСЃРЅСЏРµРј РЅСѓР¶РЅРѕ Р»Рё СЃСЂР°РІРЅРёРІР°С‚СЊ СЌС‚Сѓ РґР°С‚Сѓ СЃ РґР°С‚РѕР№ РїРѕР»СѓС‡Р°РµРјРѕР№ РёР· СЃРїРёСЃРєР°
 		bool need_compare = vacant_day_analyzing(earliest_date_from_diff, phead, p);
 
-		bool result(false); // true если дата определена
-		busy_day *current_work = NULL; // список приемных дней врача
-		//svector_doc search; // вектор хранящий информацию о враче
+		bool result(false); // true РµСЃР»Рё РґР°С‚Р° РѕРїСЂРµРґРµР»РµРЅР°
+		busy_day *current_work = NULL; // СЃРїРёСЃРѕРє РїСЂРёРµРјРЅС‹С… РґРЅРµР№ РІСЂР°С‡Р°
+		//svector_doc search; // РІРµРєС‚РѕСЂ С…СЂР°РЅСЏС‰РёР№ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РІСЂР°С‡Рµ
 
-		//search_doc_name(p, search, docname); // ищем врача
+		//search_doc_name(p, search, docname); // РёС‰РµРј РІСЂР°С‡Р°
 
-		refferal *cur = phead; // список направлений
-		do // ищем выписки относящиеся к нужному врачу
-		{	// если нашли выписку, то заполняем список приемных дней
+		refferal *cur = phead; // СЃРїРёСЃРѕРє РЅР°РїСЂР°РІР»РµРЅРёР№
+		do // РёС‰РµРј РІС‹РїРёСЃРєРё РѕС‚РЅРѕСЃСЏС‰РёРµСЃСЏ Рє РЅСѓР¶РЅРѕРјСѓ РІСЂР°С‡Сѓ
+		{	// РµСЃР»Рё РЅР°С€Р»Рё РІС‹РїРёСЃРєСѓ, С‚Рѕ Р·Р°РїРѕР»РЅСЏРµРј СЃРїРёСЃРѕРє РїСЂРёРµРјРЅС‹С… РґРЅРµР№
 			if (string_cmp(p->key.name, cur->namedoctor)) create_reception(&current_work, cur);
 			cur = cur->next;
 		} while (cur != phead);
@@ -392,7 +392,7 @@ bool employment_analyzing(SYSTEMTIME &earliest_date, refferal *phead, node *p)
 		}
 
 		cur_w = current_work;
-		if (current_work) // если список создан, то определяем ближайшую дату приема
+		if (current_work) // РµСЃР»Рё СЃРїРёСЃРѕРє СЃРѕР·РґР°РЅ, С‚Рѕ РѕРїСЂРµРґРµР»СЏРµРј Р±Р»РёР¶Р°Р№С€СѓСЋ РґР°С‚Сѓ РїСЂРёРµРјР°
 		{
 			while (cur_w)
 			{
@@ -401,13 +401,13 @@ bool employment_analyzing(SYSTEMTIME &earliest_date, refferal *phead, node *p)
 				cur_w = cur_w->next;
 			}
 		}
-		sort_busyday(&current_work); // сортируем список по дате, для определения самой ближайшей даты
-		// гуляем по списку пока не встретим свободный день, если не найдем, то сообщаем с какой даты можно записать врача
+		sort_busyday(&current_work); // СЃРѕСЂС‚РёСЂСѓРµРј СЃРїРёСЃРѕРє РїРѕ РґР°С‚Рµ, РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ СЃР°РјРѕР№ Р±Р»РёР¶Р°Р№С€РµР№ РґР°С‚С‹
+		// РіСѓР»СЏРµРј РїРѕ СЃРїРёСЃРєСѓ РїРѕРєР° РЅРµ РІСЃС‚СЂРµС‚РёРј СЃРІРѕР±РѕРґРЅС‹Р№ РґРµРЅСЊ, РµСЃР»Рё РЅРµ РЅР°Р№РґРµРј, С‚Рѕ СЃРѕРѕР±С‰Р°РµРј СЃ РєР°РєРѕР№ РґР°С‚С‹ РјРѕР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ РІСЂР°С‡Р°
 		cur_w = current_work;
 		while (cur_w)
 		{
 			if (!cur_w->is_full)
-			{// определяем дату опираясь на текущую дату календаря
+			{// РѕРїСЂРµРґРµР»СЏРµРј РґР°С‚Сѓ РѕРїРёСЂР°СЏСЃСЊ РЅР° С‚РµРєСѓС‰СѓСЋ РґР°С‚Сѓ РєР°Р»РµРЅРґР°СЂСЏ
 				//if (date_cmp(cur_w->earliest_date, cur_time) >= 0 && date_cmp(cur_w->earliest_date, cur_time) <= 1)// && time_cmp(cur_w->earliest_date, cur_time) >= 0)
 				//{
 				if (date_cmp(cur_w->earliest_date, cur_time) == 0)
@@ -421,7 +421,7 @@ bool employment_analyzing(SYSTEMTIME &earliest_date, refferal *phead, node *p)
 				{
 					if (date_cmp(cur_w->earliest_date, cur_time) == 1)
 					{
-						int diff = num_of_week_in_year(cur_w->earliest_date) - num_of_week_in_year(cur_time); // смотрим насколько велика разница
+						int diff = num_of_week_in_year(cur_w->earliest_date) - num_of_week_in_year(cur_time); // СЃРјРѕС‚СЂРёРј РЅР°СЃРєРѕР»СЊРєРѕ РІРµР»РёРєР° СЂР°Р·РЅРёС†Р°
 						if (diff > 2)
 						{
 							earliest_date = timecpy(p->key.reception.time[0]);
@@ -451,27 +451,27 @@ bool employment_analyzing(SYSTEMTIME &earliest_date, refferal *phead, node *p)
 				{
 					earliest_date = timecpy(cur_w->earliest_date);
 					datecpy(cur_w->earliest_date, earliest_date);
-					result = false; // время последней выписки потребуется для установления начальных границ прниема пациентов
+					result = false; // РІСЂРµРјСЏ РїРѕСЃР»РµРґРЅРµР№ РІС‹РїРёСЃРєРё РїРѕС‚СЂРµР±СѓРµС‚СЃСЏ РґР»СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РЅР°С‡Р°Р»СЊРЅС‹С… РіСЂР°РЅРёС† РїСЂРЅРёРµРјР° РїР°С†РёРµРЅС‚РѕРІ
 				}
 			}
 			cur_w = cur_w->next;
 		}
 
-		del_busy_time(&current_work); // освобождаем память от списка
+		del_busy_time(&current_work); // РѕСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ РѕС‚ СЃРїРёСЃРєР°
 	}
 	return result;
 }
-/* ==== Функции вывода данных для функций поиска ===== */
-// функция вывода таблицы с информацией об пациентах
+/* ==== Р¤СѓРЅРєС†РёРё РІС‹РІРѕРґР° РґР°РЅРЅС‹С… РґР»СЏ С„СѓРЅРєС†РёР№ РїРѕРёСЃРєР° ===== */
+// С„СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° С‚Р°Р±Р»РёС†С‹ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ РѕР± РїР°С†РёРµРЅС‚Р°С…
 void pat_out(svector_pat search)
 {
-	// данные для формирования шапки
-	const short COUNT_COL(5); // число столбцов
-	string name_col[] = { "Рег.номер", "ФИО ", "День рождения", "Адрес", "Место работы" }; // имена столбцов
-	short size_col[COUNT_COL] = { 11, 34, 14, 65, 30 }; // размеры столбцов
+	// РґР°РЅРЅС‹Рµ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ С€Р°РїРєРё
+	const short COUNT_COL(5); // С‡РёСЃР»Рѕ СЃС‚РѕР»Р±С†РѕРІ
+	string name_col[] = { "Р РµРі.РЅРѕРјРµСЂ", "Р¤РРћ ", "Р”РµРЅСЊ СЂРѕР¶РґРµРЅРёСЏ", "РђРґСЂРµСЃ", "РњРµСЃС‚Рѕ СЂР°Р±РѕС‚С‹" }; // РёРјРµРЅР° СЃС‚РѕР»Р±С†РѕРІ
+	short size_col[COUNT_COL] = { 11, 34, 14, 65, 30 }; // СЂР°Р·РјРµСЂС‹ СЃС‚РѕР»Р±С†РѕРІ
 
-	short size_tab = print_head(name_col, size_col, COUNT_COL); // вывод шапки таблицы
-	for (unsigned int i = 0; i < search.size(); i++) // вывод элементов таблицы
+	short size_tab = print_head(name_col, size_col, COUNT_COL); // РІС‹РІРѕРґ С€Р°РїРєРё С‚Р°Р±Р»РёС†С‹
+	for (unsigned int i = 0; i < search.size(); i++) // РІС‹РІРѕРґ СЌР»РµРјРµРЅС‚РѕРІ С‚Р°Р±Р»РёС†С‹
 	{
 		cout << "|";
 		print_row(search[i]->pat.key, size_col[0], search[i]->pat.key.length());
@@ -484,15 +484,15 @@ void pat_out(svector_pat search)
 		print_row(search[i]->pat.workplace, size_col[4], search[i]->pat.workplace.length());
 		cout << endl;
 	}
-	print_end(size_tab); // вывод нижней границы таблицы
+	print_end(size_tab); // РІС‹РІРѕРґ РЅРёР¶РЅРµР№ РіСЂР°РЅРёС†С‹ С‚Р°Р±Р»РёС†С‹
 }
-// функция вывода списка назначенных врачей
+// С„СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° СЃРїРёСЃРєР° РЅР°Р·РЅР°С‡РµРЅРЅС‹С… РІСЂР°С‡РµР№
 void print_doc_list(node *p, refferal *phead, string key_patient)
 {
 	int i(1);
 	refferal *current = phead;
 	svector_doc search;
-	cout << "Список назначенных врачей: \n";
+	cout << "РЎРїРёСЃРѕРє РЅР°Р·РЅР°С‡РµРЅРЅС‹С… РІСЂР°С‡РµР№: \n";
 	if (current)
 	{
 		do
@@ -509,12 +509,12 @@ void print_doc_list(node *p, refferal *phead, string key_patient)
 		} while (current != phead);
 	}
 }
-// функция вывода списка назначенных пациентов
+// С„СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° СЃРїРёСЃРєР° РЅР°Р·РЅР°С‡РµРЅРЅС‹С… РїР°С†РёРµРЅС‚РѕРІ
 void print_pat_list(refferal *phead, hash_tab *tab, char *namedoctor)
 {
 	int i(1), index(0);
 	refferal *current = phead;
-	cout << "Список назначенных пациентов: \n";
+	cout << "РЎРїРёСЃРѕРє РЅР°Р·РЅР°С‡РµРЅРЅС‹С… РїР°С†РёРµРЅС‚РѕРІ: \n";
 	if (current)
 	{
 		do
@@ -530,8 +530,8 @@ void print_pat_list(refferal *phead, hash_tab *tab, char *namedoctor)
 		} while (current != phead);
 	}
 }
-/* ============= Функции поиска patient ============== */
-// функция поиска пациента по имени
+/* ============= Р¤СѓРЅРєС†РёРё РїРѕРёСЃРєР° patient ============== */
+// С„СѓРЅРєС†РёСЏ РїРѕРёСЃРєР° РїР°С†РёРµРЅС‚Р° РїРѕ РёРјРµРЅРё
 void search_pat_name(hash_tab *tab, string name, svector_pat &search)
 {
 	int j(0);
@@ -547,29 +547,29 @@ void search_pat_name(hash_tab *tab, string name, svector_pat &search)
 		}
 	}
 }
-// меню поиска пациентов
+// РјРµРЅСЋ РїРѕРёСЃРєР° РїР°С†РёРµРЅС‚РѕРІ
 void pat_search_menu(svector_pat &search, hash_tab *tab, node *p, refferal *phead)
 {
-	int s_choice(0), index; // выбор критерия, индекс пациента в таблице
-	char key[SIZE_KEY]; // рег. номер пациента
-	string val; // ФИО пациента
+	int s_choice(0), index; // РІС‹Р±РѕСЂ РєСЂРёС‚РµСЂРёСЏ, РёРЅРґРµРєСЃ РїР°С†РёРµРЅС‚Р° РІ С‚Р°Р±Р»РёС†Рµ
+	char key[SIZE_KEY]; // СЂРµРі. РЅРѕРјРµСЂ РїР°С†РёРµРЅС‚Р°
+	string val; // Р¤РРћ РїР°С†РёРµРЅС‚Р°
 
-	cout << "Выберите критерий поиска пациента:\n"
-		<< " 1. По ФИО\n"
-		<< " 2. Регистрационному номеру\n"
-		<< " 0. Отмена действий\n"
-		<< "\nВведите номер выбранного критерия: ";
+	cout << "Р’С‹Р±РµСЂРёС‚Рµ РєСЂРёС‚РµСЂРёР№ РїРѕРёСЃРєР° РїР°С†РёРµРЅС‚Р°:\n"
+		<< " 1. РџРѕ Р¤РРћ\n"
+		<< " 2. Р РµРіРёСЃС‚СЂР°С†РёРѕРЅРЅРѕРјСѓ РЅРѕРјРµСЂСѓ\n"
+		<< " 0. РћС‚РјРµРЅР° РґРµР№СЃС‚РІРёР№\n"
+		<< "\nР’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РєСЂРёС‚РµСЂРёСЏ: ";
 	s_choice = input_control(4, 0);
 	switch (s_choice)
 	{
 	case 1:
-		cout << "\n Введите ФИО: ";
+		cout << "\n Р’РІРµРґРёС‚Рµ Р¤РРћ: ";
 		input_control(val);
 		search_pat_name(tab, val, search);
 		pat_out(search);
 		break;
 	case 2:
-		cout << "\n Введите регистрационный номер (MM-MMMMMM): ";
+		cout << "\n Р’РІРµРґРёС‚Рµ СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ (MM-MMMMMM): ";
 		key_input(key);
 		if (find_htab(tab, key, index))
 		{
@@ -584,34 +584,34 @@ void pat_search_menu(svector_pat &search, hash_tab *tab, node *p, refferal *phea
 	search.clear();
 	search.shrink_to_fit();
 }
-/* ============= Функции поиска doctor =============== */
-// функция вывода результатов поиска врачей
+/* ============= Р¤СѓРЅРєС†РёРё РїРѕРёСЃРєР° doctor =============== */
+// С„СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РїРѕРёСЃРєР° РІСЂР°С‡РµР№
 void doc_out(svector_doc search, refferal *ref, hash_tab *phead, bool patlist = false)
 {
-	if (patlist) // если требуется список назначенных пациентов, то
+	if (patlist) // РµСЃР»Рё С‚СЂРµР±СѓРµС‚СЃСЏ СЃРїРёСЃРѕРє РЅР°Р·РЅР°С‡РµРЅРЅС‹С… РїР°С†РёРµРЅС‚РѕРІ, С‚Рѕ
 	{
 		for (unsigned int i = 0; i < search.size(); i++)
 		{
 			cout << "\t"
 				<< i + 1 << ") "
 				<< search[i]->key.name << ", "
-				<< search[i]->key.noun << ", кабинет: "
-				<< search[i]->key.cabinet << ", график работы: ";
+				<< search[i]->key.noun << ", РєР°Р±РёРЅРµС‚: "
+				<< search[i]->key.cabinet << ", РіСЂР°С„РёРє СЂР°Р±РѕС‚С‹: ";
 			show_reception(search[i]->key.reception);
 			print_pat_list(ref, phead, search[i]->key.name);
 			cout << endl;
 		}
 	}
-	else // иначе выводим таблицу информации
+	else // РёРЅР°С‡Рµ РІС‹РІРѕРґРёРј С‚Р°Р±Р»РёС†Сѓ РёРЅС„РѕСЂРјР°С†РёРё
 	{
-		// данные для формирования шапки
-		const short COUNT_COL(5); // число столбцов
+		// РґР°РЅРЅС‹Рµ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ С€Р°РїРєРё
+		const short COUNT_COL(5); // С‡РёСЃР»Рѕ СЃС‚РѕР»Р±С†РѕРІ
 		svector_doc pointers;
-		string name_col[] = { " ## ", "ФИО ", "Должность", "№ каб", " График работы " }; // имена столбцов
-		short size_col[COUNT_COL] = { 4, 34, 11, 7, 78 }; // размеры столбцов
+		string name_col[] = { " ## ", "Р¤РРћ ", "Р”РѕР»Р¶РЅРѕСЃС‚СЊ", "в„– РєР°Р±", " Р“СЂР°С„РёРє СЂР°Р±РѕС‚С‹ " }; // РёРјРµРЅР° СЃС‚РѕР»Р±С†РѕРІ
+		short size_col[COUNT_COL] = { 4, 34, 11, 7, 78 }; // СЂР°Р·РјРµСЂС‹ СЃС‚РѕР»Р±С†РѕРІ
 
-		short size_tab = print_head(name_col, size_col, COUNT_COL); // вывод шапки таблицы
-		for (unsigned int i = 0; i < search.size(); i++) // вывод элементов таблицы
+		short size_tab = print_head(name_col, size_col, COUNT_COL); // РІС‹РІРѕРґ С€Р°РїРєРё С‚Р°Р±Р»РёС†С‹
+		for (unsigned int i = 0; i < search.size(); i++) // РІС‹РІРѕРґ СЌР»РµРјРµРЅС‚РѕРІ С‚Р°Р±Р»РёС†С‹
 		{
 			cout << "|";
 			print_row(i + 1, size_col[0], int_size(i + 1));
@@ -620,33 +620,33 @@ void doc_out(svector_doc search, refferal *ref, hash_tab *phead, bool patlist = 
 			print_row(search[i]->key.cabinet, size_col[3], int_size(search[i]->key.cabinet));
 			show_reception(search[i]->key.reception);
 		}
-		print_end(size_tab); // вывод нижней границы таблицы
+		print_end(size_tab); // РІС‹РІРѕРґ РЅРёР¶РЅРµР№ РіСЂР°РЅРёС†С‹ С‚Р°Р±Р»РёС†С‹
 	}
 }
-// меню поиска врачей
+// РјРµРЅСЋ РїРѕРёСЃРєР° РІСЂР°С‡РµР№
 void doc_search_menu(node *p, hash_tab *phead, refferal *ref, svector_doc &search)
 {
-	int s_choice(0); // критерий выбора
-	string val; // фио врача
+	int s_choice(0); // РєСЂРёС‚РµСЂРёР№ РІС‹Р±РѕСЂР°
+	string val; // С„РёРѕ РІСЂР°С‡Р°
 
-	cout << "Выберите критерий поиска врача:\n"
-		<< " 1. По ФИО\n"
-		<< " 2. По должности\n"
-		<< " 0. Отмена действий\n"
-		<< "\nВведите номер выбранного критерия: ";
+	cout << "Р’С‹Р±РµСЂРёС‚Рµ РєСЂРёС‚РµСЂРёР№ РїРѕРёСЃРєР° РІСЂР°С‡Р°:\n"
+		<< " 1. РџРѕ Р¤РРћ\n"
+		<< " 2. РџРѕ РґРѕР»Р¶РЅРѕСЃС‚Рё\n"
+		<< " 0. РћС‚РјРµРЅР° РґРµР№СЃС‚РІРёР№\n"
+		<< "\nР’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РєСЂРёС‚РµСЂРёСЏ: ";
 	s_choice = input_control(4, 0);
 	switch (s_choice)
 	{
 	case 1:
-		cout << "\n Введите ФИО: ";
+		cout << "\n Р’РІРµРґРёС‚Рµ Р¤РРћ: ";
 		input_control(val);
-		search_doc_name(p, search, val); // поиск по фио
+		search_doc_name(p, search, val); // РїРѕРёСЃРє РїРѕ С„РёРѕ
 		doc_out(search, ref, phead, true);
 		break;
 	case 2:
-		cout << "\n Введите долность врача: ";
+		cout << "\n Р’РІРµРґРёС‚Рµ РґРѕР»РЅРѕСЃС‚СЊ РІСЂР°С‡Р°: ";
 		input_control(val);
-		search_doc_noun(p, search, val); // поиск по должности
+		search_doc_noun(p, search, val); // РїРѕРёСЃРє РїРѕ РґРѕР»Р¶РЅРѕСЃС‚Рё
 		doc_out(search, NULL, NULL, false);
 		break;
 	case 0:
@@ -655,39 +655,39 @@ void doc_search_menu(node *p, hash_tab *phead, refferal *ref, svector_doc &searc
 	search.clear();
 	search.shrink_to_fit();
 }
-/* ================ Удаление элемента ================ */
-// меню удаления врача
+/* ================ РЈРґР°Р»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° ================ */
+// РјРµРЅСЋ СѓРґР°Р»РµРЅРёСЏ РІСЂР°С‡Р°
 void doc_del_menu(node **p, svector_doc &search, refferal **phead, refferal **ptail)
 {
-	int choice(0); // выбор врача
-	string answer; // ответ на вопрос да/нет
-	string val; // фио врача
+	int choice(0); // РІС‹Р±РѕСЂ РІСЂР°С‡Р°
+	string answer; // РѕС‚РІРµС‚ РЅР° РІРѕРїСЂРѕСЃ РґР°/РЅРµС‚
+	string val; // С„РёРѕ РІСЂР°С‡Р°
 	refferal *current = *phead;
-	svector_ref search_r; // вектор найденных выписок 
+	svector_ref search_r; // РІРµРєС‚РѕСЂ РЅР°Р№РґРµРЅРЅС‹С… РІС‹РїРёСЃРѕРє 
 
-	cout << "\n Введите фамилию врача: ";
+	cout << "\n Р’РІРµРґРёС‚Рµ С„Р°РјРёР»РёСЋ РІСЂР°С‡Р°: ";
 	input_control(val);
-	search_doc_name(*p, search, val); // поиск врача по фио
+	search_doc_name(*p, search, val); // РїРѕРёСЃРє РІСЂР°С‡Р° РїРѕ С„РёРѕ
 
-	if (!search.empty()) // если нашли что-то, то
+	if (!search.empty()) // РµСЃР»Рё РЅР°С€Р»Рё С‡С‚Рѕ-С‚Рѕ, С‚Рѕ
 	{
-		if (search.size() >= 2) // если найден больше чем 1 врач, то
+		if (search.size() >= 2) // РµСЃР»Рё РЅР°Р№РґРµРЅ Р±РѕР»СЊС€Рµ С‡РµРј 1 РІСЂР°С‡, С‚Рѕ
 		{
 			doc_out(search);
-			cout << "Выберите номер записи для дальнейшего удаления: ";
+			cout << "Р’С‹Р±РµСЂРёС‚Рµ РЅРѕРјРµСЂ Р·Р°РїРёСЃРё РґР»СЏ РґР°Р»СЊРЅРµР№С€РµРіРѕ СѓРґР°Р»РµРЅРёСЏ: ";
 			choice = input_control(search.size(), 1);
 		}
-		else choice = 1; // иначе зачем запрос, если запись всего одна?
+		else choice = 1; // РёРЅР°С‡Рµ Р·Р°С‡РµРј Р·Р°РїСЂРѕСЃ, РµСЃР»Рё Р·Р°РїРёСЃСЊ РІСЃРµРіРѕ РѕРґРЅР°?
 
-		cout << "\nВыбрана запись: "
+		cout << "\nР’С‹Р±СЂР°РЅР° Р·Р°РїРёСЃСЊ: "
 			<< search[choice - 1]->key.name << " "
 			<< search[choice - 1]->key.noun << "\n";
 
-		cout << "\nСобираетесь ли вы удалить запись? д/н ";
+		cout << "\nРЎРѕР±РёСЂР°РµС‚РµСЃСЊ Р»Рё РІС‹ СѓРґР°Р»РёС‚СЊ Р·Р°РїРёСЃСЊ? Рґ/РЅ ";
 		answer_control(answer);
-		if (answer[0] == 'д')
+		if (answer[0] == 'Рґ')
 		{
-			/* ===== Удаление всех выписок на данного врача ====== */
+			/* ===== РЈРґР°Р»РµРЅРёРµ РІСЃРµС… РІС‹РїРёСЃРѕРє РЅР° РґР°РЅРЅРѕРіРѕ РІСЂР°С‡Р° ====== */
 			do
 			{
 				if (string_cmp(current->namedoctor, search[choice - 1]->key.name))
@@ -713,52 +713,52 @@ void doc_del_menu(node **p, svector_doc &search, refferal **phead, refferal **pt
 				}
 			}
 			/* =================================================== */
-			*p = del_node(*p, search[choice - 1]->key); // удаление узла дерева(врача)
-			cout << "\n=== Запись удалена ===\n";
+			*p = del_node(*p, search[choice - 1]->key); // СѓРґР°Р»РµРЅРёРµ СѓР·Р»Р° РґРµСЂРµРІР°(РІСЂР°С‡Р°)
+			cout << "\n=== Р—Р°РїРёСЃСЊ СѓРґР°Р»РµРЅР° ===\n";
 		}
-		else cout << "\n=== Запись не удалена ===\n";
+		else cout << "\n=== Р—Р°РїРёСЃСЊ РЅРµ СѓРґР°Р»РµРЅР° ===\n";
 	}
-	else cout << "\n=== Запись не найдена ===\n";
+	else cout << "\n=== Р—Р°РїРёСЃСЊ РЅРµ РЅР°Р№РґРµРЅР° ===\n";
 	cout << endl;
 	search.clear();
 	search.shrink_to_fit();
 }
-// удаление пациента по ключу
+// СѓРґР°Р»РµРЅРёРµ РїР°С†РёРµРЅС‚Р° РїРѕ РєР»СЋС‡Сѓ
 void del_pat(hash_tab *tab, refferal **phead, refferal **ptail)
 {
-	char key[SIZE_KEY]; // рег. номер пациента
-	int index(0); // № ячейки пациента в таблице
-	string answer; // ответ на запрос да/нет
+	char key[SIZE_KEY]; // СЂРµРі. РЅРѕРјРµСЂ РїР°С†РёРµРЅС‚Р°
+	int index(0); // в„– СЏС‡РµР№РєРё РїР°С†РёРµРЅС‚Р° РІ С‚Р°Р±Р»РёС†Рµ
+	string answer; // РѕС‚РІРµС‚ РЅР° Р·Р°РїСЂРѕСЃ РґР°/РЅРµС‚
 
 	refferal *current = *phead;
-	svector_ref search; // вектор найденных виписок 
+	svector_ref search; // РІРµРєС‚РѕСЂ РЅР°Р№РґРµРЅРЅС‹С… РІРёРїРёСЃРѕРє 
 
-	bool retry(false); // флаг повторения действий
-	do // выбор пациента
+	bool retry(false); // С„Р»Р°Рі РїРѕРІС‚РѕСЂРµРЅРёСЏ РґРµР№СЃС‚РІРёР№
+	do // РІС‹Р±РѕСЂ РїР°С†РёРµРЅС‚Р°
 	{
-		int index(0); // индекс пациента в таблице
+		int index(0); // РёРЅРґРµРєСЃ РїР°С†РёРµРЅС‚Р° РІ С‚Р°Р±Р»РёС†Рµ
 		retry = false;
-		cout << "Введите регистрационный номер пациента[MM-NNNNNN]: ";
+		cout << "Р’РІРµРґРёС‚Рµ СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ РїР°С†РёРµРЅС‚Р°[MM-NNNNNN]: ";
 		key_input(key);
-		retry = !find_htab(tab, key, index); // поиск ключа в таблице, если найден, то retry = false
-		if (retry) // если не найден пациент, то повторить ввод
+		retry = !find_htab(tab, key, index); // РїРѕРёСЃРє РєР»СЋС‡Р° РІ С‚Р°Р±Р»РёС†Рµ, РµСЃР»Рё РЅР°Р№РґРµРЅ, С‚Рѕ retry = false
+		if (retry) // РµСЃР»Рё РЅРµ РЅР°Р№РґРµРЅ РїР°С†РёРµРЅС‚, С‚Рѕ РїРѕРІС‚РѕСЂРёС‚СЊ РІРІРѕРґ
 		{
-			cout << "\nНесуществующий регистрационный номер!\n";
-			htab_list_query(tab); // запрос на вывод таблицы пациентов
+			cout << "\nРќРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ!\n";
+			htab_list_query(tab); // Р·Р°РїСЂРѕСЃ РЅР° РІС‹РІРѕРґ С‚Р°Р±Р»РёС†С‹ РїР°С†РёРµРЅС‚РѕРІ
 		}
-		else // если найден пациент, то
+		else // РµСЃР»Рё РЅР°Р№РґРµРЅ РїР°С†РёРµРЅС‚, С‚Рѕ
 		{
-			cout << "Найден больной: "
+			cout << "РќР°Р№РґРµРЅ Р±РѕР»СЊРЅРѕР№: "
 				<< tab[index].pat.name << " ";
 			tab[index].pat.bday[0] < 10 ? cout << "0" << tab[index].pat.bday[0] : cout << tab[index].pat.bday[0];
 			tab[index].pat.bday[1] < 10 ? cout << ".0" << tab[index].pat.bday[1] : cout << "." << tab[index].pat.bday[1];
 			cout << "." << tab[index].pat.bday[2] << endl;
 
-			cout << "Удалить данные о пациенте? (д/н) ";
+			cout << "РЈРґР°Р»РёС‚СЊ РґР°РЅРЅС‹Рµ Рѕ РїР°С†РёРµРЅС‚Рµ? (Рґ/РЅ) ";
 			answer_control(answer);
-			if (answer[0] == 'д')
+			if (answer[0] == 'Рґ')
 			{
-				/* ========= Удаление всех выписок пациента ========== */
+				/* ========= РЈРґР°Р»РµРЅРёРµ РІСЃРµС… РІС‹РїРёСЃРѕРє РїР°С†РёРµРЅС‚Р° ========== */
 				do
 				{
 					if (string_cmp(current->key_patient, key))
@@ -785,13 +785,13 @@ void del_pat(hash_tab *tab, refferal **phead, refferal **ptail)
 					}
 				}
 				/* =================================================== */
-				del_htab(tab, key); // удаление данных из хэш-таблицы
-				cout << " Запись удалена.\n";
+				del_htab(tab, key); // СѓРґР°Р»РµРЅРёРµ РґР°РЅРЅС‹С… РёР· С…СЌС€-С‚Р°Р±Р»РёС†С‹
+				cout << " Р—Р°РїРёСЃСЊ СѓРґР°Р»РµРЅР°.\n";
 			}
 			else
 			{
-				cout << "\n=== Пациент не выбран ===\n";
-				htab_list_query(tab); // запрос на вывод таблицы пациентов
+				cout << "\n=== РџР°С†РёРµРЅС‚ РЅРµ РІС‹Р±СЂР°РЅ ===\n";
+				htab_list_query(tab); // Р·Р°РїСЂРѕСЃ РЅР° РІС‹РІРѕРґ С‚Р°Р±Р»РёС†С‹ РїР°С†РёРµРЅС‚РѕРІ
 				retry = true;
 			}
 		}
