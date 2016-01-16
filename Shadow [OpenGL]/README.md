@@ -2,7 +2,7 @@
 ========================
 
 ABOUT
------------
+----------- 
 
 I used a guide from NeHe to render shadows. The code for rendering shadows is 
 also owned by NeHe.
