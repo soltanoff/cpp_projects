@@ -1,7 +1,7 @@
 #include <windows.h>								
 #include <tchar.h>
 #include <direct.h>
-#include <gl\gl.h>										
+#include <gl\gl.h>		 								
 #include <gl\glu.h>										
 #include <GL\glut.h>
 #include <gl\GLAux.h>
