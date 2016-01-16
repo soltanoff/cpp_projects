@@ -1,38 +1,38 @@
-/* ============ Работа с датой ============ */
+/* ============ Р Р°Р±РѕС‚Р° СЃ РґР°С‚РѕР№ ============ */
 #pragma once
 #include "anytools.h"
-// структура графика работы врача
+// СЃС‚СЂСѓРєС‚СѓСЂР° РіСЂР°С„РёРєР° СЂР°Р±РѕС‚С‹ РІСЂР°С‡Р°
 struct date
 {
-	short work_day[WORKDAY_SIZE]; // массив рабочих дней врача
-	SYSTEMTIME time[2]; // время работы врача
+	short work_day[WORKDAY_SIZE]; // РјР°СЃСЃРёРІ СЂР°Р±РѕС‡РёС… РґРЅРµР№ РІСЂР°С‡Р°
+	SYSTEMTIME time[2]; // РІСЂРµРјСЏ СЂР°Р±РѕС‚С‹ РІСЂР°С‡Р°
 };
-// вывод дня недели
+// РІС‹РІРѕРґ РґРЅСЏ РЅРµРґРµР»Рё
 string get_day_of_week(SYSTEMTIME date)
 {
 	string day;
 	switch (date.wDayOfWeek)
 	{
 	case 0:
-		day = "Воскресенье";
+		day = "Р’РѕСЃРєСЂРµСЃРµРЅСЊРµ";
 		break;
 	case 1:
-		day = "Понедельник";
+		day = "РџРѕРЅРµРґРµР»СЊРЅРёРє";
 		break;
 	case 2:
-		day = "Вторник";
+		day = "Р’С‚РѕСЂРЅРёРє";
 		break;
 	case 3:
-		day = "Среда";
+		day = "РЎСЂРµРґР°";
 		break;
 	case 4:
-		day = "Четверг";
+		day = "Р§РµС‚РІРµСЂРі";
 		break;
 	case 5:
-		day = "Пятница";
+		day = "РџСЏС‚РЅРёС†Р°";
 		break;
 	case 6:
-		day = "Суббота";
+		day = "РЎСѓР±Р±РѕС‚Р°";
 		break;
 	default:
 		day = "";
@@ -40,32 +40,32 @@ string get_day_of_week(SYSTEMTIME date)
 	}
 	return day;
 }
-// вывод дня недели
+// РІС‹РІРѕРґ РґРЅСЏ РЅРµРґРµР»Рё
 string get_day_of_week(short date)
 {
 	string day;
 	switch (date)
 	{
 	case 0:
-		day = "Воскресенье";
+		day = "Р’РѕСЃРєСЂРµСЃРµРЅСЊРµ";
 		break;
 	case 1:
-		day = "Понедельник";
+		day = "РџРѕРЅРµРґРµР»СЊРЅРёРє";
 		break;
 	case 2:
-		day = "Вторник";
+		day = "Р’С‚РѕСЂРЅРёРє";
 		break;
 	case 3:
-		day = "Среда";
+		day = "РЎСЂРµРґР°";
 		break;
 	case 4:
-		day = "Четверг";
+		day = "Р§РµС‚РІРµСЂРі";
 		break;
 	case 5:
-		day = "Пятница";
+		day = "РџСЏС‚РЅРёС†Р°";
 		break;
 	case 6:
-		day = "Суббота";
+		day = "РЎСѓР±Р±РѕС‚Р°";
 		break;
 	default:
 		day = "";
@@ -73,47 +73,47 @@ string get_day_of_week(short date)
 	}
 	return day;
 }
-// вывод наименования месяца
+// РІС‹РІРѕРґ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ РјРµСЃСЏС†Р°
 string get_month(SYSTEMTIME date)
 {
 	string mounth;
 	switch (date.wMonth)
 	{
 	case 1:
-		mounth = "Январь";
+		mounth = "РЇРЅРІР°СЂСЊ";
 		break;
 	case 2:
-		mounth = "Февраль";
+		mounth = "Р¤РµРІСЂР°Р»СЊ";
 		break;
 	case 3:
-		mounth = "Март";
+		mounth = "РњР°СЂС‚";
 		break;
 	case 4:
-		mounth = "Апрель";
+		mounth = "РђРїСЂРµР»СЊ";
 		break;
 	case 5:
-		mounth = "Май";
+		mounth = "РњР°Р№";
 		break;
 	case 6:
-		mounth = "Июнь";
+		mounth = "РСЋРЅСЊ";
 		break;
 	case 7:
-		mounth = "Июль";
+		mounth = "РСЋР»СЊ";
 		break;
 	case 8:
-		mounth = "Август";
+		mounth = "РђРІРіСѓСЃС‚";
 		break;
 	case 9:
-		mounth = "Сентябрь";
+		mounth = "РЎРµРЅС‚СЏР±СЂСЊ";
 		break;
 	case 10:
-		mounth = "Октябрь";
+		mounth = "РћРєС‚СЏР±СЂСЊ";
 		break;
 	case 11:
-		mounth = "Ноябрь";
+		mounth = "РќРѕСЏР±СЂСЊ";
 		break;
 	case 12:
-		mounth = "Декабрь";
+		mounth = "Р”РµРєР°Р±СЂСЊ";
 		break;
 	default:
 		mounth = "";
@@ -121,10 +121,10 @@ string get_month(SYSTEMTIME date)
 	}
 	return mounth;
 }
-// сортировка массива рабочих дней врача улучшенным пузырьком
+// СЃРѕСЂС‚РёСЂРѕРІРєР° РјР°СЃСЃРёРІР° СЂР°Р±РѕС‡РёС… РґРЅРµР№ РІСЂР°С‡Р° СѓР»СѓС‡С€РµРЅРЅС‹Рј РїСѓР·С‹СЂСЊРєРѕРј
 void sort_worday(short *mass)
 {
-	bool changed(true); // флаг состояния изменения массива
+	bool changed(true); // С„Р»Р°Рі СЃРѕСЃС‚РѕСЏРЅРёСЏ РёР·РјРµРЅРµРЅРёСЏ РјР°СЃСЃРёРІР°
 	short temp;
 
 	while (changed)
@@ -149,7 +149,7 @@ void sort_worday(short *mass)
 		}
 	}
 }
-// проверка на повторяющиеся дни недели
+// РїСЂРѕРІРµСЂРєР° РЅР° РїРѕРІС‚РѕСЂСЏСЋС‰РёРµСЃСЏ РґРЅРё РЅРµРґРµР»Рё
 bool check_copyday(short *mass, short val)
 {
 	for (int i = 0; i < WORKDAY_SIZE; i++)
@@ -159,64 +159,64 @@ bool check_copyday(short *mass, short val)
 	}
 	return false;
 }
-// функция определяющая по дате день недели
+// С„СѓРЅРєС†РёСЏ РѕРїСЂРµРґРµР»СЏСЋС‰Р°СЏ РїРѕ РґР°С‚Рµ РґРµРЅСЊ РЅРµРґРµР»Рё
 int what_day(SYSTEMTIME date)
 {
-	/* Формула Зеллера (Zeller's congruence)*/
+	/* Р¤РѕСЂРјСѓР»Р° Р—РµР»Р»РµСЂР° (Zeller's congruence)*/
 	int k = date.wYear % 100,
 		j = int(date.wYear / 100),
 		h = (date.wDay + int(13 * (date.wMonth + 1) / 5) + k + int(k / 4) + int(j / 4) - 2 * j) % 7,
 		result = ((h + 5) % 7) + 1;
 	return result == 7 ? result - 7: result;
 }
-// увеличение времени на пол часа
+// СѓРІРµР»РёС‡РµРЅРёРµ РІСЂРµРјРµРЅРё РЅР° РїРѕР» С‡Р°СЃР°
 void half_hour_increase(SYSTEMTIME &date)
 {
-	bool hour_inc(false); // флаг увеличения результата на 1 час
-	int summ_minute = date.wMinute + 30; // сумма минут
-	if (summ_minute >= 60) // если сумма >= 60, то
+	bool hour_inc(false); // С„Р»Р°Рі СѓРІРµР»РёС‡РµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° 1 С‡Р°СЃ
+	int summ_minute = date.wMinute + 30; // СЃСѓРјРјР° РјРёРЅСѓС‚
+	if (summ_minute >= 60) // РµСЃР»Рё СЃСѓРјРјР° >= 60, С‚Рѕ
 	{
-		hour_inc = true; // то указываем, что результ нужно увеличить на час
-		summ_minute -= 60; // реализуем суммирование времени
+		hour_inc = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРІРµР»РёС‡РёС‚СЊ РЅР° С‡Р°СЃ
+		summ_minute -= 60; // СЂРµР°Р»РёР·СѓРµРј СЃСѓРјРјРёСЂРѕРІР°РЅРёРµ РІСЂРµРјРµРЅРё
 	}
 	date.wHour += (hour_inc ? 1 : 0);
 	date.wMinute = summ_minute;
 }
-// увеличение даты на inc дней
+// СѓРІРµР»РёС‡РµРЅРёРµ РґР°С‚С‹ РЅР° inc РґРЅРµР№
 void many_day_increase(SYSTEMTIME &date, int inc = 1)
 {
-	bool year_inc(false); // флаг увеличения результата на 1 год
-	bool month_inc(false); // флаг увеличения результата на 1 месяц
+	bool year_inc(false); // С„Р»Р°Рі СѓРІРµР»РёС‡РµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° 1 РіРѕРґ
+	bool month_inc(false); // С„Р»Р°Рі СѓРІРµР»РёС‡РµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° 1 РјРµСЃСЏС†
 	int summ_day = date.wDay + inc;
 	if (summ_day > 31)
 	{
-		month_inc = true; // то указываем, что результ нужно увеличить на 1 
+		month_inc = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРІРµР»РёС‡РёС‚СЊ РЅР° 1 
 		summ_day -= 31;
 	}
 	date.wDay = summ_day;
 	int summ_month = date.wMonth + (month_inc ? 1 : 0);
 	if (date.wMonth > 12)
 	{
-		year_inc = true; // то указываем, что результ нужно увеличить на 1
+		year_inc = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРІРµР»РёС‡РёС‚СЊ РЅР° 1
 		summ_month -= 12;
 	}
 	date.wMonth = summ_month;
 	date.wYear += (year_inc ? 1 : 0);
 }
-// функция реализующая разность времени (minuend - subtrahend = difference)
+// С„СѓРЅРєС†РёСЏ СЂРµР°Р»РёР·СѓСЋС‰Р°СЏ СЂР°Р·РЅРѕСЃС‚СЊ РІСЂРµРјРµРЅРё (minuend - subtrahend = difference)
 // HH:MM - HH:MM
 SYSTEMTIME diff_time(SYSTEMTIME min, SYSTEMTIME sub, bool *fail = false)
 {
-	SYSTEMTIME result; // результат разности
+	SYSTEMTIME result; // СЂРµР·СѓР»СЊС‚Р°С‚ СЂР°Р·РЅРѕСЃС‚Рё
 	GetSystemTime(&result);
-	if (min.wHour - sub.wHour >= 0) // если все удовлетворяет правилу математики(Уменьшаемое>Вычитаемого), то
+	if (min.wHour - sub.wHour >= 0) // РµСЃР»Рё РІСЃРµ СѓРґРѕРІР»РµС‚РІРѕСЂСЏРµС‚ РїСЂР°РІРёР»Сѓ РјР°С‚РµРјР°С‚РёРєРё(РЈРјРµРЅСЊС€Р°РµРјРѕРµ>Р’С‹С‡РёС‚Р°РµРјРѕРіРѕ), С‚Рѕ
 	{
-		bool hour_dec(false); // флаг определяющий уменьшение на 1 час 
-		int diff_minute = min.wMinute - sub.wMinute; // разница минут
-		if (diff_minute < 0) // если она отрицательно
+		bool hour_dec(false); // С„Р»Р°Рі РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ СѓРјРµРЅСЊС€РµРЅРёРµ РЅР° 1 С‡Р°СЃ 
+		int diff_minute = min.wMinute - sub.wMinute; // СЂР°Р·РЅРёС†Р° РјРёРЅСѓС‚
+		if (diff_minute < 0) // РµСЃР»Рё РѕРЅР° РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕ
 		{
-			hour_dec = true; // то указываем, что результ нужно уменьшить на час 
-			diff_minute += 60; // реализуем вычитание времени
+			hour_dec = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРјРµРЅСЊС€РёС‚СЊ РЅР° С‡Р°СЃ 
+			diff_minute += 60; // СЂРµР°Р»РёР·СѓРµРј РІС‹С‡РёС‚Р°РЅРёРµ РІСЂРµРјРµРЅРё
 		}
 		result.wHour = min.wHour - sub.wHour - (hour_dec ? 1 : 0);
 		result.wMinute = diff_minute;
@@ -224,20 +224,20 @@ SYSTEMTIME diff_time(SYSTEMTIME min, SYSTEMTIME sub, bool *fail = false)
 	else *fail = true;
 	return result;
 }
-// функция реализующая разность дат (minuend - subtrahend = difference)
+// С„СѓРЅРєС†РёСЏ СЂРµР°Р»РёР·СѓСЋС‰Р°СЏ СЂР°Р·РЅРѕСЃС‚СЊ РґР°С‚ (minuend - subtrahend = difference)
 /*/ DD.MM - DD.MM
 SYSTEMTIME diff_date(SYSTEMTIME min, SYSTEMTIME sub, bool *fail = false)
 {
-	SYSTEMTIME result; // результат разности
+	SYSTEMTIME result; // СЂРµР·СѓР»СЊС‚Р°С‚ СЂР°Р·РЅРѕСЃС‚Рё
 	GetSystemTime(&result);
-	if (min.wHour - sub.wHour >= 0) // если все удовлетворяет правилу математики(Уменьшаемое>Вычитаемого), то
+	if (min.wHour - sub.wHour >= 0) // РµСЃР»Рё РІСЃРµ СѓРґРѕРІР»РµС‚РІРѕСЂСЏРµС‚ РїСЂР°РІРёР»Сѓ РјР°С‚РµРјР°С‚РёРєРё(РЈРјРµРЅСЊС€Р°РµРјРѕРµ>Р’С‹С‡РёС‚Р°РµРјРѕРіРѕ), С‚Рѕ
 	{
-		bool hour_dec(false); // флаг определяющий уменьшение на 1 час 
-		int diff_minute = min.wMinute - sub.wMinute; // разница минут
-		if (diff_minute < 0) // если она отрицательно
+		bool hour_dec(false); // С„Р»Р°Рі РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ СѓРјРµРЅСЊС€РµРЅРёРµ РЅР° 1 С‡Р°СЃ 
+		int diff_minute = min.wMinute - sub.wMinute; // СЂР°Р·РЅРёС†Р° РјРёРЅСѓС‚
+		if (diff_minute < 0) // РµСЃР»Рё РѕРЅР° РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕ
 		{
-			hour_dec = true; // то указываем, что результ нужно уменьшить на час 
-			diff_minute += 60; // реализуем вычитание времени
+			hour_dec = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРјРµРЅСЊС€РёС‚СЊ РЅР° С‡Р°СЃ 
+			diff_minute += 60; // СЂРµР°Р»РёР·СѓРµРј РІС‹С‡РёС‚Р°РЅРёРµ РІСЂРµРјРµРЅРё
 		}
 		result.wHour = min.wHour - sub.wHour - (hour_dec ? 1 : 0);
 		result.wMinute = diff_minute;
@@ -245,18 +245,18 @@ SYSTEMTIME diff_date(SYSTEMTIME min, SYSTEMTIME sub, bool *fail = false)
 	else *fail = true;
 	return result;
 }.*/
-// функция суммирования времени 
+// С„СѓРЅРєС†РёСЏ СЃСѓРјРјРёСЂРѕРІР°РЅРёСЏ РІСЂРµРјРµРЅРё 
 // HH:MM + HH:MM
 SYSTEMTIME summ_time(SYSTEMTIME min, SYSTEMTIME sub)
 {
-	SYSTEMTIME result; // результат суммы
+	SYSTEMTIME result; // СЂРµР·СѓР»СЊС‚Р°С‚ СЃСѓРјРјС‹
 	GetSystemTime(&result);
-	bool hour_inc(false); // флаг увеличения результата на 1 час
-	int summ_minute = min.wMinute + sub.wMinute; // сумма минут
-	if (summ_minute >= 60) // если сумма >= 60, то
+	bool hour_inc(false); // С„Р»Р°Рі СѓРІРµР»РёС‡РµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° 1 С‡Р°СЃ
+	int summ_minute = min.wMinute + sub.wMinute; // СЃСѓРјРјР° РјРёРЅСѓС‚
+	if (summ_minute >= 60) // РµСЃР»Рё СЃСѓРјРјР° >= 60, С‚Рѕ
 	{
-		hour_inc = true; // то указываем, что результ нужно увеличить на час 
-		summ_minute -= 60; // реализуем суммирование времени
+		hour_inc = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРІРµР»РёС‡РёС‚СЊ РЅР° С‡Р°СЃ 
+		summ_minute -= 60; // СЂРµР°Р»РёР·СѓРµРј СЃСѓРјРјРёСЂРѕРІР°РЅРёРµ РІСЂРµРјРµРЅРё
 	}
 	int summ_hour = min.wHour + sub.wHour + (hour_inc ? 1 : 0);
 	if (summ_hour >= 24)
@@ -268,15 +268,15 @@ SYSTEMTIME summ_time(SYSTEMTIME min, SYSTEMTIME sub)
 	result.wMinute = summ_minute;
 	return result;
 }
-// вывод графика работы врача
+// РІС‹РІРѕРґ РіСЂР°С„РёРєР° СЂР°Р±РѕС‚С‹ РІСЂР°С‡Р°
 void show_reception(date d)
 {
-	//cout << "График работы врача:\n";
+	//cout << "Р“СЂР°С„РёРє СЂР°Р±РѕС‚С‹ РІСЂР°С‡Р°:\n";
 	for (int i = 0; i < WORKDAY_SIZE; i++)
 	{
 		if (d.work_day[i] != NON_WEEK_DAY) cout << get_day_of_week(d.work_day[i]) << ", ";
 	}
-	//cout << "\nВремя работы: \n";
+	//cout << "\nР’СЂРµРјСЏ СЂР°Р±РѕС‚С‹: \n";
 	for (int i = 0; i < 2; i++)
 	{
 		d.time[i].wHour < 10 ? cout << "0" << d.time[i].wHour : cout << d.time[i].wHour;
@@ -286,21 +286,21 @@ void show_reception(date d)
 	}
 	cout << endl;
 }
-// проверка времени даты приема пациента на попадание в промежуток времени приема врача
+// РїСЂРѕРІРµСЂРєР° РІСЂРµРјРµРЅРё РґР°С‚С‹ РїСЂРёРµРјР° РїР°С†РёРµРЅС‚Р° РЅР° РїРѕРїР°РґР°РЅРёРµ РІ РїСЂРѕРјРµР¶СѓС‚РѕРє РІСЂРµРјРµРЅРё РїСЂРёРµРјР° РІСЂР°С‡Р°
 bool is_time_visit(SYSTEMTIME *time, SYSTEMTIME visit)
 {
 	bool fail(false);
-	SYSTEMTIME a = diff_time(time[1], time[0], &fail), // разница в промежутка
-		b = diff_time(visit, time[0], &fail); // разница мужду временем приема и временем начала работы вреча
+	SYSTEMTIME a = diff_time(time[1], time[0], &fail), // СЂР°Р·РЅРёС†Р° РІ РїСЂРѕРјРµР¶СѓС‚РєР°
+		b = diff_time(visit, time[0], &fail); // СЂР°Р·РЅРёС†Р° РјСѓР¶РґСѓ РІСЂРµРјРµРЅРµРј РїСЂРёРµРјР° Рё РІСЂРµРјРµРЅРµРј РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ РІСЂРµС‡Р°
 	if (fail) return false;
 
-	int delta_1 = a.wHour * 60 + a.wMinute, // перевод в минуты разницы в промежутке
-		delta_2 = b.wHour * 60 + b.wMinute; // перевод в минуты 2-й разницы
-	// если delta_2 <= delta_1, то время приема принадлежит промежутку времени работы врача
+	int delta_1 = a.wHour * 60 + a.wMinute, // РїРµСЂРµРІРѕРґ РІ РјРёРЅСѓС‚С‹ СЂР°Р·РЅРёС†С‹ РІ РїСЂРѕРјРµР¶СѓС‚РєРµ
+		delta_2 = b.wHour * 60 + b.wMinute; // РїРµСЂРµРІРѕРґ РІ РјРёРЅСѓС‚С‹ 2-Р№ СЂР°Р·РЅРёС†С‹
+	// РµСЃР»Рё delta_2 <= delta_1, С‚Рѕ РІСЂРµРјСЏ РїСЂРёРµРјР° РїСЂРёРЅР°РґР»РµР¶РёС‚ РїСЂРѕРјРµР¶СѓС‚РєСѓ РІСЂРµРјРµРЅРё СЂР°Р±РѕС‚С‹ РІСЂР°С‡Р°
 	if (delta_2 <= delta_1) return true;
-	else return false; // иначе не принадлежит 
+	else return false; // РёРЅР°С‡Рµ РЅРµ РїСЂРёРЅР°РґР»РµР¶РёС‚ 
 }
-// проверка даты приема пациента на попадание в множество рабочих дней врача
+// РїСЂРѕРІРµСЂРєР° РґР°С‚С‹ РїСЂРёРµРјР° РїР°С†РёРµРЅС‚Р° РЅР° РїРѕРїР°РґР°РЅРёРµ РІ РјРЅРѕР¶РµСЃС‚РІРѕ СЂР°Р±РѕС‡РёС… РґРЅРµР№ РІСЂР°С‡Р°
 bool is_date_visit(short *work_day, SYSTEMTIME visit)
 {
 	int week = what_day(visit);
@@ -310,28 +310,28 @@ bool is_date_visit(short *work_day, SYSTEMTIME visit)
 	}
 	return false;
 }
-// увеличение даты на 1 день
-/*void Йone_day_increase(SYSTEMTIME &date)
+// СѓРІРµР»РёС‡РµРЅРёРµ РґР°С‚С‹ РЅР° 1 РґРµРЅСЊ
+/*void Р™one_day_increase(SYSTEMTIME &date)
 {
-	bool year_inc(false); // флаг увеличения результата на 1 год
-	bool month_inc(false); // флаг увеличения результата на 1 месяц
+	bool year_inc(false); // С„Р»Р°Рі СѓРІРµР»РёС‡РµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° 1 РіРѕРґ
+	bool month_inc(false); // С„Р»Р°Рі СѓРІРµР»РёС‡РµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° 1 РјРµСЃСЏС†
 	int summ_day = date.wDay + 1; 
 	if (summ_day > 31) 
 	{
-		month_inc = true; // то указываем, что результ нужно увеличить на 1 
+		month_inc = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРІРµР»РёС‡РёС‚СЊ РЅР° 1 
 		summ_day -= 31; 
 	}
 	date.wDay = summ_day;
 	int summ_month = date.wMonth + (month_inc ? 1 : 0);
 	if (date.wMonth > 12)
 	{
-		year_inc = true; // то указываем, что результ нужно увеличить на 1
+		year_inc = true; // С‚Рѕ СѓРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚ РЅСѓР¶РЅРѕ СѓРІРµР»РёС‡РёС‚СЊ РЅР° 1
 		summ_month -= 12;
 	}
 	date.wMonth = summ_month;
 	date.wYear += (year_inc ? 1 : 0);
 }/**/
-// смещение даты по определенному дню недели
+// СЃРјРµС‰РµРЅРёРµ РґР°С‚С‹ РїРѕ РѕРїСЂРµРґРµР»РµРЅРЅРѕРјСѓ РґРЅСЋ РЅРµРґРµР»Рё
 void diff_compensate(short *work_day, SYSTEMTIME &date)
 {
 	while (!is_date_visit(work_day, date))
@@ -360,16 +360,16 @@ void diff_compensate(short *work_day, SYSTEMTIME &date)
 		many_day_increase(date, (abs(cur_weekday - earl_weekday) - 1));
 	}/**/
 }/**/
-// смещение времени по определенному промежутку
+// СЃРјРµС‰РµРЅРёРµ РІСЂРµРјРµРЅРё РїРѕ РѕРїСЂРµРґРµР»РµРЅРЅРѕРјСѓ РїСЂРѕРјРµР¶СѓС‚РєСѓ
 /*void minute_diff_compensate(SYSTEMTIME *time, SYSTEMTIME &date)
 {
 	while (!is_time_visit(time, date))
 		many_day_increase(date);
 }/**/
-// функция сравнения дат
+// С„СѓРЅРєС†РёСЏ СЃСЂР°РІРЅРµРЅРёСЏ РґР°С‚
 // 1 - time_1 > time_2
 // 2 - time_1 < time_2
-// 0 - равны
+// 0 - СЂР°РІРЅС‹
 short date_cmp(SYSTEMTIME time_1, SYSTEMTIME time_2)
 {
 	if (time_1.wDay == time_2.wDay &&
@@ -404,10 +404,10 @@ short date_cmp(SYSTEMTIME time_1, SYSTEMTIME time_2)
 		}
 	}
 }
-// функция сравнение времен
+// С„СѓРЅРєС†РёСЏ СЃСЂР°РІРЅРµРЅРёРµ РІСЂРµРјРµРЅ
 // 1 - time_1 > time_2
 // 2 - time_1 < time_2
-// 0 - равны
+// 0 - СЂР°РІРЅС‹
 short time_cmp(SYSTEMTIME time_1, SYSTEMTIME time_2)
 {
 	if (time_1.wHour == time_2.wHour &&
@@ -428,7 +428,7 @@ short time_cmp(SYSTEMTIME time_1, SYSTEMTIME time_2)
 			return 2;
 	}
 }
-// функция копирования даты
+// С„СѓРЅРєС†РёСЏ РєРѕРїРёСЂРѕРІР°РЅРёСЏ РґР°С‚С‹
 SYSTEMTIME datecpy(SYSTEMTIME cur_time)
 {
 	SYSTEMTIME temp;
@@ -439,14 +439,14 @@ SYSTEMTIME datecpy(SYSTEMTIME cur_time)
 	temp.wYear = cur_time.wYear;
 	return temp;
 }
-// функция копирования даты
+// С„СѓРЅРєС†РёСЏ РєРѕРїРёСЂРѕРІР°РЅРёСЏ РґР°С‚С‹
 void datecpy(SYSTEMTIME copy, SYSTEMTIME &time)
 {
 	time.wDay = copy.wDay;
 	time.wMonth = copy.wMonth;
 	time.wYear = copy.wYear;
 }
-// функция копирования времени
+// С„СѓРЅРєС†РёСЏ РєРѕРїРёСЂРѕРІР°РЅРёСЏ РІСЂРµРјРµРЅРё
 SYSTEMTIME timecpy(SYSTEMTIME cur_time)
 {
 	SYSTEMTIME temp;
@@ -456,7 +456,7 @@ SYSTEMTIME timecpy(SYSTEMTIME cur_time)
 	temp.wMinute = cur_time.wMinute;
 	return temp;
 }
-// порядковый номер недели в году
+// РїРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ РЅРµРґРµР»Рё РІ РіРѕРґСѓ
 int num_of_week_in_year(SYSTEMTIME time)
 {
 	int value(0);
