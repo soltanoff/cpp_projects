@@ -1,17 +1,19 @@
 TODO list:
 
-- Add the map in the game.
+- (x) Add the map in the game.
 
-
-- Set the camera view to follow the character and that she did not go 
+ 
+- (x) Set the camera view to follow the character and that she did not go 
 for the card.
 
 
-- Place the interaction of the character with the map.
+- (x) Place the interaction of the character with the map.
 
 
-- There is, to look at the text.
+- (x) There is, to look at the text.
 
+
+- (x) Make counting of score of the game
 
 - To organize the time spent in the game, the life and death of the 
 player, to make a simple ending.
@@ -31,4 +33,8 @@ information by pressing.
 
 
 
+
+- (x) is completed
+
 * The list will grow as ideas.
+
