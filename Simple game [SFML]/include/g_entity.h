@@ -7,15 +7,15 @@
 class G_Entity
 {
 protected:
-	float x; // позиция по Ох
-	float y; // позиция по ОУ
-	float sprite_h; // высота спрайта
-	float sprite_w; // ширина спрайта
-	sf::String texture_file; // путь к текстуре сущности
+	float x; // РїРѕР·РёС†РёСЏ РїРѕ РћС…
+	float y; // РїРѕР·РёС†РёСЏ РїРѕ РћРЈ
+	float sprite_h; // РІС‹СЃРѕС‚Р° СЃРїСЂР°Р№С‚Р°
+	float sprite_w; // С€РёСЂРёРЅР° СЃРїСЂР°Р№С‚Р°
+	sf::String texture_file; // РїСѓС‚СЊ Рє С‚РµРєСЃС‚СѓСЂРµ СЃСѓС‰РЅРѕСЃС‚Рё
 
 	sf::Image entity_image;
-	sf::Texture entity_texture; // текстура сущности
-	sf::Sprite entity_sprite; // спрайт сущности
+	sf::Texture entity_texture; // С‚РµРєСЃС‚СѓСЂР° СЃСѓС‰РЅРѕСЃС‚Рё
+	sf::Sprite entity_sprite; // СЃРїСЂР°Р№С‚ СЃСѓС‰РЅРѕСЃС‚Рё
 public:
 	G_Entity(float X, float Y, float H, float W, sf::String Txtr_File):
 		x(X), y(Y), sprite_h(H), sprite_w(W), texture_file(Txtr_File)

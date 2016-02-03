@@ -2,11 +2,11 @@
 
 
 
-sf::View view; // определяем объект вида, при помощи которого организуем слежку камеры за игроком
+sf::View view; // РѕРїСЂРµРґРµР»СЏРµРј РѕР±СЉРµРєС‚ РІРёРґР°, РїСЂРё РїРѕРјРѕС‰Рё РєРѕС‚РѕСЂРѕРіРѕ РѕСЂРіР°РЅРёР·СѓРµРј СЃР»РµР¶РєСѓ РєР°РјРµСЂС‹ Р·Р° РёРіСЂРѕРєРѕРј
 
 
 
-void set_camera_view(float x, float y) // задаем слежку камеры за объектом находящемся по координатам Х и У
+void set_camera_view(float x, float y) // Р·Р°РґР°РµРј СЃР»РµР¶РєСѓ РєР°РјРµСЂС‹ Р·Р° РѕР±СЉРµРєС‚РѕРј РЅР°С…РѕРґСЏС‰РµРјСЃСЏ РїРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°Рј РҐ Рё РЈ
 {
 	if (!(y < 1280 || x < 680))
 		view.setCenter(x + CAMERA_VIEW_X_OFFSET, y);
@@ -44,11 +44,11 @@ void view_control(float game_speed)
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
 	{
-		view.rotate(0.1f); // поворот на 1 градус
+		view.rotate(0.1f); // РїРѕРІРѕСЂРѕС‚ РЅР° 1 РіСЂР°РґСѓСЃ
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
 	{
-		view.rotate(-0.1f); // поворот на -1 градус
+		view.rotate(-0.1f); // РїРѕРІРѕСЂРѕС‚ РЅР° -1 РіСЂР°РґСѓСЃ
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 	{

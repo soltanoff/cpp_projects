@@ -26,32 +26,32 @@ int main()
 {
 	char buffer[256];
 	/* =================================================================== */
-	// Задаем размеры окна
+	// Р—Р°РґР°РµРј СЂР°Р·РјРµСЂС‹ РѕРєРЅР°
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Test");
-	view.reset(sf::FloatRect(0.0, 0.0, WINDOW_WIDTH, WINDOW_HEIGHT)); // рестартим камеру и задаем стандартный размер
+	view.reset(sf::FloatRect(0.0, 0.0, WINDOW_WIDTH, WINDOW_HEIGHT)); // СЂРµСЃС‚Р°СЂС‚РёРј РєР°РјРµСЂСѓ Рё Р·Р°РґР°РµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Р№ СЂР°Р·РјРµСЂ
 
-	fonts_settings(); // настраиваем текст
-	sounds_settings(); // настраиваем звук
+	fonts_settings(); // РЅР°СЃС‚СЂР°РёРІР°РµРј С‚РµРєСЃС‚
+	sounds_settings(); // РЅР°СЃС‚СЂР°РёРІР°РµРј Р·РІСѓРє
 	/* =================================================================== */
 
 	Player p(80.0, 80.0, 96, 96, "hero.png");
 	/* =================================================================== */
-	// Задаем карту
-	sf::Texture map_texture; // текстура карты
+	// Р—Р°РґР°РµРј РєР°СЂС‚Сѓ
+	sf::Texture map_texture; // С‚РµРєСЃС‚СѓСЂР° РєР°СЂС‚С‹
 	map_texture.loadFromFile("Sprites/map.png");
 
-	sf::Sprite map_sprites; // создаём спрайт для карты
-	map_sprites.setTexture(map_texture); // заливаем текстуру спрайтом
+	sf::Sprite map_sprites; // СЃРѕР·РґР°С‘Рј СЃРїСЂР°Р№С‚ РґР»СЏ РєР°СЂС‚С‹
+	map_sprites.setTexture(map_texture); // Р·Р°Р»РёРІР°РµРј С‚РµРєСЃС‚СѓСЂСѓ СЃРїСЂР°Р№С‚РѕРј
 	/* =================================================================== */
-	sf::Clock system_clock; // создаем объект, который хранит время (будет юзаться для привязки времени к "жизни" остальных объектов"
-	float current_frame(0); // хранит текущий кадр
-	bool is_view_map(false); // сообщает о том, что сейчас просматривают карту 
+	sf::Clock system_clock; // СЃРѕР·РґР°РµРј РѕР±СЉРµРєС‚, РєРѕС‚РѕСЂС‹Р№ С…СЂР°РЅРёС‚ РІСЂРµРјСЏ (Р±СѓРґРµС‚ СЋР·Р°С‚СЊСЃСЏ РґР»СЏ РїСЂРёРІСЏР·РєРё РІСЂРµРјРµРЅРё Рє "Р¶РёР·РЅРё" РѕСЃС‚Р°Р»СЊРЅС‹С… РѕР±СЉРµРєС‚РѕРІ"
+	float current_frame(0); // С…СЂР°РЅРёС‚ С‚РµРєСѓС‰РёР№ РєР°РґСЂ
+	bool is_view_map(false); // СЃРѕРѕР±С‰Р°РµС‚ Рѕ С‚РѕРј, С‡С‚Рѕ СЃРµР№С‡Р°СЃ РїСЂРѕСЃРјР°С‚СЂРёРІР°СЋС‚ РєР°СЂС‚Сѓ 
 	while (window.isOpen())
 	{
 		/* =================================================================== */
-		// Задаем скорость игры
-		float game_speed = float(system_clock.getElapsedTime().asMicroseconds()); // цепляем прошедшее время в милисекундах и делим на коснтанту, в итоге мы получаем скорость игры
-		system_clock.restart(); // рестартим
+		// Р—Р°РґР°РµРј СЃРєРѕСЂРѕСЃС‚СЊ РёРіСЂС‹
+		float game_speed = float(system_clock.getElapsedTime().asMicroseconds()); // С†РµРїР»СЏРµРј РїСЂРѕС€РµРґС€РµРµ РІСЂРµРјСЏ РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… Рё РґРµР»РёРј РЅР° РєРѕСЃРЅС‚Р°РЅС‚Сѓ, РІ РёС‚РѕРіРµ РјС‹ РїРѕР»СѓС‡Р°РµРј СЃРєРѕСЂРѕСЃС‚СЊ РёРіСЂС‹
+		system_clock.restart(); // СЂРµСЃС‚Р°СЂС‚РёРј
 		game_speed /= TIME_DIV;
 		/* =================================================================== */
 		sf::Event event;
@@ -61,32 +61,32 @@ int main()
 				window.close();
 		}
 		/* =================================================================== */
-		// Обрабатываем события клавиш
+		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃРѕР±С‹С‚РёСЏ РєР»Р°РІРёС€
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
 			is_view_map = !is_view_map;
 
 		if (!is_view_map) 
 		{
 			p.move(game_speed, current_frame, 0.1);
-			set_camera_view(p.get_x(), p.get_y()); // задаем слежку камеры за игроком
+			set_camera_view(p.get_x(), p.get_y()); // Р·Р°РґР°РµРј СЃР»РµР¶РєСѓ РєР°РјРµСЂС‹ Р·Р° РёРіСЂРѕРєРѕРј
 		}
 		else
-			view_map(game_speed); // активация просмотра карты
+			view_map(game_speed); // Р°РєС‚РёРІР°С†РёСЏ РїСЂРѕСЃРјРѕС‚СЂР° РєР°СЂС‚С‹
 			
-		//view_control(game_speed); // демонстрация возможностей камеры
+		//view_control(game_speed); // РґРµРјРѕРЅСЃС‚СЂР°С†РёСЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚РµР№ РєР°РјРµСЂС‹
 		/* =================================================================== */
-		// Биндинг точки выхода
+		// Р‘РёРЅРґРёРЅРі С‚РѕС‡РєРё РІС‹С…РѕРґР°
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
-			if (MessageBox(NULL,"Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
+			if (MessageBox(NULL,"Р’С‹ СѓРІРµСЂРµРЅРЅС‹ С‡С‚Рѕ С…РѕС‚РёС‚Рµ РІС‹Р№С‚Рё?", "Р’С‹С…РѕРґ РёР· РёРіСЂС‹", MB_YESNO) == IDYES)
 				window.close();
 		}
 		/* =================================================================== */
 		score_text.setString(score_string + itoa(p.get_score(), buffer, 10));
-		window.setView(view); // задаем параметры камеры ДО очистки экрана
+		window.setView(view); // Р·Р°РґР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РєР°РјРµСЂС‹ Р”Рћ РѕС‡РёСЃС‚РєРё СЌРєСЂР°РЅР°
 		window.clear();
 
-		draw_map(window, map_sprites); // Отрисовка карты
+		draw_map(window, map_sprites); // РћС‚СЂРёСЃРѕРІРєР° РєР°СЂС‚С‹
 		window.draw(p.get_sprite());
 		window.draw(score_text);
 		window.display();
@@ -95,19 +95,19 @@ int main()
 	return 0;
 }
 
-/*sf::Texture hero_texture; // подкидываем текстурку
+/*sf::Texture hero_texture; // РїРѕРґРєРёРґС‹РІР°РµРј С‚РµРєСЃС‚СѓСЂРєСѓ
 	hero_texture.loadFromFile("Sprites/hero.png"); 
-	// Выбираем кусок текстурки, т.е. берем тайлсет 
-	sf::Sprite hero_sprite; // создаем спрайт (тайл сет)
-	hero_sprite.setTexture(hero_texture);    //в ряду   выбор ряда
-	hero_sprite.setTextureRect(sf::IntRect(0*LION_POS, 1*LION_POS, 1*LION_POS, 1*LION_POS));// задаем тайлсет
-	hero_sprite.setPosition(50.0,50.0); // задаем начальную позицию спрайта
+	// Р’С‹Р±РёСЂР°РµРј РєСѓСЃРѕРє С‚РµРєСЃС‚СѓСЂРєРё, С‚.Рµ. Р±РµСЂРµРј С‚Р°Р№Р»СЃРµС‚ 
+	sf::Sprite hero_sprite; // СЃРѕР·РґР°РµРј СЃРїСЂР°Р№С‚ (С‚Р°Р№Р» СЃРµС‚)
+	hero_sprite.setTexture(hero_texture);    //РІ СЂСЏРґСѓ   РІС‹Р±РѕСЂ СЂСЏРґР°
+	hero_sprite.setTextureRect(sf::IntRect(0*LION_POS, 1*LION_POS, 1*LION_POS, 1*LION_POS));// Р·Р°РґР°РµРј С‚Р°Р№Р»СЃРµС‚
+	hero_sprite.setPosition(50.0,50.0); // Р·Р°РґР°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ СЃРїСЂР°Р№С‚Р°
 	*/
 
 /*
-	sf::Image hero_image; // подкидываем пикчу
+	sf::Image hero_image; // РїРѕРґРєРёРґС‹РІР°РµРј РїРёРєС‡Сѓ
 	hero_image.loadFromFile("Sprites/hero.png"); 
 
-	sf::Texture hero_texture; // подкидываем текстурку
+	sf::Texture hero_texture; // РїРѕРґРєРёРґС‹РІР°РµРј С‚РµРєСЃС‚СѓСЂРєСѓ
 	hero_texture.loadFromImage(hero_image);
 */

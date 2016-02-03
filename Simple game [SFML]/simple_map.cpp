@@ -39,13 +39,13 @@ void draw_map(sf::RenderWindow &window, sf::Sprite map_sprites)
 			switch(simple_map_structure[i][j])
 			{
 			case ' ':
-				map_sprites.setTextureRect(sf::IntRect(0, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
+				map_sprites.setTextureRect(sf::IntRect(0, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //РµСЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё СЃРёРјРІРѕР» РїСЂРѕР±РµР», С‚Рѕ СЂРёСЃСѓРµРј 1Р№ РєРІР°РґСЂР°С‚РёРє
 				break;
 			case 's':
-				map_sprites.setTextureRect(sf::IntRect(MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
+				map_sprites.setTextureRect(sf::IntRect(MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //РµСЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё СЃРёРјРІРѕР» РїСЂРѕР±РµР», С‚Рѕ СЂРёСЃСѓРµРј 1Р№ РєРІР°РґСЂР°С‚РёРє
 				break;
 			case '0':
-				map_sprites.setTextureRect(sf::IntRect(2 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
+				map_sprites.setTextureRect(sf::IntRect(2 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //РµСЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё СЃРёРјРІРѕР» РїСЂРѕР±РµР», С‚Рѕ СЂРёСЃСѓРµРј 1Р№ РєРІР°РґСЂР°С‚РёРє
 				break;
 			}
 

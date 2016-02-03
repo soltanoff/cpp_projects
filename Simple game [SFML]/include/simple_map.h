@@ -4,9 +4,9 @@
 
 
 
-const short MAP_HEIGHT = 25; // размер карты высота
-const short MAP_WIDTH = 40; // размер карты ширина 
-const short MAP_TILE_SIZE = 32; // размер тайла спрайта карты
+const short MAP_HEIGHT = 25; // СЂР°Р·РјРµСЂ РєР°СЂС‚С‹ РІС‹СЃРѕС‚Р°
+const short MAP_WIDTH = 40; // СЂР°Р·РјРµСЂ РєР°СЂС‚С‹ С€РёСЂРёРЅР° 
+const short MAP_TILE_SIZE = 32; // СЂР°Р·РјРµСЂ С‚Р°Р№Р»Р° СЃРїСЂР°Р№С‚Р° РєР°СЂС‚С‹
  
 extern sf::String simple_map_structure[MAP_HEIGHT];
 

@@ -7,11 +7,11 @@
 class G_Character : public G_Entity
 {
 protected:
-	float health; // здоровье персонажа
-	float dx; // ускорение по Ox
-	float dy; // ускорение по Oy 
-	float speed; // скорость
-	short dir; // направление движения
+	float health; // Р·РґРѕСЂРѕРІСЊРµ РїРµСЂСЃРѕРЅР°Р¶Р°
+	float dx; // СѓСЃРєРѕСЂРµРЅРёРµ РїРѕ Ox
+	float dy; // СѓСЃРєРѕСЂРµРЅРёРµ РїРѕ Oy 
+	float speed; // СЃРєРѕСЂРѕСЃС‚СЊ
+	short dir; // РЅР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ
 public:
 	G_Character(float X, float Y, float H, float W, sf::String Txtr_File):
 		G_Entity(X, Y, H, W, Txtr_File), health(FULL_HEALTH), dx(0), dy(0), speed(0)
