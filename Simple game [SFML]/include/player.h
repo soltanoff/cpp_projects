@@ -1,12 +1,14 @@
 #ifndef _PLAYER_
 #define _PLAYER_
+#include "textures_settings.h"
 #include "g_character.h"
 #include "simple_map.h"
 #include "sounds.h"
 
 
 
-class Player : public G_Character
+template<class T>
+class Player : public G_Character<T>
 {
 private:
 	sf::Keyboard::Key _move_left;
@@ -17,8 +19,14 @@ private:
 	int game_score;
 	void map_iteraction(); 
 public:
-	Player(float X, float Y, float H, float W, std::string Txtr_File):
-		G_Character(X, Y, H, W, Txtr_File), game_score(0),
+	Player(T X, T Y):
+		G_Character(X, Y, 
+			Player_Texture::MVL_LEFT_STEP, 
+			Player_Texture::MVL_TOP, 
+			Player_Texture::MVL_WIDTH, 
+			Player_Texture::MVL_HEIGHT,
+			Player_Texture::TEXTURE_NAME
+		), game_score(0),
 		_move_left(sf::Keyboard::A), _move_right(sf::Keyboard::D), 
 		_move_up(sf::Keyboard::W), _move_down(sf::Keyboard::S)
 	{
@@ -34,4 +42,125 @@ public:
 	}
 	int get_score() { return this->game_score; }
 };
+
+template<class T>
+void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
+{
+	if (sf::Keyboard::isKeyPressed(this->_move_left)) 
+	{
+		this->dir = 1;
+		this->speed = obj_speed;
+		current_frame += 0.005 * game_speed;
+		if (current_frame > 3) current_frame -= 3;
+		this->entity_sprite.setTextureRect(
+			sf::IntRect(
+			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVL_LEFT_STEP, 
+			Player_Texture::MVL_TOP, 
+			Player_Texture::MVL_WIDTH, 
+			Player_Texture::MVL_HEIGHT
+			));//(sf::IntRect(int(current_frame) * this->sprite_w, 136, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
+	}
+	if (sf::Keyboard::isKeyPressed(this->_move_right))
+	{
+		this->dir = 0;
+		this->speed = obj_speed;
+		current_frame += 0.005 * game_speed;
+		if (current_frame > 3) current_frame -= 3;
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 6, 231, 89, 55));//sf::IntRect(int(current_frame) * this->sprite_w, 232, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
+		this->entity_sprite.setTextureRect(
+			sf::IntRect(
+			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVR_LEFT_STEP, 
+			Player_Texture::MVR_TOP, 
+			Player_Texture::MVR_WIDTH, 
+			Player_Texture::MVR_HEIGHT
+			));
+	}
+	if (sf::Keyboard::isKeyPressed(this->_move_up))
+	{
+		this->dir = 3;
+		this->speed = obj_speed;
+		current_frame += 0.005 * game_speed;
+		if (current_frame > 3) current_frame -= 3;
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 305, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 307, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
+		/*this->sprite_w = 45; this->sprite_h = 90;
+		this->entity_sprite.setTextureRect(sf::IntRect(int(current_frame) * 50 + this->sprite_w, 0, this->sprite_w, this->sprite_h));// задаем тайлсет	/**/
+		this->entity_sprite.setTextureRect(
+			sf::IntRect(
+			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVU_LEFT_STEP, 
+			Player_Texture::MVU_TOP, 
+			Player_Texture::MVU_WIDTH, 
+			Player_Texture::MVU_HEIGHT
+			));
+	}
+	if (sf::Keyboard::isKeyPressed(this->_move_down))
+	{
+		this->dir = 2;
+		this->speed = obj_speed;
+		current_frame += 0.005 * game_speed;
+		if (current_frame > 3) current_frame -= 3;
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 6, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 0, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
+		this->entity_sprite.setTextureRect(
+			sf::IntRect(
+			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVD_LEFT_STEP, 
+			Player_Texture::MVD_TOP, 
+			Player_Texture::MVD_WIDTH, 
+			Player_Texture::MVD_HEIGHT
+			));
+	}
+	this->map_iteraction();
+	this->update(game_speed);
+}
+
+template<class T>
+void Player<T>::map_iteraction()
+{
+	for (short i = this->y / MAP_TILE_SIZE; i < (this->y + entity_sprite.getTextureRect().height) / MAP_TILE_SIZE; i++)
+	{
+		for (short j = this->x / MAP_TILE_SIZE; j < (this->x + entity_sprite.getTextureRect().width) / MAP_TILE_SIZE; j++)
+		{
+			if (simple_map_structure[i][j] == MAP_CURB)
+			{
+				if (this->dy < 0)
+				{
+					this->y = i * MAP_TILE_SIZE + MAP_TILE_SIZE;
+				}
+				if (this->dy > 0)
+				{
+					this->y = i * MAP_TILE_SIZE - entity_sprite.getTextureRect().height;
+				}
+				if (this->dx < 0)
+				{
+					this->x = j * MAP_TILE_SIZE + MAP_TILE_SIZE;
+				}
+				if (this->dx > 0)
+				{
+					this->x = j * MAP_TILE_SIZE - entity_sprite.getTextureRect().width;
+				}
+			}
+			if (simple_map_structure[i][j] == MAP_STONE)
+			{
+				beep_sound.play();
+				this->game_score += 10;
+				simple_map_structure[i][j] = MAP_NOTHING;
+			}
+			if (simple_map_structure[i][j] == MAP_WILDFLOWER)
+			{
+				fail_sound.play();
+				this->health -= 40;
+				if (this->game_score) this->game_score -= 10;
+				simple_map_structure[i][j] = MAP_NOTHING;
+			}
+			if (simple_map_structure[i][j] == MAP_HEATLHFLOWER)
+			{
+				if (this->health != FULL_HEALTH)
+				{
+					heal_sound.play();
+					this->health += 20;
+					if (this->health > FULL_HEALTH) this->health = FULL_HEALTH;
+					simple_map_structure[i][j] = MAP_NOTHING;
+				}
+			}
+		}
+	}
+}
 #endif /* _PLAYER_ */
