@@ -15,11 +15,12 @@ for the card.
 
 - (x) Make counting of score of the game
 
-- To organize the time spent in the game, the life and death of the 
-player, to make a simple ending.
+- To organize the time spent in the game.
+
+- (x) To organize the life and death of the player, to make a simple ending.
 
 
-- The introduction of the concept of “mission” and the display 
+- (x) The introduction of the concept of “mission” and the display 
 information by pressing.
 
 
