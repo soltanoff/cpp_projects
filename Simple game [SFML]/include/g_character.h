@@ -4,20 +4,32 @@
 #define FULL_HEALTH 100
 
 
-class G_Character : public G_Entity
+
+template<class T>
+class G_Character : public G_Entity<T>
 {
 protected:
-	float health; // здоровье персонажа
+	int health; // здоровье персонажа
 	float dx; // ускорение по Ox
 	float dy; // ускорение по Oy 
 	float speed; // скорость
 	short dir; // направление движения
 public:
-	G_Character(float X, float Y, float H, float W, sf::String Txtr_File):
-		G_Entity(X, Y, H, W, Txtr_File), health(FULL_HEALTH), dx(0), dy(0), speed(0)
+	G_Character(T X, T Y, T textLeft, T textTop, T W, T H, sf::String Txtr_File):
+		G_Entity(X, Y, textLeft, textTop, W, H, Txtr_File), health(FULL_HEALTH), dx(0), dy(0), speed(0)
 	{
 	}
 	
+	bool is_alive() 
+	{ 
+		if (this->health > 0) return true; 
+		else 
+		{
+			if (this->health < 0) this->health = 0;
+			this->entity_sprite.setColor(sf::Color(0, 0, 0));
+			return false;
+		}
+	}
 	float get_health() { return this->health; }
 	short get_dir() { return this->dir; }
 	float get_dx() { return this->dx; }
@@ -59,5 +71,4 @@ public:
 		this->entity_sprite.setPosition(this->x, this->y);
 	}
 };
-
 #endif /* G_CHARACTER */
