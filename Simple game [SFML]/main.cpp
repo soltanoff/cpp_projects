@@ -7,13 +7,12 @@
 #include "sounds.h"
 #include "simple_map.h"
 #include "game_fonts.h"
-
+#include "missions.h"
 
 #define DEBUG_OUTPUT 0
 
-const short LION_POS = 96;
-const short LION_H = 58;
-const short LION_W = 96;
+const short PLAYER_STARTED_POS_X = 80;
+const short PLAYER_STARTED_POS_Y = 80;
 
 float LION_HORIZONT_STEP = 0.1;
 float LION_VERTICAL_STEP = 0.1;
@@ -24,6 +23,9 @@ const long TIME_DIV = 800;
 
 int main()
 {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	setlocale(LC_ALL, "russian");
 	char buffer[256];
 	/* =================================================================== */
 	// Задаем размеры окна
@@ -32,9 +34,10 @@ int main()
 
 	fonts_settings(); // настраиваем текст
 	sounds_settings(); // настраиваем звук
+	set_mission_textbox(); // настраиваем окно задания
+	bool view_info(true);
 	/* =================================================================== */
-
-	Player p(80.0, 80.0, 96, 96, "hero.png");
+	Player<float> p(PLAYER_STARTED_POS_X, PLAYER_STARTED_POS_Y);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
 	/* =================================================================== */
 	// Задаем карту
 	sf::Texture map_texture; // текстура карты
@@ -59,20 +62,35 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+				is_view_map = !is_view_map;
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+				view_info = !view_info;
 		}
 		/* =================================================================== */
 		// Обрабатываем события клавиш
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
-			is_view_map = !is_view_map;
 
-		if (!is_view_map) 
+		if (p.is_alive())
 		{
-			p.move(game_speed, current_frame, 0.1);
-			set_camera_view(p.get_x(), p.get_y()); // задаем слежку камеры за игроком
+			if (!is_view_map) 
+			{
+				p.move(game_speed, current_frame, 0.1);
+				set_camera_view(p.get_x(), p.get_y()); // задаем слежку камеры за игроком
+			}
+			else
+				view_map(game_speed); // активация просмотра карты
+
+			score_text.setString(score_string + itoa(p.get_score(), buffer, 10) + "\n" + health_string + itoa(p.get_health(), buffer, 10));
 		}
-		else
-			view_map(game_speed); // активация просмотра карты
-			
+		else 
+		{
+			view.rotate(0.01);
+
+			score_text.setPosition(WINDOW_WIDTH / 2.0 - 100, WINDOW_HEIGHT / 2.0 - 40);
+			score_text.setString(score_string + itoa(p.get_score(), buffer, 10) + "\n" + game_over_string);
+		}
+		
 		//view_control(game_speed); // демонстрация возможностей камеры
 		/* =================================================================== */
 		// Биндинг точки выхода
@@ -82,11 +100,12 @@ int main()
 				window.close();
 		}
 		/* =================================================================== */
-		score_text.setString(score_string + itoa(p.get_score(), buffer, 10));
+		//score_text.setString(score_string + itoa(p.get_score(), buffer, 10) + "\n" + health_string + itoa(p.get_health(), buffer, 10));
 		window.setView(view); // задаем параметры камеры ДО очистки экрана
 		window.clear();
 
 		draw_map(window, map_sprites); // Отрисовка карты
+		if (view_info) get_mission_text(window, mission_text, WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 2.0, 0);
 		window.draw(p.get_sprite());
 		window.draw(score_text);
 		window.display();
