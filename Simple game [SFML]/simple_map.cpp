@@ -4,29 +4,29 @@
 
 sf::String simple_map_structure[MAP_HEIGHT] = {
 	"0000000000000000000000000000000000000000",
-	"0        b        s                    0",
-	"0   b          sssb ss      ss    ss   0",
-	"0         f       s                    0",
-	"0                       f     s        0",
-	"0    f   s        f                    0",
-	"0              s         h             0",
-	"0                     b          s     0",
-	"0    s         b          s s          0",
-	"0          h       s             f     0",
-	"0                     b                0",
-	"0               f              s       0",
-	"0     f   h            f    f      s   0",
-	"0                  b      s            0",
-	"0        s                b      b     0",
-	"0                        s  s       s  0",
-	"0                h   f                 0",
-	"0         h                            0",
-	"0                   s               s  0",
-	"0     f             s      bf          0",
-	"0                  ss s       b  s     0",
-	"0             f           f            0",
-	"0   f                  h               0",
-	"0         s        f         f    h    0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
+	"0                                      0",
 	"0000000000000000000000000000000000000000",
 };
 /*
@@ -37,6 +37,25 @@ const char MAP_WILDFLOWER = 'f';
 const char MAP_HEATLHFLOWER = 'h';
 const char MAP_BUSH = 'b';
 */
+void create_random_items(const char map_item, short count)
+{
+	srand(time(0));
+	int rand_x = 0;
+	int rand_y = 0;
+	int temp_count = count;
+
+	while(temp_count != 0)
+	{
+		rand_x = rand() % (MAP_HEIGHT - 1);
+		rand_y = rand() % (MAP_WIDTH - 1);
+		if (simple_map_structure[rand_x][rand_y] == MAP_NOTHING)
+		{
+			simple_map_structure[rand_x][rand_y] = map_item;
+			temp_count--;
+		}
+	}
+}
+
 void draw_map(sf::RenderWindow &window, sf::Sprite map_sprites)
 {
 	for(short i = 0; i < MAP_HEIGHT; i++)
