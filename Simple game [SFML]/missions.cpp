@@ -5,6 +5,7 @@
 sf::Image quest_image;
 sf::Texture quest_texture;
 sf::Sprite mission_textbox_sprite;
+//short mission_number;
 
 void set_mission_textbox()
 {
@@ -38,4 +39,19 @@ void get_mission_text(sf::RenderWindow &window, sf::Text &text, int x, int y, sh
 		L"\n\nНажмите на левый Shift\nдля отключения подсказки.");
 	window.draw(mission_textbox_sprite);
 	window.draw(text);
+}
+
+void set_new_mission(short mission_number)
+{
+	switch(mission_number)
+	{
+	case 0:
+		create_random_items(MAP_STONE, 7);
+		create_random_items(MAP_WILDFLOWER, 11);
+		create_random_items(MAP_BUSH, 14);
+		create_random_items(MAP_HEATLHFLOWER, 3);
+		break;
+	default:
+		break;
+	}
 }
