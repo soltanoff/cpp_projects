@@ -16,16 +16,15 @@ private:
 	sf::Keyboard::Key _move_up;
 	sf::Keyboard::Key _move_down;
 
-	int game_score;
-	void map_iteraction(); 
+	int game_score; 
+	void map_iteraction();
 public:
-	Player(T X, T Y):
+	Player(T X, T Y, sf::Image &image):
 		G_Character(X, Y, 
 			Player_Texture::MVL_LEFT_STEP, 
 			Player_Texture::MVL_TOP, 
 			Player_Texture::MVL_WIDTH, 
-			Player_Texture::MVL_HEIGHT,
-			Player_Texture::TEXTURE_NAME
+			Player_Texture::MVL_HEIGHT, image
 		), game_score(0),
 		_move_left(sf::Keyboard::A), _move_right(sf::Keyboard::D), 
 		_move_up(sf::Keyboard::W), _move_down(sf::Keyboard::S)
@@ -41,6 +40,35 @@ public:
 		_move_down = Down;
 	}
 	int get_score() { return this->game_score; }
+	
+	void update(float game_speed)
+	{
+		switch(this->dir)
+		{
+		case 0:
+			this->dx = speed;
+			this->dy = 0;
+			break;
+		case 1:
+			this->dx = -speed;
+			this->dy = 0;
+			break;
+		case 2:
+			this->dx = 0;
+			this->dy = speed;
+			break;
+		case 3:
+			this->dx = 0;
+			this->dy = -speed;
+			break;
+		}
+
+		this->x += dx * game_speed;
+		this->y += dy * game_speed;
+
+		this->speed = 0;
+		this->entity_sprite.setPosition(this->x, this->y);
+	}
 };
 
 template<class T>

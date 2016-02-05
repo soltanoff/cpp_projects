@@ -1,4 +1,4 @@
-﻿#ifndef GAME_FONTS
+#ifndef GAME_FONTS
 #define GAME_FONTS
 #include <SFML\Graphics.hpp>
 
