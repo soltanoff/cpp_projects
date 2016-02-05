@@ -14,9 +14,11 @@ protected:
 	float dy; // ускорение по Oy 
 	float speed; // скорость
 	short dir; // направление движения
+
+	virtual void map_iteraction() = 0;
 public:
-	G_Character(T X, T Y, T textLeft, T textTop, T W, T H, sf::String Txtr_File):
-		G_Entity(X, Y, textLeft, textTop, W, H, Txtr_File), health(FULL_HEALTH), dx(0), dy(0), speed(0)
+	G_Character(T X, T Y, T textLeft, T textTop, T W, T H, sf::Image &image):
+		G_Entity(X, Y, textLeft, textTop, W, H, image), health(FULL_HEALTH), dx(0), dy(0), speed(0)
 	{
 	}
 	
@@ -42,33 +44,6 @@ public:
 	void set_dy(float Acceleration) { this->dy = Acceleration; }
 	void set_speed(float Speed) { this->speed = Speed; }
 
-	virtual void update(float game_speed)
-	{
-		switch(this->dir)
-		{
-		case 0:
-			this->dx = speed;
-			this->dy = 0;
-			break;
-		case 1:
-			this->dx = -speed;
-			this->dy = 0;
-			break;
-		case 2:
-			this->dx = 0;
-			this->dy = speed;
-			break;
-		case 3:
-			this->dx = 0;
-			this->dy = -speed;
-			break;
-		}
-
-		this->x += dx * game_speed;
-		this->y += dy * game_speed;
-
-		this->speed = 0;
-		this->entity_sprite.setPosition(this->x, this->y);
-	}
+	virtual void update(float game_speed) = 0;
 };
 #endif /* G_CHARACTER */
