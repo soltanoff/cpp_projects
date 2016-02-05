@@ -17,5 +17,6 @@ const char MAP_BUSH = 'b';
 
 extern sf::String simple_map_structure[MAP_HEIGHT];
 
+void create_random_items(const char map_item, short count);
 void draw_map(sf::RenderWindow &window, sf::Sprite map_sprites);
 #endif /* SIMPLE_MAP */
