@@ -24,10 +24,10 @@ for the card.
 information by pressing.
 
 
-- Make the scrolling of the map with the mouse cursor.
+- (x) Make the scrolling of the map with the mouse cursor.
 
 
-- Randomly placed objects in SFML-stage.
+- (x) Randomly placed objects in SFML-stage.
 
 
 - To do the dragging with the mouse.
