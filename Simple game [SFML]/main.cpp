@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <list>
 
+#include "g_config.h"
 #include "player.h"
 #include "enemy.h"
 #include "g_view.h"
@@ -12,18 +13,6 @@
 #include "missions.h"
 
 #define DEBUG_OUTPUT 0
-
-const short PLAYER_STARTED_POS_X = 80;
-const short PLAYER_STARTED_POS_Y = 80;
-
-float LION_HORIZONT_STEP = 0.1;
-float LION_VERTICAL_STEP = 0.1;
-
-const long WINDOW_WIDTH = 1280;//680;
-const long WINDOW_HEIGHT = 800;//480;
-const long TIME_DIV = 800;
-
-
 
 int main()
 {
@@ -37,47 +26,50 @@ int main()
 	enemy_image.loadFromFile("Sprites/enemy.png");
 	enemy_image.createMaskFromColor(sf::Color(255, 255, 255));
 
-	sf::Image bullet_image;
-	bullet_image.loadFromFile("Sprites/bullet.png");
-	bullet_image.createMaskFromColor(sf::Color(255, 255, 255));
+	//sf::Image bullet_image;
+	//bullet_image.loadFromFile("Sprites/bullet.png");
+	//bullet_image.createMaskFromColor(sf::Color(255, 255, 255));
 
-	std::list<G_Character<float>*>  obj; // СЃРѕР·РґР°СЋ СЃРїРёСЃРѕРє, СЃСЋРґР° Р±СѓРґСѓ РєРёРґР°С‚СЊ РѕР±СЉРµРєС‚С‹.РЅР°РїСЂРёРјРµСЂ РІСЂР°РіРѕРІ.
-	std::list<G_Character<float>*>::iterator it; // РёС‚РµСЂР°С‚РѕСЂ С‡С‚РѕР±С‹ РїСЂРѕС…РѕРґРёС‚СЊ РїРѕ СЌР»-С‚Р°Рј СЃРїРёСЃРєР°
+	//std::list<G_Character<float>*>  obj; // создаю список, сюда буду кидать объекты.например врагов.
+	//std::list<G_Character<float>*>::iterator it; // итератор чтобы проходить по эл-там списка
 	/* =================================================================== */
-	// Р—Р°РґР°РµРј СЂР°Р·РјРµСЂС‹ РѕРєРЅР°
-	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Test");//, sf::Style::Fullscreen);
-	view.reset(sf::FloatRect(0.0, 0.0, WINDOW_WIDTH, WINDOW_HEIGHT)); // СЂРµСЃС‚Р°СЂС‚РёРј РєР°РјРµСЂСѓ Рё Р·Р°РґР°РµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Р№ СЂР°Р·РјРµСЂ
+	G_Config* CONFIG = G_Config::instance();
+	CONFIG->take_config();
 
-	fonts_settings(); // РЅР°СЃС‚СЂР°РёРІР°РµРј С‚РµРєСЃС‚
-	sounds_settings(); // РЅР°СЃС‚СЂР°РёРІР°РµРј Р·РІСѓРє
-	set_mission_textbox(); // РЅР°СЃС‚СЂР°РёРІР°РµРј РѕРєРЅРѕ Р·Р°РґР°РЅРёСЏ
-	set_new_mission(DEFAULT_MISSION);
+	// Задаем размеры окна
+	sf::RenderWindow window(sf::VideoMode(CONFIG->get_width(), CONFIG->get_height()), "Test",
+		CONFIG->is_fullscreen() ? sf::Style::Fullscreen: sf::Style::Default);
+	view.reset(sf::FloatRect(0.0, 0.0, CONFIG->get_width(), CONFIG->get_height())); // рестартим камеру и задаем стандартный размер
+	
+	fonts_settings(); // настраиваем текст
+	sounds_settings(); // настраиваем звук
+	set_mission_textbox(); // настраиваем окно задания
+	set_new_mission(CONFIG->get_default_mission());
 	bool view_info(false);
 	
 	/* =================================================================== */
-	Player<float> p(PLAYER_STARTED_POS_X, PLAYER_STARTED_POS_Y, player_image);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
-	p.set_speed(20.0);
-	Enemy<float> enemy(PLAYER_STARTED_POS_X, PLAYER_STARTED_POS_Y, "gun", enemy_image);
+	Player<float> p(CONFIG->get_pos_x(), CONFIG->get_pos_y(), player_image);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
+	Enemy<float> enemy(CONFIG->get_pos_x(), CONFIG->get_pos_y(), "gun", enemy_image);
 	/* =================================================================== */
 	
-	// Р—Р°РґР°РµРј РєР°СЂС‚Сѓ
-	sf::Texture map_texture; // С‚РµРєСЃС‚СѓСЂР° РєР°СЂС‚С‹
+	// Задаем карту
+	sf::Texture map_texture; // текстура карты
 	map_texture.loadFromFile("Sprites/map.png");
 
-	sf::Sprite map_sprites; // СЃРѕР·РґР°С‘Рј СЃРїСЂР°Р№С‚ РґР»СЏ РєР°СЂС‚С‹
-	map_sprites.setTexture(map_texture); // Р·Р°Р»РёРІР°РµРј С‚РµРєСЃС‚СѓСЂСѓ СЃРїСЂР°Р№С‚РѕРј
+	sf::Sprite map_sprites; // создаём спрайт для карты
+	map_sprites.setTexture(map_texture); // заливаем текстуру спрайтом
 	/* =================================================================== */
 	
-	sf::Clock system_clock; // СЃРѕР·РґР°РµРј РѕР±СЉРµРєС‚, РєРѕС‚РѕСЂС‹Р№ С…СЂР°РЅРёС‚ РІСЂРµРјСЏ (Р±СѓРґРµС‚ СЋР·Р°С‚СЊСЃСЏ РґР»СЏ РїСЂРёРІСЏР·РєРё РІСЂРµРјРµРЅРё Рє "Р¶РёР·РЅРё" РѕСЃС‚Р°Р»СЊРЅС‹С… РѕР±СЉРµРєС‚РѕРІ"
-	float current_frame(0); // С…СЂР°РЅРёС‚ С‚РµРєСѓС‰РёР№ РєР°РґСЂ
-	bool is_view_map(false); // СЃРѕРѕР±С‰Р°РµС‚ Рѕ С‚РѕРј, С‡С‚Рѕ СЃРµР№С‡Р°СЃ РїСЂРѕСЃРјР°С‚СЂРёРІР°СЋС‚ РєР°СЂС‚Сѓ 
+	sf::Clock system_clock; // создаем объект, который хранит время (будет юзаться для привязки времени к "жизни" остальных объектов"
+	float current_frame(0); // хранит текущий кадр
+	bool is_view_map(false); // сообщает о том, что сейчас просматривают карту 
 	while (window.isOpen())
 	{
 		/* =================================================================== */
-		// Р—Р°РґР°РµРј СЃРєРѕСЂРѕСЃС‚СЊ РёРіСЂС‹
-		float game_speed = float(system_clock.getElapsedTime().asMicroseconds()); // С†РµРїР»СЏРµРј РїСЂРѕС€РµРґС€РµРµ РІСЂРµРјСЏ РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… Рё РґРµР»РёРј РЅР° РєРѕСЃРЅС‚Р°РЅС‚Сѓ, РІ РёС‚РѕРіРµ РјС‹ РїРѕР»СѓС‡Р°РµРј СЃРєРѕСЂРѕСЃС‚СЊ РёРіСЂС‹
-		system_clock.restart(); // СЂРµСЃС‚Р°СЂС‚РёРј
-		game_speed /= TIME_DIV;
+		// Задаем скорость игры
+		float game_speed = float(system_clock.getElapsedTime().asMicroseconds()); // цепляем прошедшее время в милисекундах и делим на коснтанту, в итоге мы получаем скорость игры
+		system_clock.restart(); // рестартим
+		game_speed /= CONFIG->get_time_div();
 		/* =================================================================== */
 
 		sf::Event event;
@@ -97,23 +89,23 @@ int main()
 					view_info = !view_info;
 					break;
 				case sf::Keyboard::Escape:
-					if (MessageBox(NULL,"Р’С‹ СѓРІРµСЂРµРЅРЅС‹ С‡С‚Рѕ С…РѕС‚РёС‚Рµ РІС‹Р№С‚Рё?", "Р’С‹С…РѕРґ РёР· РёРіСЂС‹", MB_YESNO) == IDYES)
+					//if (MessageBox(NULL,"Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
 						window.close();
 					break;
 				}
 			}
 		}
 		/* =================================================================== */
-		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃРѕР±С‹С‚РёСЏ РєР»Р°РІРёС€
+		// Обрабатываем события клавиш
 		if (p.is_alive())
 		{
 			if (!is_view_map) 
 			{
 				p.move(game_speed, current_frame, 0.1);
-				set_camera_view(p.get_x(), p.get_y()); // Р·Р°РґР°РµРј СЃР»РµР¶РєСѓ РєР°РјРµСЂС‹ Р·Р° РёРіСЂРѕРєРѕРј
+				//set_camera_view(p.get_x(), p.get_y()); // задаем слежку камеры за игроком
 			}
 			else
-				view_map(game_speed); // Р°РєС‚РёРІР°С†РёСЏ РїСЂРѕСЃРјРѕС‚СЂР° РєР°СЂС‚С‹
+				view_map(game_speed); // активация просмотра карты
 
 			score_text.setString(score_string + itoa(p.get_score(), buffer, 10) + "\n" + health_string + itoa(p.get_health(), buffer, 10));
 		}
@@ -121,23 +113,23 @@ int main()
 		{
 			view.rotate(0.01);
 
-			score_text.setPosition(WINDOW_WIDTH / 2.0 - 100, WINDOW_HEIGHT / 2.0 - 40);
+			score_text.setPosition(CONFIG->get_width() / 2.0 - 100, CONFIG->get_height() / 2.0 - 40);
 			score_text.setString(score_string + itoa(p.get_score(), buffer, 10) + "\n" + game_over_string);
 		}
 		enemy.search_enemy(p);
-		//view_control(game_speed); // РґРµРјРѕРЅСЃС‚СЂР°С†РёСЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚РµР№ РєР°РјРµСЂС‹
-		window.setView(view); // Р·Р°РґР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РєР°РјРµСЂС‹ Р”Рћ РѕС‡РёСЃС‚РєРё СЌРєСЂР°РЅР°
+		//view_control(game_speed); // демонстрация возможностей камеры
+		window.setView(view); // задаем параметры камеры ДО очистки экрана
 		window.clear();
 
-		draw_map(window, map_sprites); // РћС‚СЂРёСЃРѕРІРєР° РєР°СЂС‚С‹
-		if (view_info) get_mission_text(window, mission_text, WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 2.0, DEFAULT_MISSION);
+		draw_map(window, map_sprites); // Отрисовка карты
+		if (view_info) get_mission_text(window, mission_text, CONFIG->get_width() / 2.0, CONFIG->get_height() / 2.0, CONFIG->get_default_mission());
 		window.draw(p.get_sprite());
 		window.draw(enemy.get_sprite());
 
-		for (it = obj.begin(); it != obj.end(); it++)
+		/*for (it = obj.begin(); it != obj.end(); it++)
 		{
-			window.draw((*it)->get_sprite()); //СЂРёСЃСѓРµРј РѕР±СЉРµРєС‚С‹ (СЃРµР№С‡Р°СЃ СЌС‚Рѕ С‚РѕР»СЊРєРѕ РІСЂР°РіРё)
-		}
+			window.draw((*it)->get_sprite()); //рисуем объекты (сейчас это только враги)
+		}*/
 
 		window.draw(score_text);
 		window.display();
@@ -145,3 +137,20 @@ int main()
  
 	return 0;
 }
+
+/*sf::Texture hero_texture; // подкидываем текстурку
+	hero_texture.loadFromFile("Sprites/hero.png"); 
+	// Выбираем кусок текстурки, т.е. берем тайлсет 
+	sf::Sprite hero_sprite; // создаем спрайт (тайл сет)
+	hero_sprite.setTexture(hero_texture);    //в ряду   выбор ряда
+	hero_sprite.setTextureRect(sf::IntRect(0*LION_POS, 1*LION_POS, 1*LION_POS, 1*LION_POS));// задаем тайлсет
+	hero_sprite.setPosition(50.0,50.0); // задаем начальную позицию спрайта
+	*/
+
+/*
+	sf::Image hero_image; // подкидываем пикчу
+	hero_image.loadFromFile("Sprites/hero.png"); 
+
+	sf::Texture hero_texture; // подкидываем текстурку
+	hero_texture.loadFromImage(hero_image);
+*/
