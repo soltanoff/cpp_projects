@@ -8,13 +8,13 @@ template<class T>
 class G_Entity
 {
 protected:
-	T x; // Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð¿Ð¾ ÐžÑ…
-	T y; // Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð¿Ð¾ ÐžÐ£
+	T x; // ïîçèöèÿ ïî Îõ
+	T y; // ïîçèöèÿ ïî ÎÓ
 
-	sf::String texture_file; // Ð¿ÑƒÑ‚ÑŒ Ðº Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ðµ ÑÑƒÑ‰Ð½Ð¾ÑÑ‚Ð¸
+	sf::String texture_file; // ïóòü ê òåêñòóðå ñóùíîñòè
 
-	sf::Texture entity_texture; // Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° ÑÑƒÑ‰Ð½Ð¾ÑÑ‚Ð¸
-	sf::Sprite entity_sprite; // ÑÐ¿Ñ€Ð°Ð¹Ñ‚ ÑÑƒÑ‰Ð½Ð¾ÑÑ‚Ð¸
+	sf::Texture entity_texture; // òåêñòóðà ñóùíîñòè
+	sf::Sprite entity_sprite; // ñïðàéò ñóùíîñòè
 public:
 	G_Entity(T X, T Y, T textLeft, T textTop, T W, T H, sf::Image &image):
 		x(X), y(Y)
@@ -32,5 +32,7 @@ public:
 
 	void set_x(float X) { this->x = X; }
 	void set_y(float Y) { this->y = Y; }
+
+	virtual void update(float game_speed) = 0;
 };
 #endif /* G_ENTITY */

@@ -74,6 +74,7 @@ public:
 template<class T>
 void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 {
+
 	if (sf::Keyboard::isKeyPressed(this->_move_left)) 
 	{
 		this->dir = 1;
@@ -86,15 +87,15 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVL_TOP, 
 			Player_Texture::MVL_WIDTH, 
 			Player_Texture::MVL_HEIGHT
-			));//(sf::IntRect(int(current_frame) * this->sprite_w, 136, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
+			));//(sf::IntRect(int(current_frame) * this->sprite_w, 136, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
 	}
-	if (sf::Keyboard::isKeyPressed(this->_move_right))
+	else if (sf::Keyboard::isKeyPressed(this->_move_right))
 	{
 		this->dir = 0;
 		this->speed = obj_speed;
 		current_frame += 0.005 * game_speed;
 		if (current_frame > 3) current_frame -= 3;
-		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 6, 231, 89, 55));//sf::IntRect(int(current_frame) * this->sprite_w, 232, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 6, 231, 89, 55));//sf::IntRect(int(current_frame) * this->sprite_w, 232, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
 		this->entity_sprite.setTextureRect(
 			sf::IntRect(
 			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVR_LEFT_STEP, 
@@ -109,9 +110,9 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 		this->speed = obj_speed;
 		current_frame += 0.005 * game_speed;
 		if (current_frame > 3) current_frame -= 3;
-		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 305, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 307, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 305, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 307, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
 		/*this->sprite_w = 45; this->sprite_h = 90;
-		this->entity_sprite.setTextureRect(sf::IntRect(int(current_frame) * 50 + this->sprite_w, 0, this->sprite_w, this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚	/**/
+		this->entity_sprite.setTextureRect(sf::IntRect(int(current_frame) * 50 + this->sprite_w, 0, this->sprite_w, this->sprite_h));// çàäàåì òàéëñåò	/**/
 		this->entity_sprite.setTextureRect(
 			sf::IntRect(
 			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVU_LEFT_STEP, 
@@ -120,13 +121,13 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVU_HEIGHT
 			));
 	}
-	if (sf::Keyboard::isKeyPressed(this->_move_down))
+	else if (sf::Keyboard::isKeyPressed(this->_move_down))
 	{
 		this->dir = 2;
 		this->speed = obj_speed;
 		current_frame += 0.005 * game_speed;
 		if (current_frame > 3) current_frame -= 3;
-		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 6, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 0, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 6, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 0, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
 		this->entity_sprite.setTextureRect(
 			sf::IntRect(
 			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVD_LEFT_STEP, 
@@ -135,16 +136,18 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVD_HEIGHT
 			));
 	}
-	this->map_iteraction();
+
 	this->update(game_speed);
+	this->map_iteraction();
+	
 }
 
 template<class T>
 void Player<T>::map_iteraction()
 {
-	for (short i = this->y / MAP_TILE_SIZE; i < (this->y + entity_sprite.getTextureRect().height) / MAP_TILE_SIZE; i++)
+	for (int i = this->y / MAP_TILE_SIZE; i < (this->y + entity_sprite.getTextureRect().height) / MAP_TILE_SIZE; i++)
 	{
-		for (short j = this->x / MAP_TILE_SIZE; j < (this->x + entity_sprite.getTextureRect().width) / MAP_TILE_SIZE; j++)
+		for (int j = this->x / MAP_TILE_SIZE; j < (this->x + entity_sprite.getTextureRect().width) / MAP_TILE_SIZE; j++)
 		{
 			if (simple_map_structure[i][j] == MAP_CURB)
 			{

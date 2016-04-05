@@ -9,11 +9,11 @@ template<class T>
 class G_Character : public G_Entity<T>
 {
 protected:
-	int health; // Р·РґРѕСЂРѕРІСЊРµ РїРµСЂСЃРѕРЅР°Р¶Р°
-	float dx; // СѓСЃРєРѕСЂРµРЅРёРµ РїРѕ Ox
-	float dy; // СѓСЃРєРѕСЂРµРЅРёРµ РїРѕ Oy 
-	float speed; // СЃРєРѕСЂРѕСЃС‚СЊ
-	short dir; // РЅР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ
+	int health; // здоровье персонажа
+	float dx; // ускорение по Ox
+	float dy; // ускорение по Oy 
+	float speed; // скорость
+	short dir; // направление движения
 
 	virtual void map_iteraction() = 0;
 public:
@@ -44,6 +44,6 @@ public:
 	void set_dy(float Acceleration) { this->dy = Acceleration; }
 	void set_speed(float Speed) { this->speed = Speed; }
 
-	virtual void update(float game_speed) = 0;
+	
 };
 #endif /* G_CHARACTER */
