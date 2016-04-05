@@ -30,7 +30,13 @@ information by pressing.
 - (x) Randomly placed objects in SFML-stage.
 
 
+- (x) Add bullets
+
 - To do the dragging with the mouse.
+
+
+- Add enemy who can shot
+
 
 
 
