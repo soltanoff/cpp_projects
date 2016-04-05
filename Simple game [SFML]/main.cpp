@@ -26,9 +26,9 @@ int main()
 	enemy_image.loadFromFile("Sprites/enemy.png");
 	enemy_image.createMaskFromColor(sf::Color(255, 255, 255));
 
-	//sf::Image bullet_image;
-	//bullet_image.loadFromFile("Sprites/bullet.png");
-	//bullet_image.createMaskFromColor(sf::Color(255, 255, 255));
+	sf::Image bullet_image;
+	bullet_image.loadFromFile("Sprites/bullet.png");
+	bullet_image.createMaskFromColor(sf::Color(255, 255, 255));
 
 	//std::list<G_Character<float>*>  obj; // создаю список, сюда буду кидать объекты.например врагов.
 	//std::list<G_Character<float>*>::iterator it; // итератор чтобы проходить по эл-там списка
@@ -49,7 +49,8 @@ int main()
 	
 	/* =================================================================== */
 	Player<float> p(CONFIG->get_pos_x(), CONFIG->get_pos_y(), player_image);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
-	Enemy<float> enemy(CONFIG->get_pos_x(), CONFIG->get_pos_y(), "gun", enemy_image);
+	Enemy<float> enemy(CONFIG->get_pos_x()+300, CONFIG->get_pos_y(), "gun", enemy_image);
+	//Bullet<float> bull(CONFIG->get_pos_x()+100, CONFIG->get_pos_y(),  bullet_image);
 	/* =================================================================== */
 	
 	// Задаем карту
@@ -124,8 +125,15 @@ int main()
 		draw_map(window, map_sprites); // Отрисовка карты
 		if (view_info) get_mission_text(window, mission_text, CONFIG->get_width() / 2.0, CONFIG->get_height() / 2.0, CONFIG->get_default_mission());
 		window.draw(p.get_sprite());
+		//window.draw(bull.get_sprite());
 		window.draw(enemy.get_sprite());
-
+		enemy.update(game_speed);
+		//window.draw((*(enemy.enemy_bullets.begin()))->get_sprite());
+		/*
+		for (it = enemy.enemy_bullets; it != enemy.enemy_bullets.end(); it++)
+		{
+			window.draw((*it)->get_sprite()); //рисуем объекты (сейчас это только враги)
+		}/**/
 		/*for (it = obj.begin(); it != obj.end(); it++)
 		{
 			window.draw((*it)->get_sprite()); //рисуем объекты (сейчас это только враги)
