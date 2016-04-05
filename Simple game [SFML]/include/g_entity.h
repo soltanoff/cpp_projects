@@ -8,13 +8,13 @@ template<class T>
 class G_Entity
 {
 protected:
-	T x; // позиция по Ох
-	T y; // позиция по ОУ
+	T x; // РїРѕР·РёС†РёСЏ РїРѕ РћС…
+	T y; // РїРѕР·РёС†РёСЏ РїРѕ РћРЈ
 
-	sf::String texture_file; // путь к текстуре сущности
+	sf::String texture_file; // РїСѓС‚СЊ Рє С‚РµРєСЃС‚СѓСЂРµ СЃСѓС‰РЅРѕСЃС‚Рё
 
-	sf::Texture entity_texture; // текстура сущности
-	sf::Sprite entity_sprite; // спрайт сущности
+	sf::Texture entity_texture; // С‚РµРєСЃС‚СѓСЂР° СЃСѓС‰РЅРѕСЃС‚Рё
+	sf::Sprite entity_sprite; // СЃРїСЂР°Р№С‚ СЃСѓС‰РЅРѕСЃС‚Рё
 public:
 	G_Entity(T X, T Y, T textLeft, T textTop, T W, T H, sf::Image &image):
 		x(X), y(Y)

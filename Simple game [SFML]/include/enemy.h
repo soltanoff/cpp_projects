@@ -32,12 +32,12 @@ public:
 
 	void search_enemy(Player<T> &enemy)
 	{	
-		T dX = - this->x + enemy.get_x(); // вектор , колинеарный прямой, которая пересекает спрайт и курсор
-		T dY = - this->y + enemy.get_y(); // он же, координата y
+		T dX = - this->x + enemy.get_x(); // РІРµРєС‚РѕСЂ , РєРѕР»РёРЅРµР°СЂРЅС‹Р№ РїСЂСЏРјРѕР№, РєРѕС‚РѕСЂР°СЏ РїРµСЂРµСЃРµРєР°РµС‚ СЃРїСЂР°Р№С‚ Рё РєСѓСЂСЃРѕСЂ
+		T dY = - this->y + enemy.get_y(); // РѕРЅ Р¶Рµ, РєРѕРѕСЂРґРёРЅР°С‚Р° y
 
-		float rotation = (atan2(dY, dX)) * 180 / 3.14159265; // получаем угол в радианах и переводим его в градусы
-		//printf("rotation: %f \n", rotation); // смотрим на градусы в консольке
-		this->entity_sprite.setRotation(rotation); // поворачиваем спрайт на эти градусы	
+		float rotation = (atan2(dY, dX)) * 180 / 3.14159265; // РїРѕР»СѓС‡Р°РµРј СѓРіРѕР» РІ СЂР°РґРёР°РЅР°С… Рё РїРµСЂРµРІРѕРґРёРј РµРіРѕ РІ РіСЂР°РґСѓСЃС‹
+		//printf("rotation: %f \n", rotation); // СЃРјРѕС‚СЂРёРј РЅР° РіСЂР°РґСѓСЃС‹ РІ РєРѕРЅСЃРѕР»СЊРєРµ
+		this->entity_sprite.setRotation(rotation); // РїРѕРІРѕСЂР°С‡РёРІР°РµРј СЃРїСЂР°Р№С‚ РЅР° СЌС‚Рё РіСЂР°РґСѓСЃС‹	
 
 
 	}
@@ -61,8 +61,8 @@ private:
 	sf::String name;
 	void map_iteraction() {}
 public:
-	std::list<Bullet<float>*> enemy_bullets; // создаю список пуль
-	//std::list<Bullet<float>*>::iterator it; // итератор чтобы проходить по эл-там списка
+	std::list<Bullet<float>*> enemy_bullets; // СЃРѕР·РґР°СЋ СЃРїРёСЃРѕРє РїСѓР»СЊ
+	//std::list<Bullet<float>*>::iterator it; // РёС‚РµСЂР°С‚РѕСЂ С‡С‚РѕР±С‹ РїСЂРѕС…РѕРґРёС‚СЊ РїРѕ СЌР»-С‚Р°Рј СЃРїРёСЃРєР°
 
 	Enemy(T X, T Y, sf::String enemy_name, sf::Image &image):
 		enemy_spoted(false), name(enemy_name),
@@ -81,12 +81,12 @@ public:
 
 	void search_enemy(Player<T> &enemy)
 	{	
-		T dX = - this->x + enemy.get_x(); // вектор , колинеарный прямой, которая пересекает спрайт и курсор
-		T dY = - this->y + enemy.get_y(); // он же, координата y
+		T dX = - this->x + enemy.get_x(); // РІРµРєС‚РѕСЂ , РєРѕР»РёРЅРµР°СЂРЅС‹Р№ РїСЂСЏРјРѕР№, РєРѕС‚РѕСЂР°СЏ РїРµСЂРµСЃРµРєР°РµС‚ СЃРїСЂР°Р№С‚ Рё РєСѓСЂСЃРѕСЂ
+		T dY = - this->y + enemy.get_y(); // РѕРЅ Р¶Рµ, РєРѕРѕСЂРґРёРЅР°С‚Р° y
 
-		float rotation = (atan2(dY, dX)) * 180 / 3.14159265; // получаем угол в радианах и переводим его в градусы
-		//printf("rotation: %f \n", rotation); // смотрим на градусы в консольке
-		this->entity_sprite.setRotation(rotation); // поворачиваем спрайт на эти градусы	
+		float rotation = (atan2(dY, dX)) * 180 / 3.14159265; // РїРѕР»СѓС‡Р°РµРј СѓРіРѕР» РІ СЂР°РґРёР°РЅР°С… Рё РїРµСЂРµРІРѕРґРёРј РµРіРѕ РІ РіСЂР°РґСѓСЃС‹
+		//printf("rotation: %f \n", rotation); // СЃРјРѕС‚СЂРёРј РЅР° РіСЂР°РґСѓСЃС‹ РІ РєРѕРЅСЃРѕР»СЊРєРµ
+		this->entity_sprite.setRotation(rotation); // РїРѕРІРѕСЂР°С‡РёРІР°РµРј СЃРїСЂР°Р№С‚ РЅР° СЌС‚Рё РіСЂР°РґСѓСЃС‹	
 
 		int distance = sqrt( pow(dX, 2) + pow(dY, 2) );
 		printf("distance %i ", distance);
@@ -105,7 +105,7 @@ public:
 	{
 		/*for (it = enemy_bullets; it != enemy_bullets.end(); it++)
 		{
-			(*it)->update(game_speed); //рисуем объекты (сейчас это только враги)
+			(*it)->update(game_speed); //СЂРёСЃСѓРµРј РѕР±СЉРµРєС‚С‹ (СЃРµР№С‡Р°СЃ СЌС‚Рѕ С‚РѕР»СЊРєРѕ РІСЂР°РіРё)
 		}*/
 
 		//(*enemy_bullets.begin())->update(game_speed);

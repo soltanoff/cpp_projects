@@ -87,7 +87,7 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVL_TOP, 
 			Player_Texture::MVL_WIDTH, 
 			Player_Texture::MVL_HEIGHT
-			));//(sf::IntRect(int(current_frame) * this->sprite_w, 136, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
+			));//(sf::IntRect(int(current_frame) * this->sprite_w, 136, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
 	}
 	else if (sf::Keyboard::isKeyPressed(this->_move_right))
 	{
@@ -95,7 +95,7 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 		this->speed = obj_speed;
 		current_frame += 0.005 * game_speed;
 		if (current_frame > 3) current_frame -= 3;
-		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 6, 231, 89, 55));//sf::IntRect(int(current_frame) * this->sprite_w, 232, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 6, 231, 89, 55));//sf::IntRect(int(current_frame) * this->sprite_w, 232, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
 		this->entity_sprite.setTextureRect(
 			sf::IntRect(
 			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVR_LEFT_STEP, 
@@ -110,9 +110,9 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 		this->speed = obj_speed;
 		current_frame += 0.005 * game_speed;
 		if (current_frame > 3) current_frame -= 3;
-		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 305, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 307, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 305, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 307, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
 		/*this->sprite_w = 45; this->sprite_h = 90;
-		this->entity_sprite.setTextureRect(sf::IntRect(int(current_frame) * 50 + this->sprite_w, 0, this->sprite_w, this->sprite_h));// çàäàåì òàéëñåò	/**/
+		this->entity_sprite.setTextureRect(sf::IntRect(int(current_frame) * 50 + this->sprite_w, 0, this->sprite_w, this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚	/**/
 		this->entity_sprite.setTextureRect(
 			sf::IntRect(
 			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVU_LEFT_STEP, 
@@ -127,7 +127,7 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 		this->speed = obj_speed;
 		current_frame += 0.005 * game_speed;
 		if (current_frame > 3) current_frame -= 3;
-		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 6, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 0, 1 * this->sprite_w, 1 * this->sprite_h));// çàäàåì òàéëñåò
+		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 6, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 0, 1 * this->sprite_w, 1 * this->sprite_h));// Ð·Ð°Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð»ÑÐµÑ‚
 		this->entity_sprite.setTextureRect(
 			sf::IntRect(
 			Player_Texture::BASE_RECTLEFT_POS * int(current_frame) + Player_Texture::MVD_LEFT_STEP, 
