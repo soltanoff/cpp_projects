@@ -4,9 +4,9 @@
 
 
 
-const short MAP_HEIGHT = 25; // размер карты высота
-const short MAP_WIDTH = 40; // размер карты ширина 
-const short MAP_TILE_SIZE = 32; // размер тайла спрайта карты
+const int MAP_HEIGHT = 25; // размер карты высота
+const int MAP_WIDTH = 40; // размер карты ширина 
+const int MAP_TILE_SIZE = 32; // размер тайла спрайта карты
 
 const char MAP_NOTHING = ' ';
 const char MAP_STONE = 's';
