@@ -43,4 +43,15 @@ namespace Enemy_Texture
 	const int WIDTH = 32;
 	const int HEIGHT = 32;
 }
+
+namespace Bullet_Texture
+{
+	//const char TEXTURE_NAME[] = "enemy.png";
+
+	const int RECT_LEFT = 0;
+	const int RECT_TOP = 0;
+
+	const int WIDTH = 16; // 16
+	const int HEIGHT = 16; //16
+}
 #endif /* TEXTURE_SETTINGS */
