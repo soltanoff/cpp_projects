@@ -9,11 +9,11 @@ template<class T>
 class G_Character : public G_Entity<T>
 {
 protected:
-	int health; // здоровье персонажа
-	float dx; // ускорение по Ox
-	float dy; // ускорение по Oy 
-	float speed; // скорость
-	short dir; // направление движения
+	int health; // Р·РґРѕСЂРѕРІСЊРµ РїРµСЂСЃРѕРЅР°Р¶Р°
+	float dx; // СѓСЃРєРѕСЂРµРЅРёРµ РїРѕ Ox
+	float dy; // СѓСЃРєРѕСЂРµРЅРёРµ РїРѕ Oy 
+	float speed; // СЃРєРѕСЂРѕСЃС‚СЊ
+	short dir; // РЅР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ
 
 	virtual void map_iteraction() = 0;
 public:
@@ -22,13 +22,12 @@ public:
 	{
 	}
 	
-	bool is_alive() 
+	virtual bool is_alive() 
 	{ 
 		if (this->health > 0) return true; 
 		else 
 		{
 			if (this->health < 0) this->health = 0;
-			this->entity_sprite.setColor(sf::Color(0, 0, 0));
 			return false;
 		}
 	}
