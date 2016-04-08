@@ -3,7 +3,7 @@
 #include <SFML\Graphics.hpp>
 #include "simple_map.h"
 
-const short DEFAULT_MISSION = 0;
+//const short DEFAULT_MISSION = 0;
 
 extern sf::Texture quest_texture;
 extern sf::Sprite mission_textbox_sprite;
