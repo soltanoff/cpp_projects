@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	void move(float game_speed, float &current_frame, float obj_speed = 0.1);
+	bool move(float game_speed, float &current_frame, float obj_speed = 0.1);
 	void set_move_control(sf::Keyboard::Key Left, sf::Keyboard::Key Right, sf::Keyboard::Key Up, sf::Keyboard::Key Down)
 	{
 		_move_left = Left;
@@ -41,6 +41,17 @@ public:
 	}
 	int get_score() { return this->game_score; }
 	
+	bool is_alive() 
+	{ 
+		if (this->health > 0) return true; 
+		else 
+		{
+			if (this->health < 0) this->health = 0;
+			this->entity_sprite.setColor(sf::Color(0, 0, 0));
+			return false;
+		}
+	}
+
 	void update(float game_speed)
 	{
 		switch(this->dir)
@@ -72,9 +83,9 @@ public:
 };
 
 template<class T>
-void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
+bool Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 {
-
+	bool moved = false;
 	if (sf::Keyboard::isKeyPressed(this->_move_left)) 
 	{
 		this->dir = 1;
@@ -103,6 +114,7 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVR_WIDTH, 
 			Player_Texture::MVR_HEIGHT
 			));
+		moved = true;
 	}
 	if (sf::Keyboard::isKeyPressed(this->_move_up))
 	{
@@ -120,6 +132,7 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVU_WIDTH, 
 			Player_Texture::MVU_HEIGHT
 			));
+		moved = true;
 	}
 	else if (sf::Keyboard::isKeyPressed(this->_move_down))
 	{
@@ -135,11 +148,15 @@ void Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVD_WIDTH, 
 			Player_Texture::MVD_HEIGHT
 			));
+		moved = true;
 	}
 
 	this->update(game_speed);
 	this->map_iteraction();
-	
+
+	//printf("%f\n", game_speed);
+
+	return moved;
 }
 
 template<class T>
