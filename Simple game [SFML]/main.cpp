@@ -14,6 +14,8 @@
 
 #define DEBUG_OUTPUT 0
 
+// Фассад.
+
 int main()
 {
 	char buffer[256];
@@ -26,7 +28,7 @@ int main()
 	enemy_image.loadFromFile("Sprites/enemy.png");
 	enemy_image.createMaskFromColor(sf::Color(255, 255, 255));
 
-	sf::Image bullet_image;
+	//sf::Image bullet_image;
 	bullet_image.loadFromFile("Sprites/bullet.png");
 	bullet_image.createMaskFromColor(sf::Color(255, 255, 255));
 
@@ -49,7 +51,8 @@ int main()
 	
 	/* =================================================================== */
 	Player<float> p(CONFIG->get_pos_x(), CONFIG->get_pos_y(), player_image);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
-	Enemy<float> enemy(CONFIG->get_pos_x()+300, CONFIG->get_pos_y(), "gun", enemy_image);
+	Enemy<float> enemy(CONFIG->get_pos_x()+300, 40, "gun", enemy_image);
+	Enemy<float> enemy_2(40, 100, "gun", enemy_image);
 	//Bullet<float> bull(CONFIG->get_pos_x()+100, CONFIG->get_pos_y(),  bullet_image);
 	/* =================================================================== */
 	
@@ -61,6 +64,8 @@ int main()
 	map_sprites.setTexture(map_texture); // заливаем текстуру спрайтом
 	/* =================================================================== */
 	
+	bool start_game(false); // двинулся ли персонаж?
+
 	sf::Clock system_clock; // создаем объект, который хранит время (будет юзаться для привязки времени к "жизни" остальных объектов"
 	float current_frame(0); // хранит текущий кадр
 	bool is_view_map(false); // сообщает о том, что сейчас просматривают карту 
@@ -90,7 +95,7 @@ int main()
 					view_info = !view_info;
 					break;
 				case sf::Keyboard::Escape:
-					//if (MessageBox(NULL,"Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
+					if (MessageBox(NULL,"Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
 						window.close();
 					break;
 				}
@@ -117,7 +122,6 @@ int main()
 			score_text.setPosition(CONFIG->get_width() / 2.0 - 100, CONFIG->get_height() / 2.0 - 40);
 			score_text.setString(score_string + itoa(p.get_score(), buffer, 10) + "\n" + game_over_string);
 		}
-		enemy.search_enemy(p);
 		//view_control(game_speed); // демонстрация возможностей камеры
 		window.setView(view); // задаем параметры камеры ДО очистки экрана
 		window.clear();
@@ -126,8 +130,18 @@ int main()
 		if (view_info) get_mission_text(window, mission_text, CONFIG->get_width() / 2.0, CONFIG->get_height() / 2.0, CONFIG->get_default_mission());
 		window.draw(p.get_sprite());
 		//window.draw(bull.get_sprite());
+
+		enemy.search_enemy(p);
 		window.draw(enemy.get_sprite());
 		enemy.update(game_speed);
+		enemy.shot(window);
+
+		enemy_2.search_enemy(p);
+		window.draw(enemy_2.get_sprite());
+		enemy_2.update(game_speed);
+		enemy_2.shot(window);
+		
+
 		//window.draw((*(enemy.enemy_bullets.begin()))->get_sprite());
 		/*
 		for (it = enemy.enemy_bullets; it != enemy.enemy_bullets.end(); it++)

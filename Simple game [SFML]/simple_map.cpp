@@ -58,29 +58,29 @@ void create_random_items(const char map_item, short count)
 
 void draw_map(sf::RenderWindow &window, sf::Sprite map_sprites)
 {
-	for(short i = 0; i < MAP_HEIGHT; i++)
+	for(int i = 0; i < MAP_HEIGHT; i++)
 	{
-		for(short j = 0; j < MAP_WIDTH; j++)
+		for(int j = 0; j < MAP_WIDTH; j++)
 		{
 			switch(simple_map_structure[i][j])
 			{
 			case MAP_NOTHING: // просто пол
 				map_sprites.setTextureRect(sf::IntRect(0, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
 				break;
-			case MAP_CURB: // 0 - бордюр
-				map_sprites.setTextureRect(sf::IntRect(2 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
-				break;
 			case MAP_STONE: // s - камень
 				map_sprites.setTextureRect(sf::IntRect(MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
 				break;
-			case MAP_BUSH: // b - куст
-				map_sprites.setTextureRect(sf::IntRect(5 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
+			case MAP_CURB: // 0 - бордюр
+				map_sprites.setTextureRect(sf::IntRect(2 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
 				break;
 			case MAP_WILDFLOWER: // f - дикий цветок
 				map_sprites.setTextureRect(sf::IntRect(3 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
 				break;
 			case MAP_HEATLHFLOWER: // h - цветок жизни
 				map_sprites.setTextureRect(sf::IntRect(4 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
+				break;
+			case MAP_BUSH: // b - куст
+				map_sprites.setTextureRect(sf::IntRect(5 * MAP_TILE_SIZE, 0, MAP_TILE_SIZE, MAP_TILE_SIZE)); //если встретили символ пробел, то рисуем 1й квадратик
 				break;
 			}
 
