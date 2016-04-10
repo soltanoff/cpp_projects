@@ -41,6 +41,11 @@ public:
 	}
 	int get_score() { return this->game_score; }
 	
+	void health_decr(int value)
+	{
+		this->health -= value;
+	}
+
 	bool is_alive() 
 	{ 
 		if (this->health > 0) return true; 

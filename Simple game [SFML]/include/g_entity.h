@@ -28,6 +28,8 @@ public:
 
 	float get_x() { return this->x; }
 	float get_y() { return this->y; }
+	int get_width() { return entity_sprite.getTextureRect().width; }
+	int get_height() { return entity_sprite.getTextureRect().height; }
 	sf::Sprite get_sprite() { return this->entity_sprite; }
 
 	void set_x(float X) { this->x = X; }

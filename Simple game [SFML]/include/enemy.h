@@ -8,7 +8,8 @@
 
 sf::Image bullet_image;
 
-const int BULLET_SPEED = 50;
+const int BULLET_SPEED = 100;
+const int BULLET_DAMAGE = 1;
 
 template<class T>
 class Bullet : public G_Character<T>
@@ -16,8 +17,6 @@ class Bullet : public G_Character<T>
 private:
 	void map_iteraction();
 public:
-	int k;
-
 	Bullet(T X, T Y, T dX, T dY, sf::Image &image):
 		G_Character(X, Y,
 			Bullet_Texture::RECT_LEFT, 
@@ -47,6 +46,21 @@ public:
 	{
 		this->dx = dX;
 		this->dy = dY;
+	}
+
+	void player_iteraction(Player<T> &p)
+	{
+		//if (abs(this->x + entity_sprite.getTextureRect().width - p.get_x()) < 1 && 
+			//abs(this->y + entity_sprite.getTextureRect().height - p.get_y()) < 1)
+			//printf("TARGET\n %f %f", p.get_x(), p.get_y());
+		//if (this->x == p.get_x() && this->y == p.get_y())
+		if (this->is_alive())
+		if (this->x <=  p.get_x() + p.get_width() && this->x >= p.get_x() &&
+			this->y <=  p.get_y() + p.get_height() && this->y >= p.get_y())
+		{
+			p.health_decr(BULLET_DAMAGE);
+			this->set_health(0);
+		}
 	}
 
 	void update(float game_speed)
@@ -114,8 +128,8 @@ public:
 
 	void search_enemy(Player<T> &enemy)
 	{	
-		T dX = - this->x + enemy.get_x(); // вектор , колинеарный прямой, которая пересекает спрайт и курсор
-		T dY = - this->y + enemy.get_y(); // он же, координата y
+		T dX = - this->x + (enemy.get_x());// + enemy.get_width()); // вектор , колинеарный прямой, которая пересекает спрайт и курсор
+		T dY = - this->y + (enemy.get_y());// + enemy.get_height()); // он же, координата y
 
 		float rotation = (atan2(dY, dX)) * 180 / 3.14159265; // получаем угол в радианах и переводим его в градусы
 		//printf("rotation: %f \n", rotation); // смотрим на градусы в консольке
@@ -146,7 +160,9 @@ public:
 	void update(float game_speed)
 	{
 		if (shooted && enemy_bullets->is_alive())
+		{
 			enemy_bullets->update(game_speed);
+		}
 		else
 		{
 			shooted = false;
@@ -166,6 +182,14 @@ public:
 	{
 		if (shooted && enemy_bullets->is_alive())
 			window.draw(enemy_bullets->get_sprite());
+	}
+
+	void enemy_action(sf::RenderWindow &window, Player<T> &p, float game_speed)
+	{
+		this->update(game_speed);
+		this->enemy_bullets->player_iteraction(p);
+
+		this->shot(window);
 	}
 };
 #endif /* G_ENEMY */
