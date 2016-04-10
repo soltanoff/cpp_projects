@@ -21,7 +21,7 @@ sf::String get_mission_info(short mission_number)
 {
 	switch(mission_number)
 	{
-	case 0:
+	case 1:
 		return L"Вы должны собрать все камни\nдля того, чтобы построить дом.\nБудьте осторожны в лесу много\nрастений как вредных, так и нет.";
 	default:
 		return "";
