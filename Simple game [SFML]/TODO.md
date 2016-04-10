@@ -35,7 +35,13 @@ information by pressing.
 - To do the dragging with the mouse.
 
 
-- Add enemy who can shot
+- Add menu
+
+- Add game difficult
+
+- Add pattern
+
+- (x) Add enemy who can shot
 
 
 
