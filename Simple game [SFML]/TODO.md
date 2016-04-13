@@ -35,11 +35,17 @@ information by pressing.
 - To do the dragging with the mouse.
 
 
-- Add menu
+- (x) Add menu
 
-- Add game difficult
+- (x) Add game difficult
 
-- Add pattern
+- Add pattern (2/3 Facade, Singleton)
+
+- Redesign the menu
+
+- Add goal in the game
+
+- Add restart mission
 
 - (x) Add enemy who can shot
 
