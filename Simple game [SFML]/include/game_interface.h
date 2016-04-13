@@ -1,4 +1,4 @@
-#ifndef G_GAME_INTERFACE
+﻿#ifndef G_GAME_INTERFACE
 #define G_GAME_INTERFACE
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
@@ -32,6 +32,8 @@ private:
 	char __buffer[256];
 	bool _is_init_settings;
 	int _mission_number;
+	int _game_difficulty;
+	int _stone_count;
 	/* ============================================================================================================================= */
 	G_Config *_CONFIG;
 	//sf::Event event;
@@ -72,14 +74,15 @@ public:
 		_enemy_list = NULL;
 
 		__start_game = __view_info = __is_view_map = false;
-		_mission_number = 4;
+		_mission_number = 1;
+		_game_difficulty = 0;
 		__current_frame = 0;
 		__game_speed = 0;
 
 		_is_init_settings = false;
 	}
 	/* ============================================================================================================================= */
-	bool enemy_init(int count)
+	bool enemy_init()
 	{
 		
 		if (_enemy_list)
@@ -93,8 +96,8 @@ public:
 			_enemy_list = NULL;
 		}
 
-		int a = ENEMY_SPAWN::ENEMY_POS_INDEX[_mission_number - 1][0];
-		int b = ENEMY_SPAWN::ENEMY_POS_INDEX[_mission_number - 1][1];
+		int a = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][0]; // _mission_number - 1
+		int b = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][1];
 
 		_enemy_list = new g_list<T>();
 		_enemy_list->enemy = new Enemy<T>(
@@ -127,6 +130,7 @@ public:
 	/* ============================================================================================================================= */
 	void set_game_speed();
 	bool start_engine();
+	void menu(sf::RenderWindow &window) ;
 	/* ============================================================================================================================= */
 	~Facade()
 	{
@@ -159,7 +163,7 @@ bool Facade<T>::event_handler()//(sf::Event &event_)
 				__view_info = !__view_info;
 				break;
 			case sf::Keyboard::Escape:
-				if (MessageBox(NULL,"Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
+				if (MessageBox(NULL, "Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
 					_window->close();
 				break;
 			}
@@ -227,7 +231,8 @@ bool Facade<T>::init_settings()
 			fonts_settings(); // настраиваем текст
 			sounds_settings(); // настраиваем звук
 			set_mission_textbox(); // настраиваем окно задания
-			set_new_mission(_CONFIG->get_default_mission());
+			_mission_number = _CONFIG->get_default_mission();
+			set_new_mission(_mission_number);
 			_is_init_settings = true;
 		}
 		catch(...)
@@ -251,7 +256,7 @@ bool Facade<T>::init_entities()
 	{
 		/* =================================================================== */
 		_p = new Player<T>(_CONFIG->get_pos_x(), _CONFIG->get_pos_y(), __player_image);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
-		enemy_init(3);
+		//enemy_init(3);
 		//_enemy = new Enemy<T>(_CONFIG->get_pos_x()+300, 40, "gun", __enemy_image);
 		//_enemy_2 = new Enemy<T>(40, 100, "gun", __enemy_image);
 		//Bullet<float> bull(CONFIG->get_pos_x()+100, CONFIG->get_pos_y(),  bullet_image);
@@ -275,6 +280,85 @@ void Facade<T>::set_game_speed()
 	__game_speed /= _CONFIG->get_time_div();
 	/* =================================================================== */
 }
+/*
+ДОБАВИТЬ НОВУЮ СТИЛИСТИКУ
+РЕАЛИЗОВАТЬ ЦЕЛИ В ИГРЕ
+РЕАЛИЗОВАТЬ ПЕРЕЗАПУСК МИССИЙ
+
+*/
+template<typename T>
+void Facade<T>::menu(sf::RenderWindow &window) 
+{
+	sf::Texture menuBackground, menuText;
+	menuBackground.loadFromFile("Sprites/test.png");
+
+	sf::Image menuTxt_img;
+	menuTxt_img.loadFromFile("Sprites/mission_background1.png");
+	menuTxt_img.createMaskFromColor(sf::Color(255, 255, 255));
+	menuText.loadFromImage(menuTxt_img);
+
+	sf::Sprite menuBg(menuBackground), menuTxt(menuText);
+	
+	//sf::Sprite menu1(menuTexture1), menu2(menuTexture2), menu3(menuTexture3), about(aboutTexture), menuBg(menuBackground);
+	
+	bool isMenu = 1;
+	int menuNum = 0;
+	mn_new_game.setPosition(100, 30);
+	mn_change_diff.setPosition(100, 90);
+	mn_exit.setPosition(100, 150);
+
+	menuBg.setPosition(80, 140);
+	menuTxt.setPosition(80, 20);
+	menuTxt.scale(0.8, 0.52);
+	//menuBg.setOrigin(1280 / 2.0, (630 + 130)/2.0);
+	//////////////////////////////МЕНЮ///////////////////
+//	mn_difficult.setColor(sf::Color::White);
+//	mn_difficult.setPosition(_CONFIG->get_width(), 20);
+
+	while (isMenu)
+	{
+		//mn_difficult.setString(L"Уровень сложности: " + game_difficult[_game_difficulty]);
+		mn_change_diff.setString(L"Уровень сложности: " + game_difficult[_game_difficulty]);
+
+		mn_new_game.setColor(sf::Color::White);
+		mn_change_diff.setColor(sf::Color::White);
+		mn_exit.setColor(sf::Color::White);
+		menuNum = 0;
+		window.clear(sf::Color(129, 181, 221));
+ 
+		if (sf::IntRect(100, 30, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_new_game.setColor(sf::Color::Blue); menuNum = 1; }
+		if (sf::IntRect(100, 90, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_change_diff.setColor(sf::Color::Blue); menuNum = 2; }
+		if (sf::IntRect(100, 150, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_exit.setColor(sf::Color::Blue); menuNum = 3; }
+
+		while (window.pollEvent(event_))
+		{
+			if (event_.type == sf::Event::Closed)
+				window.close();
+
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				if (menuNum == 1)	isMenu = false;//если нажали первую кнопку, то выходим из меню 
+				if (menuNum == 2)	
+				{ /*window.draw(about); window.display(); while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape));*/ 
+					if (_game_difficulty == MAX_GAME_DIFFICULT - 1) _game_difficulty = 0;
+					else _game_difficulty++;
+				}
+				if (menuNum == 3)	{ window.close(); isMenu = false; }
+			}
+		}
+ 
+		menuBg.rotate(0.01);
+
+		window.draw(menuBg);
+		window.draw(menuTxt);
+		window.draw(mn_new_game);
+		window.draw(mn_change_diff);
+		window.draw(mn_exit);
+		
+		window.display();
+	}
+	////////////////////////////////////////////////////
+}
 
 template<typename T>
 bool Facade<T>::start_engine()
@@ -283,8 +367,13 @@ bool Facade<T>::start_engine()
 	{
 		if (_is_init_settings)
 		{
+			menu(*_window);
+
+			enemy_init();
+
 			while (_window->isOpen())
 			{
+				
 				this->set_game_speed();
 				this->event_handler();
 				/* =================================================================== */
@@ -301,20 +390,17 @@ bool Facade<T>::start_engine()
 						mission_text, 
 						_CONFIG->get_width() / 2.0, 
 						_CONFIG->get_height() / 2.0, 
-						_CONFIG->get_default_mission());
+						this->_mission_number);
 
 				_window->draw(_p->get_sprite());
 				//window.draw(bull.get_sprite());
 
 				//_enemy_list.
 				g_list<T> *temp = _enemy_list;
+				
 				while(temp)
 				{
-					temp->enemy->search_enemy((*_p));
-					_window->draw(temp->enemy->get_sprite());
 					temp->enemy->enemy_action((*_window), (*_p), __game_speed);
-					temp->enemy->update(__game_speed);
-					temp->enemy->shot((*_window));
 					temp = temp->next;
 				}
 				/**/
