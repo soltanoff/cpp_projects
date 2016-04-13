@@ -1,4 +1,4 @@
-#include "missions.h"
+﻿#include "missions.h"
 
 
 
@@ -45,11 +45,23 @@ void set_new_mission(short mission_number)
 {
 	switch(mission_number)
 	{
-	case 0:
+	case 1: 
 		create_random_items(MAP_STONE, 7);
 		create_random_items(MAP_WILDFLOWER, 11);
 		create_random_items(MAP_BUSH, 14);
 		create_random_items(MAP_HEATLHFLOWER, 3);
+		break;
+	case 2:
+		create_random_items(MAP_STONE, 10);
+		create_random_items(MAP_WILDFLOWER, 14);
+		create_random_items(MAP_BUSH, 14);
+		create_random_items(MAP_HEATLHFLOWER, 3);
+		break;
+	case 3:
+		create_random_items(MAP_STONE, 12);
+		create_random_items(MAP_WILDFLOWER, 15);
+		create_random_items(MAP_BUSH, 10);
+		create_random_items(MAP_HEATLHFLOWER, 2);
 		break;
 	default:
 		break;
