@@ -1,4 +1,4 @@
-#ifndef G_MISSIONS
+﻿#ifndef G_MISSIONS
 #define G_MISSIONS
 #include <SFML\Graphics.hpp>
 #include "simple_map.h"
@@ -13,13 +13,15 @@ void set_mission_textbox();
 void set_new_mission(short mission_number);
 void get_mission_text(sf::RenderWindow &window, sf::Text &text, int x, int y, short mission_number);
 
+const int MAX_GAME_DIFFICULT = 4;
+
 namespace ENEMY_SPAWN
 {// 1280 x 800
 	const int ENEMY_POS_INDEX[][2] = {
-		{ 0,	1 },
-		{ 2,	5 },
-		{ 6,	11 },
-		{ 12,	19 }
+			{ 0,	1 },
+			{ 2,	5 },
+			{ 6,	11 },
+			{ 12,	19 }
 	};
 	const int ENEMY_POS[][2] = {
 			{ 45,	400 },	{ 1232, 400 },	// 1 lvl left, right
