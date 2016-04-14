@@ -1,7 +1,7 @@
-#ifndef G_CHARACTER
+﻿#ifndef G_CHARACTER
 #define G_CHARACTER
 #include "g_entity.h"
-#define FULL_HEALTH 100
+#define FULL_HEALTH 9100
 
 
 
@@ -31,13 +31,13 @@ public:
 			return false;
 		}
 	}
-	float get_health() { return this->health; }
+	int get_health() { return this->health; }
 	short get_dir() { return this->dir; }
 	float get_dx() { return this->dx; }
 	float get_dy() { return this->dy; }
 	float get_speed() { return this->speed; }
 
-	void set_health(float Health) { this->health = Health; }
+	void set_health(int Health) { this->health = Health; }
 	void set_dir(short Dirrection) { this->dir = Dirrection; }
 	void set_dx(float Acceleration) { this->dx = Acceleration; }
 	void set_dy(float Acceleration) { this->dy = Acceleration; }
