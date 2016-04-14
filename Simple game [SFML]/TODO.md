@@ -39,16 +39,19 @@ information by pressing.
 
 - (x) Add game difficult
 
+- (x) Add goal in the game
+
+- (x) Add restart mission
+
+- (x) Add enemy who can shot
+
+- (x) Add 3 missions
+
 - Add pattern (2/3 Facade, Singleton)
 
 - Redesign the menu
 
-- Add goal in the game
-
-- Add restart mission
-
-- (x) Add enemy who can shot
-
+- To do the refactoring of functions
 
 
 
