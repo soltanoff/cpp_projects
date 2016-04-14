@@ -33,7 +33,10 @@ private:
 	bool _is_init_settings;
 	int _mission_number;
 	int _game_difficulty;
-	int _stone_count;
+	bool _next_mission;
+	bool _go_to_menu;
+	bool _exit_program;
+	bool _restart;
 	/* ============================================================================================================================= */
 	G_Config *_CONFIG;
 	//sf::Event event;
@@ -79,6 +82,10 @@ public:
 		__current_frame = 0;
 		__game_speed = 0;
 
+		_restart = false;
+		_go_to_menu = false;
+		_next_mission = false;
+		_exit_program = false;
 		_is_init_settings = false;
 	}
 	/* ============================================================================================================================= */
@@ -130,7 +137,9 @@ public:
 	/* ============================================================================================================================= */
 	void set_game_speed();
 	bool start_engine();
-	void menu(sf::RenderWindow &window) ;
+	bool menu(sf::RenderWindow &window) ;
+	void map_reserve(sf::String *map_copy);
+	void load_map(sf::String *map_copy);
 	/* ============================================================================================================================= */
 	~Facade()
 	{
@@ -165,7 +174,22 @@ bool Facade<T>::event_handler()//(sf::Event &event_)
 			case sf::Keyboard::Escape:
 				if (MessageBox(NULL, "Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
 					_window->close();
+				_exit_program = true;
 				break;
+			case sf::Keyboard::R:
+				if (MessageBox(NULL, "Вы уверенны что перезапустить уровень?", "Перезапуск уровня", MB_YESNO) == IDYES)
+					_restart = true;
+				break;
+			}
+			if (_next_mission && event_.key.code == sf::Keyboard::Space)
+			{
+				_next_mission = false;
+				
+				_mission_number++;
+				if (_mission_number > MAX_MISSIONS_COUNT)
+					_go_to_menu = true;
+				else
+					set_new_mission(_mission_number);
 			}
 		}
 	}
@@ -185,7 +209,9 @@ bool Facade<T>::player_actions()
 		else
 			view_map(__game_speed); // активация просмотра карты
 
-		score_text.setString(score_string + itoa(_p->get_score(), __buffer, 10) + "\n" + health_string + itoa(_p->get_health(), __buffer, 10));
+		score_text.setString(score_string + itoa(_p->get_score(), __buffer, 10) 
+			+ "\t\t\t" + left_collect + itoa(stone_count, __buffer, 10) +"\n" + 
+			health_string + itoa(_p->get_health(), __buffer, 10));
 	}
 	else 
 	{
@@ -232,7 +258,7 @@ bool Facade<T>::init_settings()
 			sounds_settings(); // настраиваем звук
 			set_mission_textbox(); // настраиваем окно задания
 			_mission_number = _CONFIG->get_default_mission();
-			set_new_mission(_mission_number);
+			//set_new_mission(_mission_number);
 			_is_init_settings = true;
 		}
 		catch(...)
@@ -280,14 +306,9 @@ void Facade<T>::set_game_speed()
 	__game_speed /= _CONFIG->get_time_div();
 	/* =================================================================== */
 }
-/*
-ДОБАВИТЬ НОВУЮ СТИЛИСТИКУ
-РЕАЛИЗОВАТЬ ЦЕЛИ В ИГРЕ
-РЕАЛИЗОВАТЬ ПЕРЕЗАПУСК МИССИЙ
 
-*/
 template<typename T>
-void Facade<T>::menu(sf::RenderWindow &window) 
+bool Facade<T>::menu(sf::RenderWindow &window) 
 {
 	sf::Texture menuBackground, menuText;
 	menuBackground.loadFromFile("Sprites/test.png");
@@ -309,7 +330,7 @@ void Facade<T>::menu(sf::RenderWindow &window)
 
 	menuBg.setPosition(80, 140);
 	menuTxt.setPosition(80, 20);
-	menuTxt.scale(0.8, 0.52);
+	menuTxt.scale(0.9, 0.52);
 	//menuBg.setOrigin(1280 / 2.0, (630 + 130)/2.0);
 	//////////////////////////////МЕНЮ///////////////////
 //	mn_difficult.setColor(sf::Color::White);
@@ -343,7 +364,7 @@ void Facade<T>::menu(sf::RenderWindow &window)
 					if (_game_difficulty == MAX_GAME_DIFFICULT - 1) _game_difficulty = 0;
 					else _game_difficulty++;
 				}
-				if (menuNum == 3)	{ window.close(); isMenu = false; }
+				if (menuNum == 3)	{ window.close(); isMenu = false; _exit_program = true; }
 			}
 		}
  
@@ -357,8 +378,29 @@ void Facade<T>::menu(sf::RenderWindow &window)
 		
 		window.display();
 	}
+	return true;
 	////////////////////////////////////////////////////
 }
+
+template<typename T>
+void Facade<T>::map_reserve(sf::String *map_copy)
+{
+	for (int i = 0; i < MAP_HEIGHT; i++)
+		map_copy[i] = simple_map_structure[i];
+}
+
+template<typename T>
+void Facade<T>::load_map(sf::String *map_copy)
+{
+	for (int i = 0; i < MAP_HEIGHT; i++)
+		simple_map_structure[i] = map_copy[i];
+}
+
+/*
+ДОБАВИТЬ НОВУЮ СТИЛИСТИКУ
+Сделать рефакторинг функции
+Рейсталинг меню
+*/
 
 template<typename T>
 bool Facade<T>::start_engine()
@@ -367,43 +409,114 @@ bool Facade<T>::start_engine()
 	{
 		if (_is_init_settings)
 		{
-			menu(*_window);
+			sf::String copy_map[MAP_HEIGHT];
+			int health(FULL_HEALTH);
+			int score(0);
 
-			enemy_init();
-
-			while (_window->isOpen())
+			while (!_exit_program)
 			{
-				
-				this->set_game_speed();
-				this->event_handler();
-				/* =================================================================== */
-				player_actions();
-
-				//view_control(game_speed); // демонстрация возможностей камеры
-				_window->setView(view); // задаем параметры камеры ДО очистки экрана
-				_window->clear();
-
-				draw_map((*_window), __map_sprites); // Отрисовка карты
-				if (__view_info) 
-					get_mission_text(
-						(*_window), 
-						mission_text, 
-						_CONFIG->get_width() / 2.0, 
-						_CONFIG->get_height() / 2.0, 
-						this->_mission_number);
-
-				_window->draw(_p->get_sprite());
-				//window.draw(bull.get_sprite());
-
-				//_enemy_list.
-				g_list<T> *temp = _enemy_list;
-				
-				while(temp)
+				if (!_restart)
 				{
-					temp->enemy->enemy_action((*_window), (*_p), __game_speed);
-					temp = temp->next;
+					menu(*_window);
+					enemy_init();
+
+					__view_info = true;
+
+					map_reserve(copy_map);
 				}
-				/**/
+				else
+				{
+					_p->set_score(score);
+					_p->set_health(health);
+					load_map(copy_map);
+					_restart = false;
+				}
+
+				set_new_mission(_mission_number);
+				while (_window->isOpen())
+				{
+					/* =================================================================== */
+					this->set_game_speed();
+					this->event_handler();
+					/* =================================================================== */
+					//view_control(game_speed); // демонстрация возможностей камеры
+					_window->setView(view); // задаем параметры камеры ДО очистки экрана
+					_window->clear();
+
+					draw_map((*_window), __map_sprites); // Отрисовка карты
+					//window.draw(bull.get_sprite());
+					/* =================================================================== */
+					/* =================================================================== */
+					g_list<T> *temp = _enemy_list;
+				
+					while(temp)
+					{
+						temp->enemy->enemy_action((*_window), (*_p), __game_speed, true);//__view_info);
+						//if (!__view_info) temp->enemy->shot((*_window));
+						temp = temp->next;
+					}
+					/* =================================================================== */
+					if (!__view_info) player_actions();
+					_window->draw(_p->get_sprite());
+					/* =================================================================== */
+					if (__view_info)
+					{
+						if (_next_mission)
+							get_mission_complete_text(
+								(*_window), 
+								mission_text, 
+								_CONFIG->get_width() / 2.0, 
+								_CONFIG->get_height() / 2.0, 
+								this->_mission_number);
+						else
+							get_mission_text(
+								(*_window), 
+								mission_text, 
+								_CONFIG->get_width() / 2.0, 
+								_CONFIG->get_height() / 2.0, 
+								this->_mission_number);
+					}
+
+					if (stone_count == 0 && !_next_mission)
+					{
+						_next_mission = true;
+						__view_info = true;
+
+						map_reserve(copy_map);
+						score = _p->get_score();
+						health = _p->get_health();
+					}
+
+					if (_go_to_menu)
+					{
+						_go_to_menu = false;
+						break;
+					}
+
+					if (_restart)
+						break;
+					
+					_window->draw(score_text);
+					_window->display();
+				}
+			}
+			return true;
+		}
+		else
+		{
+			MessageBox(NULL,"Настройки не были проинициализированы.", "Game error.", MB_OK);
+			return false;
+		}
+	}
+	catch(...)
+	{
+		MessageBox(NULL,"Ошибка движка. Let's debug.", "Engine error.", MB_OK);
+		return false;
+	}
+}
+#endif /* G_GAME_INTERFACE */
+
+/**/
 
 				/*_enemy->search_enemy((*_p));
 				_window->draw(_enemy->get_sprite());
@@ -427,21 +540,3 @@ bool Facade<T>::start_engine()
 				{
 					window.draw((*it)->get_sprite()); //рисуем объекты (сейчас это только враги)
 				}*/
-				_window->draw(score_text);
-				_window->display();
-			}
-			return true;
-		}
-		else
-		{
-			MessageBox(NULL,"Настройки не были проинициализированы.", "Game error.", MB_OK);
-			return false;
-		}
-	}
-	catch(...)
-	{
-		MessageBox(NULL,"Ошибка движка. Let's debug.", "Engine error.", MB_OK);
-		return false;
-	}
-}
-#endif /* G_GAME_INTERFACE */
