@@ -15,6 +15,7 @@ sf::Text mn_change_diff;
 sf::Text mn_exit;
 //sf::Text mn_difficult;
 
+sf::String left_collect = L"Осталось собрать: ";
 sf::String score_string = L"Ваши очки: ";
 sf::String health_string = L"Ваше здоровье: ";
 sf::String game_over_string = L"GAME OVER!\nНажмите ESC.";
@@ -39,6 +40,8 @@ void fonts_settings()
 	install_text(mn_change_diff, mission_font, "times.TTF");
 	install_text(mn_exit, mission_font, "times.TTF");
 	//install_text(mn_difficult, mission_font, "times.TTF");
+
+	mission_text.setColor(sf::Color::Black);
 
 	mn_new_game.setString(game_menu[0]);
 	mn_change_diff.setString(game_menu[1]);
