@@ -1,4 +1,4 @@
-#ifndef G_ENEMY
+﻿#ifndef G_ENEMY
 #define G_ENEMY
 #include "g_character.h"
 #include "player.h"
@@ -58,8 +58,8 @@ public:
 		if (this->x <=  p.get_x() + p.get_width() && this->x >= p.get_x() &&
 			this->y <=  p.get_y() + p.get_height() && this->y >= p.get_y())
 		{
-			p.health_decr(BULLET_DAMAGE);
 			this->set_health(0);
+			p.health_decr(BULLET_DAMAGE);
 		}
 	}
 
@@ -184,12 +184,16 @@ public:
 			window.draw(enemy_bullets->get_sprite());
 	}
 
-	void enemy_action(sf::RenderWindow &window, Player<T> &p, float game_speed)
+	void enemy_action(sf::RenderWindow &window, Player<T> &p, float game_speed, bool no_iteraction)
 	{
-		this->update(game_speed);
-		this->enemy_bullets->player_iteraction(p);
-
+		this->search_enemy(p);
+		if (!no_iteraction) 
+		{
+			this->update(game_speed);
+			this->enemy_bullets->player_iteraction(p);
+		}
 		this->shot(window);
+		window.draw(this->get_sprite());
 	}
 };
 #endif /* G_ENEMY */
