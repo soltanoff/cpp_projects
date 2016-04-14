@@ -1,10 +1,10 @@
-#ifndef _PLAYER_
+﻿#ifndef _PLAYER_
 #define _PLAYER_
 #include "textures_settings.h"
 #include "g_character.h"
 #include "simple_map.h"
 #include "sounds.h"
-
+#include "missions.h"
 
 
 template<class T>
@@ -39,7 +39,10 @@ public:
 		_move_up = Up;
 		_move_down = Down;
 	}
+
 	int get_score() { return this->game_score; }
+	
+	void set_score(int score) { this->game_score = score; }
 	
 	void health_decr(int value)
 	{
@@ -194,6 +197,7 @@ void Player<T>::map_iteraction()
 			{
 				beep_sound.play();
 				this->game_score += 10;
+				if (stone_count) stone_count--;
 				simple_map_structure[i][j] = MAP_NOTHING;
 			}
 			if (simple_map_structure[i][j] == MAP_WILDFLOWER)
