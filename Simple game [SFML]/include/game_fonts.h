@@ -11,6 +11,7 @@ extern sf::Text mission_text;;
 extern sf::String score_string;
 extern sf::String health_string;
 extern sf::String game_over_string;
+extern sf::String left_collect;
 
 extern sf::String game_menu[3];
 extern sf::String game_difficult[4];
