@@ -10,21 +10,11 @@
 #include "simple_map.h"
 #include "game_fonts.h"
 #include "missions.h"
-
-#include <list>
-
+#include "entity_observer.h"
 
 
-
-template <typename T>
-struct g_list
-{
-	Enemy<T> *enemy;
-	g_list<T> *next;
-};
 
 // Фасад.
-template <typename T>
 class Facade
 {
 private:
@@ -48,7 +38,7 @@ private:
 	/* ============================================================================================================================= */
 	bool __view_info;
 	bool __start_game;			// двинулся ли персонаж?
-	sf::Clock __system_clock;		// создаем объект, который хранит время (будет юзаться для привязки времени к "жизни" остальных объектов"
+	sf::Clock __system_clock;	// создаем объект, который хранит время (будет юзаться для привязки времени к "жизни" остальных объектов"
 	float __current_frame;		// хранит текущий кадр
 	float __game_speed;			// скорость игры
 	bool __is_view_map;			// сообщает о том, что сейчас просматривают карту 
@@ -56,96 +46,37 @@ private:
 	sf::Image __player_image;
 	sf::Image __enemy_image;
 	/* ============================================================================================================================= */
-	Player<T> *_p;
-	int _enemy_count;
-	g_list<T> *_enemy_list;
+	Player *_p;
+	//g_list *_enemy_list;
+	G_Subject _entity_list;
 	/* ============================================================================================================================= */
 	sf::Event event_;
 	/* ============================================================================================================================= */
 	bool event_handler();//(sf::Event &event_)
-	bool player_actions();
+	bool rotate_screen();
+	/* ============================================================================================================================= */
+	void set_game_speed();
+	bool init_enemy();
+	/* ============================================================================================================================= */
+	void map_reserve(sf::String *map_copy);
+	void load_map(sf::String *map_copy);
 	/* ============================================================================================================================= */
 public:
 	/* ============================================================================================================================= */
-	Facade()
-	{
-		_CONFIG = NULL;
-		_window = NULL;
-		_p = NULL;
-//		_enemy = NULL;
-//		_enemy_2 = NULL;
-		_enemy_list = NULL;
-
-		__start_game = __view_info = __is_view_map = false;
-		_mission_number = 1;
-		_game_difficulty = 0;
-		__current_frame = 0;
-		__game_speed = 0;
-
-		_restart = false;
-		_go_to_menu = false;
-		_next_mission = false;
-		_exit_program = false;
-		_is_init_settings = false;
-	}
+	Facade();
 	/* ============================================================================================================================= */
-	bool enemy_init()
-	{
-		
-		if (_enemy_list)
-		{
-			g_list<T> *temp = _enemy_list;
-			while(temp)
-			{
-				delete temp->enemy;
-				temp = temp->next;
-			}
-			_enemy_list = NULL;
-		}
-
-		int a = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][0]; // _mission_number - 1
-		int b = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][1];
-
-		_enemy_list = new g_list<T>();
-		_enemy_list->enemy = new Enemy<T>(
-			ENEMY_SPAWN::ENEMY_POS[a][0], 
-			ENEMY_SPAWN::ENEMY_POS[a][1], 
-			"gun",
-			__enemy_image);
-
-		_enemy_list->next = NULL;
-
-		g_list<T> *plist = _enemy_list;
-		for(int i = a + 1; i <= b; i++)
-		{
-			g_list<T> *temp = new g_list<T>();
-			temp->enemy = new Enemy<T>(
-				ENEMY_SPAWN::ENEMY_POS[i][0], 
-				ENEMY_SPAWN::ENEMY_POS[i][1], 
-				"gun", 
-				__enemy_image);
-
-			temp->next = NULL;
-			plist->next = temp;
-			plist = plist->next;
-		}
-
-		return true;
-	}
 	bool init_settings();
 	bool init_entities();
 	/* ============================================================================================================================= */
-	void set_game_speed();
 	bool start_engine();
-	bool menu(sf::RenderWindow &window) ;
-	void map_reserve(sf::String *map_copy);
-	void load_map(sf::String *map_copy);
+	bool menu(sf::RenderWindow &window);
 	/* ============================================================================================================================= */
 	~Facade()
 	{
 		delete _p;
 //		delete _enemy;
 //		delete _enemy_2;
+		_entity_list.clear();
 
 		delete _CONFIG;
 		delete _window;
@@ -153,8 +84,29 @@ public:
 	/* ============================================================================================================================= */
 };
 
-template<typename T>
-bool Facade<T>::event_handler()//(sf::Event &event_)
+Facade::Facade()
+{
+	_CONFIG = NULL;
+	_window = NULL;
+	_p = NULL;
+//		_enemy = NULL;
+//		_enemy_2 = NULL;
+	//_enemy_list = NULL;
+
+	__start_game = __view_info = __is_view_map = false;
+	_mission_number = 1;
+	_game_difficulty = 0;
+	__current_frame = 0;
+	__game_speed = 0;
+
+	_restart = false;
+	_go_to_menu = false;
+	_next_mission = false;
+	_exit_program = false;
+	_is_init_settings = false;
+}
+
+bool Facade::event_handler()//(sf::Event &event_)
 {
 	while (_window->pollEvent(event_))
 	{
@@ -184,47 +136,110 @@ bool Facade<T>::event_handler()//(sf::Event &event_)
 			if (_next_mission && event_.key.code == sf::Keyboard::Space)
 			{
 				_next_mission = false;
-				
+
 				_mission_number++;
 				if (_mission_number > MAX_MISSIONS_COUNT)
 					_go_to_menu = true;
 				else
+				{
+					_p->set_x(_CONFIG->get_pos_x());
+					_p->set_y(_CONFIG->get_pos_y());
 					set_new_mission(_mission_number);
+				}
 			}
 		}
 	}
 	return true;
 }
 
-template<typename T>
-bool Facade<T>::player_actions()
+bool Facade::rotate_screen()
 {
 	if (_p->is_alive())
 	{
+		/*
 		if (!__is_view_map) 
 		{
-			_p->move(__game_speed, __current_frame, 0.1);
+			//_p->move(__game_speed, __current_frame, (float)0.1);
 			//set_camera_view(p.get_x(), p.get_y()); // задаем слежку камеры за игроком
 		}
 		else
 			view_map(__game_speed); // активация просмотра карты
-
-		score_text.setString(score_string + itoa(_p->get_score(), __buffer, 10) 
-			+ "\t\t\t" + left_collect + itoa(stone_count, __buffer, 10) +"\n" + 
-			health_string + itoa(_p->get_health(), __buffer, 10));
+		*/
+		score_text.setString(score_string + _itoa(_p->get_score(), __buffer, 10) 
+			+ "\t\t\t" + left_collect + _itoa(stone_count, __buffer, 10) +"\n" + 
+			health_string + _itoa(_p->get_health(), __buffer, 10));
 	}
 	else 
 	{
-		view.rotate(0.01);
+		view.rotate((float)0.01);
 
-		score_text.setPosition(_CONFIG->get_width() / 2.0 - 100, _CONFIG->get_height() / 2.0 - 40);
-		score_text.setString(score_string + itoa(_p->get_score(), __buffer, 10) + "\n" + game_over_string);
+		score_text.setPosition((float)(_CONFIG->get_width() / 2.0 - 100), (float)(_CONFIG->get_height() / 2.0 - 40));
+		score_text.setString(score_string + _itoa(_p->get_score(), __buffer, 10) + "\n" + game_over_string);
 	}
 	return true;
 }
 
-template<typename T>
-bool Facade<T>::init_settings()
+bool Facade::init_enemy()
+	{
+		/*
+		if (_enemy_list)
+		{
+			g_list *temp = _enemy_list;
+			while(temp)
+			{
+				delete temp->enemy;
+				temp = temp->next;
+			}
+			_enemy_list = NULL;
+		}
+
+		int a = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][0]; // _mission_number - 1
+		int b = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][1];
+
+		_enemy_list = new g_list();
+		_enemy_list->enemy = new Enemy(
+			(float)ENEMY_SPAWN::ENEMY_POS[a][0], 
+			(float)ENEMY_SPAWN::ENEMY_POS[a][1], 
+			"gun",
+			__enemy_image);
+
+		_enemy_list->next = NULL;
+
+		g_list *plist = _enemy_list;
+		for(int i = a + 1; i <= b; i++)
+		{
+			g_list *temp = new g_list();
+			temp->enemy = new Enemy(
+				(float)ENEMY_SPAWN::ENEMY_POS[i][0], 
+				(float)ENEMY_SPAWN::ENEMY_POS[i][1], 
+				"gun", 
+				__enemy_image);
+
+			temp->next = NULL;
+			plist->next = temp;
+			plist = plist->next;
+		}
+		*/
+
+		if (!_entity_list.empty())
+			_entity_list.clear();
+
+		int a = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][0]; // _mission_number - 1
+		int b = ENEMY_SPAWN::ENEMY_POS_INDEX[_game_difficulty][1];
+
+		for(int i = a; i <= b; i++)
+			_entity_list.attach(new Enemy(
+				(float)ENEMY_SPAWN::ENEMY_POS[i][0], 
+				(float)ENEMY_SPAWN::ENEMY_POS[i][1], 
+				"gun", 
+				__enemy_image));
+
+		_entity_list.attach(_p);
+
+		return true;
+	}
+
+bool Facade::init_settings()
 {
 	if (!_is_init_settings)
 	{
@@ -247,7 +262,7 @@ bool Facade<T>::init_settings()
 				"Test",
 				_CONFIG->is_fullscreen() ? sf::Style::Fullscreen: sf::Style::Default);
 			// рестартим камеру и задаем стандартный размер
-			view.reset(sf::FloatRect(0.0, 0.0, _CONFIG->get_width(), _CONFIG->get_height()));
+			view.reset(sf::FloatRect(0.0, 0.0, (float)_CONFIG->get_width(), (float)_CONFIG->get_height()));
 
 
 			__map_texture.loadFromFile("Sprites/map.png");
@@ -275,13 +290,12 @@ bool Facade<T>::init_settings()
 	return true;
 }
 
-template<typename T>
-bool Facade<T>::init_entities()
+bool Facade::init_entities()
 {
 	if (_is_init_settings)
 	{
 		/* =================================================================== */
-		_p = new Player<T>(_CONFIG->get_pos_x(), _CONFIG->get_pos_y(), __player_image);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
+		_p = new Player(_CONFIG->get_pos_x(), _CONFIG->get_pos_y(), __player_image);//, 6, 136, 89, 55, "hero.png");//80.0, 80.0, 96, 96, "hero.png");
 		//enemy_init(3);
 		//_enemy = new Enemy<T>(_CONFIG->get_pos_x()+300, 40, "gun", __enemy_image);
 		//_enemy_2 = new Enemy<T>(40, 100, "gun", __enemy_image);
@@ -296,8 +310,7 @@ bool Facade<T>::init_entities()
 	}
 }
 
-template<typename T>
-void Facade<T>::set_game_speed()
+void Facade::set_game_speed()
 {
 	/* =================================================================== */
 	// Задаем скорость игры
@@ -307,8 +320,7 @@ void Facade<T>::set_game_speed()
 	/* =================================================================== */
 }
 
-template<typename T>
-bool Facade<T>::menu(sf::RenderWindow &window) 
+bool Facade::menu(sf::RenderWindow &window) 
 {
 	sf::Texture menuBackground, menuText;
 	menuBackground.loadFromFile("Sprites/test.png");
@@ -330,7 +342,7 @@ bool Facade<T>::menu(sf::RenderWindow &window)
 
 	menuBg.setPosition(80, 140);
 	menuTxt.setPosition(80, 20);
-	menuTxt.scale(0.9, 0.52);
+	menuTxt.scale((float)0.9, (float)0.52);
 	//menuBg.setOrigin(1280 / 2.0, (630 + 130)/2.0);
 	//////////////////////////////МЕНЮ///////////////////
 //	mn_difficult.setColor(sf::Color::White);
@@ -368,7 +380,7 @@ bool Facade<T>::menu(sf::RenderWindow &window)
 			}
 		}
  
-		menuBg.rotate(0.01);
+		menuBg.rotate((float)0.01);
 
 		window.draw(menuBg);
 		window.draw(menuTxt);
@@ -382,28 +394,19 @@ bool Facade<T>::menu(sf::RenderWindow &window)
 	////////////////////////////////////////////////////
 }
 
-template<typename T>
-void Facade<T>::map_reserve(sf::String *map_copy)
+void Facade::map_reserve(sf::String *map_copy)
 {
 	for (int i = 0; i < MAP_HEIGHT; i++)
 		map_copy[i] = simple_map_structure[i];
 }
 
-template<typename T>
-void Facade<T>::load_map(sf::String *map_copy)
+void Facade::load_map(sf::String *map_copy)
 {
 	for (int i = 0; i < MAP_HEIGHT; i++)
 		simple_map_structure[i] = map_copy[i];
 }
 
-/*
-ДОБАВИТЬ НОВУЮ СТИЛИСТИКУ
-Сделать рефакторинг функции
-Рейсталинг меню
-*/
-
-template<typename T>
-bool Facade<T>::start_engine()
+bool Facade::start_engine()
 {
 	try
 	{
@@ -412,14 +415,18 @@ bool Facade<T>::start_engine()
 			sf::String copy_map[MAP_HEIGHT];
 			int health(FULL_HEALTH);
 			int score(0);
+			sf::String default_map[MAP_HEIGHT];
+			map_reserve(default_map);
 
 			while (!_exit_program)
 			{
 				if (!_restart)
 				{
 					menu(*_window);
-					enemy_init();
-
+					_next_mission = false;
+					_mission_number = _CONFIG->get_default_mission();
+					init_enemy();
+					load_map(default_map);
 					__view_info = true;
 
 					map_reserve(copy_map);
@@ -428,11 +435,19 @@ bool Facade<T>::start_engine()
 				{
 					_p->set_score(score);
 					_p->set_health(health);
+
+					score_text.setPosition(SCORE_POS[0], SCORE_POS[1]);
+					view.rotate(-view.getRotation());
+
+
+					_next_mission = false;
 					load_map(copy_map);
 					_restart = false;
 				}
 
 				set_new_mission(_mission_number);
+				_p->set_x(_CONFIG->get_pos_x());
+				_p->set_y(_CONFIG->get_pos_y());
 				while (_window->isOpen())
 				{
 					/* =================================================================== */
@@ -447,17 +462,23 @@ bool Facade<T>::start_engine()
 					//window.draw(bull.get_sprite());
 					/* =================================================================== */
 					/* =================================================================== */
-					g_list<T> *temp = _enemy_list;
+					/*g_list *temp = _enemy_list;
 				
 					while(temp)
 					{
-						temp->enemy->enemy_action((*_window), (*_p), __game_speed, true);//__view_info);
+						temp->enemy->enemy_action((*_window), (*_p), __game_speed, __view_info);
 						//if (!__view_info) temp->enemy->shot((*_window));
 						temp = temp->next;
-					}
+					}*/
+					/*
+					for(int i = 0; i < _enemy_list.size(); i++)
+					{
+						_enemy_list[i]->action_time((*_window), __game_speed, __view_info, __current_frame, (*_p)); 
+					}/**/
+					_entity_list.notify((*_window), __game_speed, __view_info, __current_frame, (*_p));
 					/* =================================================================== */
-					if (!__view_info) player_actions();
-					_window->draw(_p->get_sprite());
+					rotate_screen();
+					//_window->draw(_p->get_sprite());
 					/* =================================================================== */
 					if (__view_info)
 					{
@@ -465,15 +486,15 @@ bool Facade<T>::start_engine()
 							get_mission_complete_text(
 								(*_window), 
 								mission_text, 
-								_CONFIG->get_width() / 2.0, 
-								_CONFIG->get_height() / 2.0, 
+								(int)(_CONFIG->get_width() / 2.0), 
+								(int)(_CONFIG->get_height() / 2.0), 
 								this->_mission_number);
 						else
 							get_mission_text(
 								(*_window), 
 								mission_text, 
-								_CONFIG->get_width() / 2.0, 
-								_CONFIG->get_height() / 2.0, 
+								(int)(_CONFIG->get_width() / 2.0), 
+								(int)(_CONFIG->get_height() / 2.0), 
 								this->_mission_number);
 					}
 
@@ -481,7 +502,6 @@ bool Facade<T>::start_engine()
 					{
 						_next_mission = true;
 						__view_info = true;
-
 						map_reserve(copy_map);
 						score = _p->get_score();
 						health = _p->get_health();
