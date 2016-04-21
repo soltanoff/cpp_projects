@@ -1,13 +1,20 @@
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include "game_interface.h"
+
 
 
 int main()
 {
-	Facade<float> game;
+	//
+	Facade game;
 	game.init_settings();
 	game.init_entities();
 
 	game.start_engine();
+	/**/
+	//sf::RenderWindow window(sf::VideoMode(1280, 800), "menu test");
+	//menu(window);//вызов меню
+
 	return 0;
 }
 
