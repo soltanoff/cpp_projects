@@ -19,6 +19,9 @@ extern sf::String game_difficult[4];
 extern sf::Text mn_new_game;
 extern sf::Text mn_change_diff;
 extern sf::Text mn_exit;
+
+const float SCORE_POS[] = { 10, 0 };
+
 //extern sf::Text mn_difficult;
 void fonts_settings();
 #endif /* GAME_FONTS */

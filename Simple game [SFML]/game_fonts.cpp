@@ -24,7 +24,7 @@ void install_text(sf::Text &text, sf::Font &font, sf::String font_name)
 {
 	font.loadFromFile("Font/" + font_name);
     //score_text.setColor(sf::Color::Red); 
-	text.setPosition(10.0f, 0.0f);
+	text.setPosition(SCORE_POS[0], SCORE_POS[1]);
 	text.setFont(font);
 	text.setString("");
 	text.setCharacterSize(30);

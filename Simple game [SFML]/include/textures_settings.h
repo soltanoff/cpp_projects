@@ -1,4 +1,4 @@
-#ifndef TEXTURE_SETTINGS
+﻿#ifndef TEXTURE_SETTINGS
 #define TEXTURE_SETTINGS
 
 

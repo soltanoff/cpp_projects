@@ -1,4 +1,4 @@
-#ifndef G_SOUNDS
+﻿#ifndef G_SOUNDS
 #define G_SOUNDS
 #include <SFML/Audio.hpp>
 

@@ -1,4 +1,4 @@
-#ifndef SIMPLE_MAP
+﻿#ifndef SIMPLE_MAP
 #define SIMPLE_MAP
 #include <SFML\Graphics.hpp>
 

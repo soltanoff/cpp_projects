@@ -1,22 +1,20 @@
-#ifndef G_ENTITY
+﻿#ifndef G_ENTITY
 #define G_ENTITY
 #include <SFML/Graphics.hpp>
 
 
-
-template<class T>
 class G_Entity
 {
 protected:
-	T x; // позиция по Ох
-	T y; // позиция по ОУ
+	float x; // позиция по Ох
+	float y; // позиция по ОУ
 
 	sf::String texture_file; // путь к текстуре сущности
 
 	sf::Texture entity_texture; // текстура сущности
 	sf::Sprite entity_sprite; // спрайт сущности
 public:
-	G_Entity(T X, T Y, T textLeft, T textTop, T W, T H, sf::Image &image):
+	G_Entity(float X, float Y, float textLeft, float textTop, float W, float H, sf::Image &image):
 		x(X), y(Y)
 	{
 		this->entity_texture.loadFromImage(image);

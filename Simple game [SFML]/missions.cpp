@@ -51,7 +51,7 @@ void get_mission_complete_text(sf::RenderWindow &window, sf::Text &text, int x, 
 {
 	sf::Vector2f pos;
 
-	if (mission_number <= MAX_MISSIONS_COUNT) 
+	if (mission_number < MAX_MISSIONS_COUNT) 
 	{
 		pos.x = x - mission_textbox_sprite.getTextureRect().width / 2.0 - 50;
 		pos.y = y - mission_textbox_sprite.getTextureRect().height / 2.0 + 80;

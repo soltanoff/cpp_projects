@@ -7,19 +7,25 @@
 #include "missions.h"
 
 
-template<class T>
-class Player : public G_Character<T>
+
+class Player : public G_Character
 {
 private:
+	/* ============================================================================================================================= */
 	sf::Keyboard::Key _move_left;
 	sf::Keyboard::Key _move_right;
 	sf::Keyboard::Key _move_up;
 	sf::Keyboard::Key _move_down;
-
+	/* ============================================================================================================================= */
 	int game_score; 
 	void map_iteraction();
+	/* ============================================================================================================================= */
+	inline void update(float game_speed);
+	bool move(float game_speed, float &current_frame, float obj_speed = 0.1);
+	/* ============================================================================================================================= */
 public:
-	Player(T X, T Y, sf::Image &image):
+	/* ============================================================================================================================= */
+	Player(float X, float Y, sf::Image &image):
 		G_Character(X, Y, 
 			Player_Texture::MVL_LEFT_STEP, 
 			Player_Texture::MVL_TOP, 
@@ -30,75 +36,92 @@ public:
 		_move_up(sf::Keyboard::W), _move_down(sf::Keyboard::S)
 	{
 	}
-
-	bool move(float game_speed, float &current_frame, float obj_speed = 0.1);
-	void set_move_control(sf::Keyboard::Key Left, sf::Keyboard::Key Right, sf::Keyboard::Key Up, sf::Keyboard::Key Down)
-	{
-		_move_left = Left;
-		_move_right = Right; 
-		_move_up = Up;
-		_move_down = Down;
-	}
-
-	int get_score() { return this->game_score; }
-	
-	void set_score(int score) { this->game_score = score; }
-	
-	void health_decr(int value)
-	{
-		this->health -= value;
-	}
-
-	bool is_alive() 
-	{ 
-		if (this->health > 0) return true; 
-		else 
-		{
-			if (this->health < 0) this->health = 0;
-			this->entity_sprite.setColor(sf::Color(0, 0, 0));
-			return false;
-		}
-	}
-
-	void update(float game_speed)
-	{
-		switch(this->dir)
-		{
-		case 0:
-			this->dx = speed;
-			this->dy = 0;
-			break;
-		case 1:
-			this->dx = -speed;
-			this->dy = 0;
-			break;
-		case 2:
-			this->dx = 0;
-			this->dy = speed;
-			break;
-		case 3:
-			this->dx = 0;
-			this->dy = -speed;
-			break;
-		}
-
-		this->x += dx * game_speed;
-		this->y += dy * game_speed;
-
-		this->speed = 0;
-		this->entity_sprite.setPosition(this->x, this->y);
-	}
+	/* ============================================================================================================================= */
+	inline bool is_alive();
+	inline int get_score() const { return this->game_score; }
+	/* ============================================================================================================================= */
+	inline void set_move_control(sf::Keyboard::Key Left, sf::Keyboard::Key Right, sf::Keyboard::Key Up, sf::Keyboard::Key Down);
+	inline void set_score(int score) { this->game_score = score; }
+	/* ============================================================================================================================= */
+	void action_time(sf::RenderWindow &window, float game_speed, bool no_iteraction, float &current_frame, G_Character &p);
+	/* ============================================================================================================================= */
 };
 
-template<class T>
-bool Player<T>::move(float game_speed, float &current_frame, float obj_speed)
+void Player::set_move_control(sf::Keyboard::Key Left, sf::Keyboard::Key Right, sf::Keyboard::Key Up, sf::Keyboard::Key Down)
+{
+	_move_left = Left;
+	_move_right = Right; 
+	_move_up = Up;
+	_move_down = Down;
+}
+
+bool Player::is_alive() 
+{ 
+	if (this->health > 0) 
+	{
+		this->entity_sprite.setColor(sf::Color(255, 255, 255));
+		return true; 
+	}
+	else 
+	{
+		if (this->health < 0) this->health = 0;
+		this->entity_sprite.setColor(sf::Color(0, 0, 0));
+		return false;
+	}
+}
+
+void Player::update(float game_speed)
+{
+	switch(this->dir)
+	{
+	case 0:
+		this->dx = speed;
+		this->dy = 0;
+		break;
+	case 1:
+		this->dx = -speed;
+		this->dy = 0;
+		break;
+	case 2:
+		this->dx = 0;
+		this->dy = speed;
+		break;
+	case 3:
+		this->dx = 0;
+		this->dy = -speed;
+		break;
+	}
+
+	this->x += dx * game_speed;
+	this->y += dy * game_speed;
+
+	this->speed = 0;
+	this->entity_sprite.setPosition(this->x, this->y);
+}
+
+void Player::action_time(sf::RenderWindow &window, float game_speed, bool no_iteraction, float &current_frame, G_Character &p)
+{
+	if (is_alive() && !no_iteraction)
+	{
+		//if (!__is_view_map) 
+		//{
+			move(game_speed, current_frame, (float)0.1);
+			//set_camera_view(p.get_x(), p.get_y()); // задаем слежку камеры за игроком
+		//}
+		//else
+			//view_map(__game_speed); // активация просмотра карты
+	}
+	window.draw(this->get_sprite());
+}
+
+bool Player::move(float game_speed, float &current_frame, float obj_speed)
 {
 	bool moved = false;
 	if (sf::Keyboard::isKeyPressed(this->_move_left)) 
 	{
 		this->dir = 1;
 		this->speed = obj_speed;
-		current_frame += 0.005 * game_speed;
+		current_frame += (float)(0.005 * game_speed);
 		if (current_frame > 3) current_frame -= 3;
 		this->entity_sprite.setTextureRect(
 			sf::IntRect(
@@ -112,7 +135,7 @@ bool Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 	{
 		this->dir = 0;
 		this->speed = obj_speed;
-		current_frame += 0.005 * game_speed;
+		current_frame += (float)(0.005 * game_speed);
 		if (current_frame > 3) current_frame -= 3;
 		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 6, 231, 89, 55));//sf::IntRect(int(current_frame) * this->sprite_w, 232, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
 		this->entity_sprite.setTextureRect(
@@ -128,7 +151,7 @@ bool Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 	{
 		this->dir = 3;
 		this->speed = obj_speed;
-		current_frame += 0.005 * game_speed;
+		current_frame += (float)(0.005 * game_speed);
 		if (current_frame > 3) current_frame -= 3;
 		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 305, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 307, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
 		/*this->sprite_w = 45; this->sprite_h = 90;
@@ -146,7 +169,7 @@ bool Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 	{
 		this->dir = 2;
 		this->speed = obj_speed;
-		current_frame += 0.005 * game_speed;
+		current_frame += (float)(0.005 * game_speed);
 		if (current_frame > 3) current_frame -= 3;
 		//this->entity_sprite.setTextureRect(sf::IntRect(96 * int(current_frame) + 27, 6, 39, 89));//sf::IntRect(int(current_frame) * this->sprite_w, 0, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
 		this->entity_sprite.setTextureRect(
@@ -167,30 +190,29 @@ bool Player<T>::move(float game_speed, float &current_frame, float obj_speed)
 	return moved;
 }
 
-template<class T>
-void Player<T>::map_iteraction()
+void Player::map_iteraction()
 {
-	for (int i = this->y / MAP_TILE_SIZE; i < (this->y + entity_sprite.getTextureRect().height) / MAP_TILE_SIZE; i++)
+	for (int i = (int)(this->y / MAP_TILE_SIZE); i < (this->y + entity_sprite.getTextureRect().height) / MAP_TILE_SIZE; i++)
 	{
-		for (int j = this->x / MAP_TILE_SIZE; j < (this->x + entity_sprite.getTextureRect().width) / MAP_TILE_SIZE; j++)
+		for (int j = (int)(this->x / MAP_TILE_SIZE); j < (this->x + entity_sprite.getTextureRect().width) / MAP_TILE_SIZE; j++)
 		{
 			if (simple_map_structure[i][j] == MAP_CURB)
 			{
 				if (this->dy < 0)
 				{
-					this->y = i * MAP_TILE_SIZE + MAP_TILE_SIZE;
+					this->y = (float)(i * MAP_TILE_SIZE + MAP_TILE_SIZE);
 				}
 				if (this->dy > 0)
 				{
-					this->y = i * MAP_TILE_SIZE - entity_sprite.getTextureRect().height;
+					this->y = (float)(i * MAP_TILE_SIZE - entity_sprite.getTextureRect().height);
 				}
 				if (this->dx < 0)
 				{
-					this->x = j * MAP_TILE_SIZE + MAP_TILE_SIZE;
+					this->x = (float)(j * MAP_TILE_SIZE + MAP_TILE_SIZE);
 				}
 				if (this->dx > 0)
 				{
-					this->x = j * MAP_TILE_SIZE - entity_sprite.getTextureRect().width;
+					this->x = (float)(j * MAP_TILE_SIZE - entity_sprite.getTextureRect().width);
 				}
 			}
 			if (simple_map_structure[i][j] == MAP_STONE)

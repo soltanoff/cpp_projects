@@ -1,4 +1,4 @@
-#ifndef G_VIEW
+﻿#ifndef G_VIEW
 #define G_VIEW
 #include <SFML\Graphics.hpp>
 
