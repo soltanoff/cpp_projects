@@ -8,9 +8,6 @@
 
 
 
-const int CRITICAL_DISTANCE = 300;
-const int MINIMAL_DISTANCE = 60;
-
 class Enemy : public G_Character
 {
 private:
@@ -64,7 +61,7 @@ void Enemy::search_enemy(G_Character &enemy)
 
 	int distance = (int)sqrt( pow(dX, 2) + pow(dY, 2) );
 	//printf("distance %i \n", distance);
-	if (distance <= CRITICAL_DISTANCE && distance >= MINIMAL_DISTANCE)
+	if (distance <= EnemyCFG::GUN_CRITICAL_DISTANCE && distance >= EnemyCFG::GUN_MINIMAL_DISTANCE)
 	{
 		if (!shooted)
 		{

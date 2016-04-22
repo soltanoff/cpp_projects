@@ -1,7 +1,6 @@
 ﻿#ifndef G_CHARACTER
 #define G_CHARACTER
 //#include "g_entity.h"
-#define FULL_HEALTH 120
 
 
 
@@ -57,7 +56,7 @@ public:
 	inline void set_x(float X) { this->x = X; }
 	inline void set_y(float Y) { this->y = Y; }
 	/* ============================================================================================================================= */
-	inline void health_decr(int value) { this->health -= value; }
+	inline virtual void health_decr(int value) { this->health -= value; }
 	inline virtual bool is_alive() 
 	{ 
 		if (this->health > 0) return true; 

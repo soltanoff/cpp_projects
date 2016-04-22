@@ -2,12 +2,9 @@
 #define G_BULLET
 #include "g_character.h"
 #include "player.h"
-
+#include "main_settings.h"
 
 sf::Image bullet_image;
-
-const int BULLET_SPEED = 120;
-const int BULLET_DAMAGE = 1;
 
 
 class Bullet : public G_Character
@@ -45,11 +42,11 @@ public:
 
 void Bullet::map_iteraction()
 {
-	for (int i = (int)(this->y / MAP_TILE_SIZE); i < (this->y + entity_sprite.getTextureRect().height) / MAP_TILE_SIZE; i++)
+	for (int i = (int)(this->y / MapCFG::MAP_TILE_SIZE); i < (this->y + entity_sprite.getTextureRect().height) / MapCFG::MAP_TILE_SIZE; i++)
 	{
-		for (int j = (int)(this->x / MAP_TILE_SIZE); j < (this->x + entity_sprite.getTextureRect().width) / MAP_TILE_SIZE; j++)
+		for (int j = (int)(this->x / MapCFG::MAP_TILE_SIZE); j < (this->x + entity_sprite.getTextureRect().width) / MapCFG::MAP_TILE_SIZE; j++)
 		{
-			if (simple_map_structure[i][j] == MAP_CURB)
+			if (Map::get_map()[i][j] == MapCFG::MAP_CURB)
 			{
 				this->set_health(0);
 			}
@@ -83,7 +80,7 @@ void Bullet::player_iteraction(G_Character &p)
 		this->y <=  p.get_y() + p.get_height() && this->y >= p.get_y())
 	{
 		this->set_health(0);
-		p.health_decr(BULLET_DAMAGE);
+		p.health_decr(EnemyCFG::BULLET_DAMAGE);
 	}
 }
 
@@ -91,8 +88,8 @@ void Bullet::update(float game_speed)
 {
 	if (game_speed >= 1)
 	{
-		this->x += dx / game_speed / BULLET_SPEED;
-		this->y += dy / game_speed / BULLET_SPEED;
+		this->x += dx / game_speed / EnemyCFG::BULLET_SPEED;
+		this->y += dy / game_speed / EnemyCFG::BULLET_SPEED;
 			
 		this->entity_sprite.setPosition(this->x, this->y);
 		this->map_iteraction();

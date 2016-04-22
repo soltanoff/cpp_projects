@@ -13,7 +13,6 @@
 #include "entity_observer.h"
 
 
-
 // Фасад.
 class Facade
 {
@@ -21,7 +20,7 @@ private:
 	/* ============================================================================================================================= */
 	char __buffer[256];
 	bool _is_init_settings;
-	int _mission_number;
+	//int _mission_number;
 	int _game_difficulty;
 	bool _next_mission;
 	bool _go_to_menu;
@@ -29,12 +28,14 @@ private:
 	bool _restart;
 	/* ============================================================================================================================= */
 	G_Config *_CONFIG;
+	Map game_map;
+	Mission game_mission;
 	//sf::Event event;
 	sf::RenderWindow *_window;
 	/* ============================================================================================================================= */
 	// Задаем карту
-	sf::Texture __map_texture;	// текстура карты
-	sf::Sprite __map_sprites;		// создаём спрайт для карты
+	//sf::Texture __map_texture;	// текстура карты
+	//sf::Sprite __map_sprites;		// создаём спрайт для карты
 	/* ============================================================================================================================= */
 	bool __view_info;
 	bool __start_game;			// двинулся ли персонаж?
@@ -58,8 +59,10 @@ private:
 	void set_game_speed();
 	bool init_enemy();
 	/* ============================================================================================================================= */
-	void map_reserve(sf::String *map_copy);
-	void load_map(sf::String *map_copy);
+	//void map_reserve(sf::String *map_copy);
+	//void load_map(sf::String *map_copy);
+	sf::String temp[4];
+	sf::Keyboard::Key up, down, left, right;
 	/* ============================================================================================================================= */
 public:
 	/* ============================================================================================================================= */
@@ -70,6 +73,10 @@ public:
 	/* ============================================================================================================================= */
 	bool start_engine();
 	bool menu(sf::RenderWindow &window);
+	bool mini_menu(sf::RenderWindow &window);
+	bool settings_menu(sf::RenderWindow &window);
+	/* ============================================================================================================================= */
+	sf::Keyboard::Key Facade::write(sf::String &key, sf::RenderWindow &window);
 	/* ============================================================================================================================= */
 	~Facade()
 	{
@@ -94,7 +101,7 @@ Facade::Facade()
 	//_enemy_list = NULL;
 
 	__start_game = __view_info = __is_view_map = false;
-	_mission_number = 1;
+	//_mission_number = 1;
 	_game_difficulty = 0;
 	__current_frame = 0;
 	__game_speed = 0;
@@ -124,9 +131,12 @@ bool Facade::event_handler()//(sf::Event &event_)
 				__view_info = !__view_info;
 				break;
 			case sf::Keyboard::Escape:
+				/*
 				if (MessageBox(NULL, "Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
 					_window->close();
 				_exit_program = true;
+				*/
+				mini_menu(*_window);
 				break;
 			case sf::Keyboard::R:
 				if (MessageBox(NULL, "Вы уверенны что перезапустить уровень?", "Перезапуск уровня", MB_YESNO) == IDYES)
@@ -137,14 +147,15 @@ bool Facade::event_handler()//(sf::Event &event_)
 			{
 				_next_mission = false;
 
-				_mission_number++;
-				if (_mission_number > MAX_MISSIONS_COUNT)
+				//_mission_number++;
+				game_mission.mission_incr();
+				if (game_mission.get_mission_number() > MissionCFG::MAX_MISSIONS_COUNT)
 					_go_to_menu = true;
 				else
 				{
 					_p->set_x(_CONFIG->get_pos_x());
 					_p->set_y(_CONFIG->get_pos_y());
-					set_new_mission(_mission_number);
+					game_mission.set_new_mission(&game_map);//, _mission_number);
 				}
 			}
 		}
@@ -165,16 +176,16 @@ bool Facade::rotate_screen()
 		else
 			view_map(__game_speed); // активация просмотра карты
 		*/
-		score_text.setString(score_string + _itoa(_p->get_score(), __buffer, 10) 
-			+ "\t\t\t" + left_collect + _itoa(stone_count, __buffer, 10) +"\n" + 
-			health_string + _itoa(_p->get_health(), __buffer, 10));
+		score_text.setString(FontsCFG::score_string + _itoa(_p->get_score(), __buffer, 10) 
+			+ "\t\t\t" + FontsCFG::left_collect + _itoa(Mission::get_stone_count(), __buffer, 10) +"\n" + 
+			FontsCFG::health_string + _itoa(_p->get_health(), __buffer, 10));
 	}
 	else 
 	{
 		view.rotate((float)0.01);
 
 		score_text.setPosition((float)(_CONFIG->get_width() / 2.0 - 100), (float)(_CONFIG->get_height() / 2.0 - 40));
-		score_text.setString(score_string + _itoa(_p->get_score(), __buffer, 10) + "\n" + game_over_string);
+		score_text.setString(FontsCFG::score_string + _itoa(_p->get_score(), __buffer, 10) + "\n" + FontsCFG::game_over_string);
 	}
 	return true;
 }
@@ -264,15 +275,16 @@ bool Facade::init_settings()
 			// рестартим камеру и задаем стандартный размер
 			view.reset(sf::FloatRect(0.0, 0.0, (float)_CONFIG->get_width(), (float)_CONFIG->get_height()));
 
-
+			/*
 			__map_texture.loadFromFile("Sprites/map.png");
 			__map_sprites.setTexture(__map_texture); // заливаем текстуру спрайтом
-
+			*/
+			
 
 			fonts_settings(); // настраиваем текст
-			sounds_settings(); // настраиваем звук
-			set_mission_textbox(); // настраиваем окно задания
-			_mission_number = _CONFIG->get_default_mission();
+			//sounds_settings(); // настраиваем звук
+			//game_mission.set_mission_textbox(); // настраиваем окно задания
+			game_mission.set_mission_number(_CONFIG->get_default_mission());//_mission_number = _CONFIG->get_default_mission();
 			//set_new_mission(_mission_number);
 			_is_init_settings = true;
 		}
@@ -320,90 +332,357 @@ void Facade::set_game_speed()
 	/* =================================================================== */
 }
 
-bool Facade::menu(sf::RenderWindow &window) 
+bool Facade::mini_menu(sf::RenderWindow &window) 
 {
-	sf::Texture menuBackground, menuText;
-	menuBackground.loadFromFile("Sprites/test.png");
+	sf::Texture menuText;
 
 	sf::Image menuTxt_img;
-	menuTxt_img.loadFromFile("Sprites/mission_background1.png");
+	menuTxt_img.loadFromFile("Sprites/mission_background.png");
 	menuTxt_img.createMaskFromColor(sf::Color(255, 255, 255));
 	menuText.loadFromImage(menuTxt_img);
 
-	sf::Sprite menuBg(menuBackground), menuTxt(menuText);
+	sf::Sprite menuTxt(menuText);
 	
-	//sf::Sprite menu1(menuTexture1), menu2(menuTexture2), menu3(menuTexture3), about(aboutTexture), menuBg(menuBackground);
-	
-	bool isMenu = 1;
+	bool isMenu = true;
+	bool isSetting = false;
 	int menuNum = 0;
-	mn_new_game.setPosition(100, 30);
-	mn_change_diff.setPosition(100, 90);
-	mn_exit.setPosition(100, 150);
+	mn_continue.setPosition(100, 30);
+	mn_load.setPosition(100, 90);
+	mn_save.setPosition(100, 150);
+	mn_settings.setPosition(100, 210);
+	mn_back_to_menu.setPosition(100, 270);
 
-	menuBg.setPosition(80, 140);
 	menuTxt.setPosition(80, 20);
-	menuTxt.scale((float)0.9, (float)0.52);
-	//menuBg.setOrigin(1280 / 2.0, (630 + 130)/2.0);
-	//////////////////////////////МЕНЮ///////////////////
-//	mn_difficult.setColor(sf::Color::White);
-//	mn_difficult.setPosition(_CONFIG->get_width(), 20);
+	//menuTxt.scale((float)0.5, (float)0.9);
+	menuTxt.scale((float)0.84, (float)0.9);
 
 	while (isMenu)
 	{
-		//mn_difficult.setString(L"Уровень сложности: " + game_difficult[_game_difficulty]);
-		mn_change_diff.setString(L"Уровень сложности: " + game_difficult[_game_difficulty]);
-
-		mn_new_game.setColor(sf::Color::White);
-		mn_change_diff.setColor(sf::Color::White);
-		mn_exit.setColor(sf::Color::White);
-		menuNum = 0;
-		window.clear(sf::Color(129, 181, 221));
- 
-		if (sf::IntRect(100, 30, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_new_game.setColor(sf::Color::Blue); menuNum = 1; }
-		if (sf::IntRect(100, 90, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_change_diff.setColor(sf::Color::Blue); menuNum = 2; }
-		if (sf::IntRect(100, 150, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_exit.setColor(sf::Color::Blue); menuNum = 3; }
-
-		while (window.pollEvent(event_))
-		{
-			if (event_.type == sf::Event::Closed)
-				window.close();
-
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				if (menuNum == 1)	isMenu = false;//если нажали первую кнопку, то выходим из меню 
-				if (menuNum == 2)	
-				{ /*window.draw(about); window.display(); while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape));*/ 
-					if (_game_difficulty == MAX_GAME_DIFFICULT - 1) _game_difficulty = 0;
-					else _game_difficulty++;
-				}
-				if (menuNum == 3)	{ window.close(); isMenu = false; _exit_program = true; }
-			}
-		}
- 
-		menuBg.rotate((float)0.01);
-
-		window.draw(menuBg);
 		window.draw(menuTxt);
-		window.draw(mn_new_game);
-		window.draw(mn_change_diff);
-		window.draw(mn_exit);
-		
+
+		if (isSetting)
+		{
+			isSetting = settings_menu(window);
+		}
+		else
+		{
+			mn_continue.setColor(sf::Color::Black);
+			mn_load.setColor(sf::Color::Black);
+			mn_save.setColor(sf::Color::Black);
+			mn_settings.setColor(sf::Color::Black);
+			mn_back_to_menu.setColor(sf::Color::Black);
+			menuNum = 0;
+ 
+			if (sf::IntRect(100, 30, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_continue.setColor(sf::Color::Blue); menuNum = 1; }
+			if (sf::IntRect(100, 90, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_load.setColor(sf::Color::Blue); menuNum = 2; }
+			if (sf::IntRect(100, 150, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_save.setColor(sf::Color::Blue); menuNum = 3; }
+			if (sf::IntRect(100, 210, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_settings.setColor(sf::Color::Blue); menuNum = 4; }
+			if (sf::IntRect(100, 270, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_back_to_menu.setColor(sf::Color::Blue); menuNum = 5; }
+
+			while (window.pollEvent(event_))
+			{
+				if (event_.type == sf::Event::Closed)
+					window.close();
+
+				if (event_.type == sf::Event::KeyPressed)
+					if (event_.key.code == sf::Keyboard::Escape)
+						isMenu = false;
+
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				{
+					switch(menuNum)
+					{
+					case 1:
+						isMenu = false;
+						break;
+					case 2:
+						if (_game_difficulty == MissionCFG::MAX_GAME_DIFFICULT - 1) _game_difficulty = 0;
+						else _game_difficulty++;
+						break;
+					case 4:
+						isSetting = true;
+						break;
+					case 5:
+						if (MessageBox(NULL, "Вы уверенны что хотите вернуться в меню?", "Выход из игры", MB_YESNO) == IDYES)
+						{
+							_go_to_menu = true;
+							isMenu = false; 
+						}
+						break;
+					}
+				}
+			}
+
+			//window.draw(menuTxt);
+			window.draw(mn_continue);
+			window.draw(mn_load);
+			window.draw(mn_save);
+			window.draw(mn_settings);
+			window.draw(mn_back_to_menu);
+		}
 		window.display();
 	}
 	return true;
 	////////////////////////////////////////////////////
 }
 
-void Facade::map_reserve(sf::String *map_copy)
+bool Facade::settings_menu(sf::RenderWindow &window) 
 {
-	for (int i = 0; i < MAP_HEIGHT; i++)
-		map_copy[i] = simple_map_structure[i];
+	int menuNum = 0;
+	bool changed(false);
+
+	(*_p).get_move_control(left, right, up, down);
+	(*_p).get_move_control(temp[0], temp[1], temp[2], temp[3]);
+
+	mn_setting_caption.setPosition(200, 30);
+	mn_key_up.setPosition(100, 90);
+	mn_key_down.setPosition(100, 130);
+	mn_key_left.setPosition(100, 170);
+	mn_key_right.setPosition(100, 210);
+
+	mn_key_up_value.setPosition(340, 90);
+	mn_key_down_value.setPosition(340, 130);
+	mn_key_left_value.setPosition(340, 170);
+	mn_key_right_value.setPosition(340, 210);
+
+	mn_accept.setPosition(100, 270);
+	mn_cancel.setPosition(325, 270);
+
+	mn_setting_caption.setColor(sf::Color::Black);
+	mn_key_up.setColor(sf::Color::Black);
+	mn_key_down.setColor(sf::Color::Black);
+	mn_key_left.setColor(sf::Color::Black);
+	mn_key_right.setColor(sf::Color::Black);
+ 
+	mn_key_up_value.setColor(sf::Color::Black);
+	mn_key_down_value.setColor(sf::Color::Black);
+	mn_key_left_value.setColor(sf::Color::Black);
+	mn_key_right_value.setColor(sf::Color::Black);
+
+	mn_accept.setColor(sf::Color::Black);
+	mn_cancel.setColor(sf::Color::Black);
+
+	mn_key_up_value.setString(temp[2]);
+	mn_key_down_value.setString(temp[3]);
+	mn_key_left_value.setString(temp[0]);
+	mn_key_right_value.setString(temp[1]);
+	
+	
+
+	//if (sf::IntRect(100, 30, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_continue.setColor(sf::Color::Blue); menuNum = 1; }
+	if (sf::IntRect(100, 90, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_key_up.setColor(sf::Color::Blue); menuNum = 1; }
+	if (sf::IntRect(100, 130, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_key_down.setColor(sf::Color::Blue); menuNum = 2; }
+	if (sf::IntRect(100, 170, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_key_left.setColor(sf::Color::Blue); menuNum = 3; }
+	if (sf::IntRect(100, 210, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_key_right.setColor(sf::Color::Blue); menuNum = 4; }
+	if (sf::IntRect(100, 270, 200, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 5; }
+	if (sf::IntRect(325, 270, 200, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 6; }
+
+	while (window.pollEvent(event_))
+	{
+		if (event_.type == sf::Event::Closed)
+			window.close();
+
+		if (event_.type == sf::Event::KeyPressed)
+			if (event_.key.code == sf::Keyboard::Escape)
+				return false;
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			switch(menuNum)
+			{
+			case 1:
+				up = write(temp[2], window);
+				changed = true;
+				break;
+			case 2:
+				down = write(temp[3], window);
+				changed = true;
+				break;
+			case 3:
+				left = write(temp[0], window);
+				changed = true;
+				break;
+			case 4:
+				right = write(temp[1], window);
+				changed = true;
+				break;
+			case 5:
+				return false;
+			case 6:
+				(*_p).set_move_control(_CONFIG->get_key_left(), _CONFIG->get_key_right(), _CONFIG->get_key_up(), _CONFIG->get_key_down());
+				return true;
+			}
+			if (changed)
+			{
+				(*_p).set_move_control(left, right, up, down);
+				changed = false;
+			}
+		}
+	}
+
+	window.draw(mn_setting_caption);
+	window.draw(mn_key_up);
+	window.draw(mn_key_down);
+	window.draw(mn_key_left);
+	window.draw(mn_key_right);
+
+	window.draw(mn_key_up_value);
+	window.draw(mn_key_down_value);
+	window.draw(mn_key_left_value);
+	window.draw(mn_key_right_value);
+
+	window.draw(mn_accept);
+	window.draw(mn_cancel);
+
+	return true;
+	////////////////////////////////////////////////////
 }
 
-void Facade::load_map(sf::String *map_copy)
+sf::Keyboard::Key Facade::write(sf::String &key, sf::RenderWindow &window)
 {
-	for (int i = 0; i < MAP_HEIGHT; i++)
-		simple_map_structure[i] = map_copy[i];
+	bool isMenu = true;
+	while (isMenu)
+	{
+		while (window.pollEvent(event_))
+		{
+			if (event_.type == sf::Event::Closed)
+				window.close();
+
+			if (event_.type == sf::Event::KeyPressed)
+			{
+				/*
+				if (event_.key.code == sf::Keyboard::Escape)
+				{
+					isMenu = false;
+					break;
+				}
+				*/
+				if (event_.key.code >= sf::Keyboard::A && event_.key.code <= sf::Keyboard::Z)
+				{
+					key = (char)(event_.text.unicode + 65);
+					return event_.key.code;
+				}
+				if (event_.key.code == sf::Keyboard::Up)
+				{
+					key = "Up";
+					return event_.key.code;
+				}
+				if (event_.key.code == sf::Keyboard::Down)
+				{
+					key = "Down";
+					return event_.key.code;
+				}
+				if (event_.key.code == sf::Keyboard::Left)
+				{
+					key = "Left";
+					return event_.key.code;
+				}
+				if (event_.key.code == sf::Keyboard::Right)
+				{
+					key = "Right";
+					return event_.key.code;
+				}
+			}
+		}
+	}
+}
+
+bool Facade::menu(sf::RenderWindow &window) 
+{
+	sf::Texture menuBackground, menuText;
+	menuBackground.loadFromFile("Sprites/test.png");
+
+	sf::Image menuTxt_img;
+	menuTxt_img.loadFromFile("Sprites/mission_background.png");
+	menuTxt_img.createMaskFromColor(sf::Color(255, 255, 255));
+	menuText.loadFromImage(menuTxt_img);
+
+	sf::Sprite menuBg(menuBackground), menuTxt(menuText);
+	
+	bool isMenu = true;
+	bool isSetting = false;
+
+	int menuNum = 0;
+	mn_new_game.setPosition(100, 30);
+	mn_load.setPosition(100, 90);
+	mn_change_diff.setPosition(100, 150);
+	mn_settings.setPosition(100, 210);
+	mn_exit.setPosition(100, 270);
+
+	menuBg.setPosition(80, 140);
+	menuTxt.setPosition(80, 20);
+	menuTxt.scale((float)0.84, (float)0.9);
+
+	while (isMenu)
+	{
+		window.clear(sf::Color(129, 181, 221));
+		menuBg.rotate((float)0.01);
+
+		window.draw(menuBg);
+		window.draw(menuTxt);
+
+		if (isSetting)
+		{
+			isSetting = settings_menu(window);
+		}
+		else
+		{
+			mn_change_diff.setString(L"Уровень сложности: " + FontsCFG::game_difficult[_game_difficulty]);
+
+			mn_new_game.setColor(sf::Color::Black);
+			mn_load.setColor(sf::Color::Black);
+			mn_change_diff.setColor(sf::Color::Black);
+			mn_settings.setColor(sf::Color::Black);
+			mn_exit.setColor(sf::Color::Black);
+			menuNum = 0;
+
+			if (sf::IntRect(100, 30, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_new_game.setColor(sf::Color::Blue); menuNum = 1; }
+			if (sf::IntRect(100, 90, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_load.setColor(sf::Color::Blue); menuNum = 2; }
+			if (sf::IntRect(100, 150, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_change_diff.setColor(sf::Color::Blue); menuNum = 3; }
+			if (sf::IntRect(100, 210, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_settings.setColor(sf::Color::Blue); menuNum = 4; }
+			if (sf::IntRect(100, 270, 300, 50).contains(sf::Mouse::getPosition(window))) { mn_exit.setColor(sf::Color::Blue); menuNum = 5; }
+
+			while (window.pollEvent(event_))
+			{
+				if (event_.type == sf::Event::Closed)
+					window.close();
+
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				{
+					switch(menuNum)
+					{
+					case 1:
+						isMenu = false;
+						break;
+					case 3:
+						if (_game_difficulty == MissionCFG::MAX_GAME_DIFFICULT - 1) _game_difficulty = 0;
+						else _game_difficulty++;
+						break;
+					case 4:
+						//settings_menu(window);
+						isSetting = true;
+						break;
+					case 5:
+						if (MessageBox(NULL, "Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
+						{
+							window.close();
+							_exit_program = true;
+							isMenu = false; 
+						}
+						break;
+					}
+				}
+			}
+			window.draw(mn_new_game);
+			window.draw(mn_load);
+			window.draw(mn_change_diff);
+			window.draw(mn_settings);
+			window.draw(mn_exit);
+		}
+		window.display();
+	}
+	return true;
+	////////////////////////////////////////////////////
 }
 
 bool Facade::start_engine()
@@ -412,11 +691,11 @@ bool Facade::start_engine()
 	{
 		if (_is_init_settings)
 		{
-			sf::String copy_map[MAP_HEIGHT];
+			sf::String copy_map[MapCFG::MAP_HEIGHT];
 			int health(FULL_HEALTH);
 			int score(0);
-			sf::String default_map[MAP_HEIGHT];
-			map_reserve(default_map);
+			sf::String default_map[MapCFG::MAP_HEIGHT];
+			game_map.map_reserve(default_map);
 
 			while (!_exit_program)
 			{
@@ -424,28 +703,28 @@ bool Facade::start_engine()
 				{
 					menu(*_window);
 					_next_mission = false;
-					_mission_number = _CONFIG->get_default_mission();
+					game_mission.set_mission_number(_CONFIG->get_default_mission());
 					init_enemy();
-					load_map(default_map);
+					game_map.load_map(default_map);
 					__view_info = true;
 
-					map_reserve(copy_map);
+					game_map.map_reserve(copy_map);
 				}
 				else
 				{
 					_p->set_score(score);
 					_p->set_health(health);
 
-					score_text.setPosition(SCORE_POS[0], SCORE_POS[1]);
+					score_text.setPosition(FontsCFG::SCORE_POS[0], FontsCFG::SCORE_POS[1]);
 					view.rotate(-view.getRotation());
 
 
 					_next_mission = false;
-					load_map(copy_map);
+					game_map.load_map(copy_map);
 					_restart = false;
 				}
 
-				set_new_mission(_mission_number);
+				game_mission.set_new_mission(&game_map);//, _mission_number);
 				_p->set_x(_CONFIG->get_pos_x());
 				_p->set_y(_CONFIG->get_pos_y());
 				while (_window->isOpen())
@@ -458,51 +737,35 @@ bool Facade::start_engine()
 					_window->setView(view); // задаем параметры камеры ДО очистки экрана
 					_window->clear();
 
-					draw_map((*_window), __map_sprites); // Отрисовка карты
-					//window.draw(bull.get_sprite());
+					game_map.draw_map((*_window));//, __map_sprites); // Отрисовка карты
 					/* =================================================================== */
-					/* =================================================================== */
-					/*g_list *temp = _enemy_list;
-				
-					while(temp)
-					{
-						temp->enemy->enemy_action((*_window), (*_p), __game_speed, __view_info);
-						//if (!__view_info) temp->enemy->shot((*_window));
-						temp = temp->next;
-					}*/
-					/*
-					for(int i = 0; i < _enemy_list.size(); i++)
-					{
-						_enemy_list[i]->action_time((*_window), __game_speed, __view_info, __current_frame, (*_p)); 
-					}/**/
 					_entity_list.notify((*_window), __game_speed, __view_info, __current_frame, (*_p));
 					/* =================================================================== */
 					rotate_screen();
-					//_window->draw(_p->get_sprite());
 					/* =================================================================== */
 					if (__view_info)
 					{
 						if (_next_mission)
-							get_mission_complete_text(
+							game_mission.get_mission_complete_text(
 								(*_window), 
 								mission_text, 
 								(int)(_CONFIG->get_width() / 2.0), 
-								(int)(_CONFIG->get_height() / 2.0), 
-								this->_mission_number);
+								(int)(_CONFIG->get_height() / 2.0)//, 
+								);//this->_mission_number);
 						else
-							get_mission_text(
+							game_mission.get_mission_text(
 								(*_window), 
 								mission_text, 
 								(int)(_CONFIG->get_width() / 2.0), 
-								(int)(_CONFIG->get_height() / 2.0), 
-								this->_mission_number);
+								(int)(_CONFIG->get_height() / 2.0)//, 
+								);//this->_mission_number);
 					}
 
-					if (stone_count == 0 && !_next_mission)
+					if (game_mission.get_stone_count() == 0 && !_next_mission)
 					{
 						_next_mission = true;
 						__view_info = true;
-						map_reserve(copy_map);
+						game_map.map_reserve(copy_map);
 						score = _p->get_score();
 						health = _p->get_health();
 					}
@@ -535,28 +798,3 @@ bool Facade::start_engine()
 	}
 }
 #endif /* G_GAME_INTERFACE */
-
-/**/
-
-				/*_enemy->search_enemy((*_p));
-				_window->draw(_enemy->get_sprite());
-				_enemy->enemy_action((*_window), (*_p), __game_speed);
-				//_enemy->update(__game_speed);
-				//_enemy->shot((*_window));
-
-				_enemy_2->search_enemy((*_p));
-				_window->draw(_enemy_2->get_sprite());
-				_enemy_2->enemy_action((*_window), (*_p), __game_speed);
-				//_enemy_2->update(__game_speed);
-				//_enemy_2->shot((*_window));
-				*/
-				//window.draw((*(enemy.enemy_bullets.begin()))->get_sprite());
-				/*
-				for (it = enemy.enemy_bullets; it != enemy.enemy_bullets.end(); it++)
-				{
-					window.draw((*it)->get_sprite()); //рисуем объекты (сейчас это только враги)
-				}/**/
-				/*for (it = obj.begin(); it != obj.end(); it++)
-				{
-					window.draw((*it)->get_sprite()); //рисуем объекты (сейчас это только враги)
-				}*/
