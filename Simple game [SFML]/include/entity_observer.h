@@ -1,4 +1,4 @@
-#ifndef ENTITY_OBSERVER
+﻿#ifndef ENTITY_OBSERVER
 #define ENTITY_OBSERVER
 #include <vector>
 #include "g_character.h" // Observer
