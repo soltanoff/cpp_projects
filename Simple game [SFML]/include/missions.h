@@ -2,21 +2,36 @@
 #define G_MISSIONS
 #include <SFML\Graphics.hpp>
 #include "simple_map.h"
+#include "main_settings.h"
 
-//const short DEFAULT_MISSION = 0;
 
-extern sf::Texture quest_texture;
-extern sf::Sprite mission_textbox_sprite;
-extern short stone_count;
-//extern short mission_number;
+class Mission
+{
+private:
+	sf::Image quest_image;
+	sf::Texture quest_texture;
+	sf::Sprite mission_textbox_sprite;
+	static short stone_count; // статик потому что юзается в Player при map_iteraction
+	//extern short mission_number;
+	int mission_number;
+	
+	void set_mission_textbox();
+public:
+	Mission(): mission_number(1) { set_mission_textbox(); /* настраиваем окно задания */ };
 
-void set_mission_textbox();
-void set_new_mission(short mission_number);
-void get_mission_text(sf::RenderWindow &window, sf::Text &text, int x, int y, short mission_number);
-void get_mission_complete_text(sf::RenderWindow &window, sf::Text &text, int x, int y, short mission_number);
+	void set_mission_number(int value) { mission_number = value; }
+	
+	void set_new_mission(Map *game_map);//, short mission_number);
+	void mission_incr() { mission_number++; }
+	static void stone_count_decr() { stone_count--; }
 
-const int MAX_GAME_DIFFICULT = 4;
-const short MAX_MISSIONS_COUNT = 3;
+	sf::String get_mission_info();//short mission_number);
+	int get_mission_number() { return mission_number; }
+	static short get_stone_count() { return stone_count; }
+	void get_mission_text(sf::RenderWindow &window, sf::Text &text, int x, int y);//, short mission_number);
+	void get_mission_complete_text(sf::RenderWindow &window, sf::Text &text, int x, int y);//, short mission_number);
+};
+
 
 namespace ENEMY_SPAWN
 {// 1280 x 800
