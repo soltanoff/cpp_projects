@@ -1,6 +1,6 @@
 ﻿#ifndef _PLAYER_
 #define _PLAYER_
-#include "textures_settings.h"
+#include "main_settings.h"
 #include "g_character.h"
 #include "simple_map.h"
 #include "sounds.h"
@@ -19,6 +19,7 @@ private:
 	/* ============================================================================================================================= */
 	int game_score; 
 	void map_iteraction();
+	Sounds game_sound;
 	/* ============================================================================================================================= */
 	inline void update(float game_speed);
 	bool move(float game_speed, float &current_frame, float obj_speed = 0.1);
@@ -35,17 +36,51 @@ public:
 		_move_left(sf::Keyboard::A), _move_right(sf::Keyboard::D), 
 		_move_up(sf::Keyboard::W), _move_down(sf::Keyboard::S)
 	{
+		//game_sound.sounds_settings(); // настраиваем звук
 	}
 	/* ============================================================================================================================= */
+	inline void health_decr(int value);
 	inline bool is_alive();
 	inline int get_score() const { return this->game_score; }
 	/* ============================================================================================================================= */
+	inline void get_move_control(sf::String &Left, sf::String &Right, sf::String &Up, sf::String &Down);
+	inline void get_move_control(sf::Keyboard::Key &Left, sf::Keyboard::Key &Right, sf::Keyboard::Key &Up, sf::Keyboard::Key &Down);
 	inline void set_move_control(sf::Keyboard::Key Left, sf::Keyboard::Key Right, sf::Keyboard::Key Up, sf::Keyboard::Key Down);
 	inline void set_score(int score) { this->game_score = score; }
 	/* ============================================================================================================================= */
 	void action_time(sf::RenderWindow &window, float game_speed, bool no_iteraction, float &current_frame, G_Character &p);
 	/* ============================================================================================================================= */
 };
+
+sf::String get_code(sf::Keyboard::Key key)
+{
+	if (key >= sf::Keyboard::A && key <= sf::Keyboard::Z)
+		return (char)(key + 65);
+	if (key == sf::Keyboard::Up)
+		return "Up";
+	if (key == sf::Keyboard::Down)
+		return "Down";
+	if (key == sf::Keyboard::Left)
+		return "Left";
+	if (key == sf::Keyboard::Right)
+		return "Right";
+}
+
+void Player::get_move_control(sf::String &Left, sf::String &Right, sf::String &Up, sf::String &Down)
+{
+	Left = get_code(_move_left);
+	Right = get_code(_move_right); 
+	Up = get_code(_move_up);
+	Down = get_code(_move_down);
+}
+
+void Player::get_move_control(sf::Keyboard::Key &Left, sf::Keyboard::Key &Right, sf::Keyboard::Key &Up, sf::Keyboard::Key &Down)
+{
+	Left = _move_left;
+	Right = _move_right; 
+	Up = _move_up;
+	Down = _move_down;
+}
 
 void Player::set_move_control(sf::Keyboard::Key Left, sf::Keyboard::Key Right, sf::Keyboard::Key Up, sf::Keyboard::Key Down)
 {
@@ -67,6 +102,15 @@ bool Player::is_alive()
 		if (this->health < 0) this->health = 0;
 		this->entity_sprite.setColor(sf::Color(0, 0, 0));
 		return false;
+	}
+}
+
+inline void Player::health_decr(int value) 
+{
+	if (this->is_alive())
+	{
+		this->game_sound.play_fail(); 
+		this->health -= value; 
 	}
 }
 
@@ -192,51 +236,54 @@ bool Player::move(float game_speed, float &current_frame, float obj_speed)
 
 void Player::map_iteraction()
 {
-	for (int i = (int)(this->y / MAP_TILE_SIZE); i < (this->y + entity_sprite.getTextureRect().height) / MAP_TILE_SIZE; i++)
+	for (int i = (int)(this->y / MapCFG::MAP_TILE_SIZE); i < (this->y + entity_sprite.getTextureRect().height) / MapCFG::MAP_TILE_SIZE; i++)
 	{
-		for (int j = (int)(this->x / MAP_TILE_SIZE); j < (this->x + entity_sprite.getTextureRect().width) / MAP_TILE_SIZE; j++)
+		for (int j = (int)(this->x / MapCFG::MAP_TILE_SIZE); j < (this->x + entity_sprite.getTextureRect().width) / MapCFG::MAP_TILE_SIZE; j++)
 		{
-			if (simple_map_structure[i][j] == MAP_CURB)
+			if (Map::get_map()[i][j] == MapCFG::MAP_CURB)
 			{
 				if (this->dy < 0)
 				{
-					this->y = (float)(i * MAP_TILE_SIZE + MAP_TILE_SIZE);
+					this->y = (float)(i * MapCFG::MAP_TILE_SIZE + MapCFG::MAP_TILE_SIZE);
 				}
 				if (this->dy > 0)
 				{
-					this->y = (float)(i * MAP_TILE_SIZE - entity_sprite.getTextureRect().height);
+					this->y = (float)(i * MapCFG::MAP_TILE_SIZE - entity_sprite.getTextureRect().height);
 				}
 				if (this->dx < 0)
 				{
-					this->x = (float)(j * MAP_TILE_SIZE + MAP_TILE_SIZE);
+					this->x = (float)(j * MapCFG::MAP_TILE_SIZE + MapCFG::MAP_TILE_SIZE);
 				}
 				if (this->dx > 0)
 				{
-					this->x = (float)(j * MAP_TILE_SIZE - entity_sprite.getTextureRect().width);
+					this->x = (float)(j * MapCFG::MAP_TILE_SIZE - entity_sprite.getTextureRect().width);
 				}
 			}
-			if (simple_map_structure[i][j] == MAP_STONE)
+			if (/*simple_map_structure[i][j] */ Map::get_map()[i][j] == MapCFG::MAP_STONE)
 			{
-				beep_sound.play();
-				this->game_score += 10;
-				if (stone_count) stone_count--;
-				simple_map_structure[i][j] = MAP_NOTHING;
+				//beep_sound.play();
+				game_sound.play_beep();
+				this->game_score += PlayerCFG::STONE_SCOREINCR;
+				if (Mission::get_stone_count()) Mission::stone_count_decr();
+				Map::get_map()[i][j] = MapCFG::MAP_NOTHING;
 			}
-			if (simple_map_structure[i][j] == MAP_WILDFLOWER)
+			if (Map::get_map()[i][j] == MapCFG::MAP_WILDFLOWER)
 			{
-				fail_sound.play();
-				this->health -= 40;
-				if (this->game_score) this->game_score -= 10;
-				simple_map_structure[i][j] = MAP_NOTHING;
+				//fail_sound.play();
+				//game_sound.play_fail();
+				this->health_decr(PlayerCFG::WILDFLOWER_DAMAGE);
+				if (this->game_score) this->game_score -= PlayerCFG::WILDFLOWER_SCOREDECR;
+				Map::get_map()[i][j] = MapCFG::MAP_NOTHING;
 			}
-			if (simple_map_structure[i][j] == MAP_HEATLHFLOWER)
+			if (Map::get_map()[i][j] == MapCFG::MAP_HEATLHFLOWER)
 			{
 				if (this->health != FULL_HEALTH)
 				{
-					heal_sound.play();
-					this->health += 20;
+					//heal_sound.play();
+					game_sound.play_heal();
+					this->health += PlayerCFG::HEATLHFLOWER_HEAL;
 					if (this->health > FULL_HEALTH) this->health = FULL_HEALTH;
-					simple_map_structure[i][j] = MAP_NOTHING;
+					Map::get_map()[i][j] = MapCFG::MAP_NOTHING;
 				}
 			}
 		}
