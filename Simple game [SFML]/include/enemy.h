@@ -38,7 +38,7 @@ public:
 	{
 		//bullet_image.loadFromFile("Sprites/bullet.png");
 		//bullet_image.createMaskFromColor(sf::Color(255, 255, 255));
-		enemy_bullets = new Bullet(this->x, this->y, (float)0.0, (float)0.0, bullet_image);
+		enemy_bullets = new Bullet(this->get_x(), this->get_y(), (float)0.0, (float)0.0, bullet_image);
 
 		shooted = false;
 
@@ -52,9 +52,12 @@ public:
 
 void Enemy::search_enemy(G_Character &enemy)
 {	
-	float dX = - this->x + (enemy.get_x());// + enemy.get_width()); // вектор , колинеарный прямой, которая пересекает спрайт и курсор
-	float dY = - this->y + (enemy.get_y());// + enemy.get_height()); // он же, координата y
-
+	//float dX = - this->get_x() + (enemy.get_x());// + enemy.get_width()); // вектор , колинеарный прямой, которая пересекает спрайт и курсор
+	//float dY = - this->get_y() + (enemy.get_y());// + enemy.get_height()); // он же, координата y
+	/* ======================================== */
+	float dX = - this->get_x() + (2 * enemy.get_x() + enemy.get_width()) / 2.0f;
+	float dY = - this->get_y() + (2 * enemy.get_y() + enemy.get_height()) / 2.0f;
+	/* ======================================== */
 	float rotation = (float)((atan2(dY, dX)) * 180 / 3.14159265); // получаем угол в радианах и переводим его в градусы
 	//printf("rotation: %f \n", rotation); // смотрим на градусы в консольке
 	this->entity_sprite.setRotation(rotation); // поворачиваем спрайт на эти градусы	
@@ -65,7 +68,7 @@ void Enemy::search_enemy(G_Character &enemy)
 	{
 		if (!shooted)
 		{
-			enemy_bullets->set_coord(this->x, this->y, rotation);
+			enemy_bullets->set_coord(this->get_x(), this->get_y(), rotation);
 			enemy_bullets->set_direction(dX, dY);
 			shooted = true;
 		}
@@ -88,8 +91,10 @@ void Enemy::update(float game_speed)
 	else
 	{
 		shooted = false;
-		enemy_bullets->set_health(FULL_HEALTH);
+		//enemy_bullets->set_health(FULL_HEALTH);
 	}
+	if (!enemy_bullets->is_alive() && !shooted)
+		enemy_bullets->set_health(FULL_HEALTH);
 	//if (enemy_bullets != NULL)
 		//enemy_bullets->update(game_speed);
 	/*for (it = enemy_bullets; it != enemy_bullets.end(); it++)
@@ -112,7 +117,7 @@ void Enemy::enemy_action(sf::RenderWindow &window, G_Character &p, float game_sp
 	if (!no_iteraction) 
 	{
 		this->update(game_speed);
-		this->enemy_bullets->player_iteraction(p);
+		if (this->enemy_bullets->is_alive()) this->enemy_bullets->player_iteraction(p);
 	}
 	this->shot(window);
 	window.draw(this->get_sprite());

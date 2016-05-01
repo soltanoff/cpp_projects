@@ -42,9 +42,9 @@ public:
 
 void Bullet::map_iteraction()
 {
-	for (int i = (int)(this->y / MapCFG::MAP_TILE_SIZE); i < (this->y + entity_sprite.getTextureRect().height) / MapCFG::MAP_TILE_SIZE; i++)
+	for (int i = (int)(this->get_y() / MapCFG::MAP_TILE_SIZE); i < (this->get_y() + entity_sprite.getTextureRect().height) / MapCFG::MAP_TILE_SIZE; i++)
 	{
-		for (int j = (int)(this->x / MapCFG::MAP_TILE_SIZE); j < (this->x + entity_sprite.getTextureRect().width) / MapCFG::MAP_TILE_SIZE; j++)
+		for (int j = (int)(this->get_x() / MapCFG::MAP_TILE_SIZE); j < (this->get_x() + entity_sprite.getTextureRect().width) / MapCFG::MAP_TILE_SIZE; j++)
 		{
 			if (Map::get_map()[i][j] == MapCFG::MAP_CURB)
 			{
@@ -56,11 +56,8 @@ void Bullet::map_iteraction()
 
 void Bullet::set_coord(float X, float Y, float rotation)
 {
-	this->x = X;
-	this->y = Y;
-
 	this->entity_sprite.setRotation(rotation);
-	this->entity_sprite.setPosition(this->x, this->y);
+	this->entity_sprite.setPosition(X, Y);
 }
 
 void Bullet::set_direction(float dX, float dY)
@@ -76,11 +73,13 @@ void Bullet::player_iteraction(G_Character &p)
 		//printf("TARGET\n %f %f", p.get_x(), p.get_y());
 	//if (this->x == p.get_x() && this->y == p.get_y())
 	if (this->is_alive())
-	if (this->x <=  p.get_x() + p.get_width() && this->x >= p.get_x() &&
-		this->y <=  p.get_y() + p.get_height() && this->y >= p.get_y())
+	if (this->get_x() <=  p.get_x() + p.get_width() && this->get_x() >= p.get_x() &&
+		this->get_y() <=  p.get_y() + p.get_height() && this->get_y() >= p.get_y())
 	{
+		if (this->is_alive())
+			p.health_decr(EnemyCFG::BULLET_DAMAGE);
+		this->entity_sprite.setPosition(0.0, 0.0);
 		this->set_health(0);
-		p.health_decr(EnemyCFG::BULLET_DAMAGE);
 	}
 }
 
@@ -88,10 +87,13 @@ void Bullet::update(float game_speed)
 {
 	if (game_speed >= 1)
 	{
-		this->x += dx / game_speed / EnemyCFG::BULLET_SPEED;
-		this->y += dy / game_speed / EnemyCFG::BULLET_SPEED;
+		//this->x += dx / game_speed / EnemyCFG::BULLET_SPEED;
+		//this->y += dy / game_speed / EnemyCFG::BULLET_SPEED;
 			
-		this->entity_sprite.setPosition(this->x, this->y);
+		this->entity_sprite.setPosition(
+			this->get_x() + dx / game_speed / EnemyCFG::BULLET_SPEED, 
+			this->get_y() + dy / game_speed / EnemyCFG::BULLET_SPEED
+			);
 		this->map_iteraction();
 	}
 }
