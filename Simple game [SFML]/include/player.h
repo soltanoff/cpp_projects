@@ -64,6 +64,7 @@ sf::String get_code(sf::Keyboard::Key key)
 		return "Left";
 	if (key == sf::Keyboard::Right)
 		return "Right";
+	return "None";
 }
 
 void Player::get_move_control(sf::String &Left, sf::String &Right, sf::String &Up, sf::String &Down)
@@ -136,11 +137,16 @@ void Player::update(float game_speed)
 		break;
 	}
 
-	this->x += dx * game_speed;
-	this->y += dy * game_speed;
+	//this->x += dx * game_speed;
+	//this->y += dy * game_speed;
+	if (this->game_score < 0)
+		this->game_score = 0;
 
 	this->speed = 0;
-	this->entity_sprite.setPosition(this->x, this->y);
+	this->entity_sprite.setPosition(
+		this->get_x() + dx * game_speed, 
+		this->get_y() + dy * game_speed
+		);
 }
 
 void Player::action_time(sf::RenderWindow &window, float game_speed, bool no_iteraction, float &current_frame, G_Character &p)
@@ -174,6 +180,7 @@ bool Player::move(float game_speed, float &current_frame, float obj_speed)
 			Player_Texture::MVL_WIDTH, 
 			Player_Texture::MVL_HEIGHT
 			));//(sf::IntRect(int(current_frame) * this->sprite_w, 136, 1 * this->sprite_w, 1 * this->sprite_h));// задаем тайлсет
+		moved = true;
 	}
 	else if (sf::Keyboard::isKeyPressed(this->_move_right))
 	{
@@ -226,6 +233,11 @@ bool Player::move(float game_speed, float &current_frame, float obj_speed)
 		moved = true;
 	}
 
+	if (moved)
+	{
+		printf("[Player] (%f, \t%f)\n", this->get_x(), this->get_y());
+	}
+
 	this->update(game_speed);
 	this->map_iteraction();
 
@@ -236,27 +248,27 @@ bool Player::move(float game_speed, float &current_frame, float obj_speed)
 
 void Player::map_iteraction()
 {
-	for (int i = (int)(this->y / MapCFG::MAP_TILE_SIZE); i < (this->y + entity_sprite.getTextureRect().height) / MapCFG::MAP_TILE_SIZE; i++)
+	for (int i = (int)(this->get_y() / MapCFG::MAP_TILE_SIZE); i < (this->get_y() + entity_sprite.getTextureRect().height) / MapCFG::MAP_TILE_SIZE; i++)
 	{
-		for (int j = (int)(this->x / MapCFG::MAP_TILE_SIZE); j < (this->x + entity_sprite.getTextureRect().width) / MapCFG::MAP_TILE_SIZE; j++)
+		for (int j = (int)(this->get_x() / MapCFG::MAP_TILE_SIZE); j < (this->get_x() + entity_sprite.getTextureRect().width) / MapCFG::MAP_TILE_SIZE; j++)
 		{
 			if (Map::get_map()[i][j] == MapCFG::MAP_CURB)
 			{
 				if (this->dy < 0)
 				{
-					this->y = (float)(i * MapCFG::MAP_TILE_SIZE + MapCFG::MAP_TILE_SIZE);
+					this->set_y((float)(i * MapCFG::MAP_TILE_SIZE + MapCFG::MAP_TILE_SIZE));
 				}
 				if (this->dy > 0)
 				{
-					this->y = (float)(i * MapCFG::MAP_TILE_SIZE - entity_sprite.getTextureRect().height);
+					this->set_y((float)(i * MapCFG::MAP_TILE_SIZE - entity_sprite.getTextureRect().height));
 				}
 				if (this->dx < 0)
 				{
-					this->x = (float)(j * MapCFG::MAP_TILE_SIZE + MapCFG::MAP_TILE_SIZE);
+					this->set_x((float)(j * MapCFG::MAP_TILE_SIZE + MapCFG::MAP_TILE_SIZE));
 				}
 				if (this->dx > 0)
 				{
-					this->x = (float)(j * MapCFG::MAP_TILE_SIZE - entity_sprite.getTextureRect().width);
+					this->set_x((float)(j * MapCFG::MAP_TILE_SIZE - entity_sprite.getTextureRect().width));
 				}
 			}
 			if (/*simple_map_structure[i][j] */ Map::get_map()[i][j] == MapCFG::MAP_STONE)
