@@ -15,6 +15,7 @@ sf::Text mn_save;
 sf::Text mn_load;
 sf::Text mn_settings;
 sf::Text mn_back_to_menu;
+sf::Text mn_record_table;
 
 sf::Text mn_key_up;
 sf::Text mn_key_down;
@@ -27,6 +28,8 @@ sf::Text mn_key_left_value;
 sf::Text mn_key_right_value;
 
 sf::Text mn_accept;
+sf::Text mn_caption;
+sf::Text mn_text;
 sf::Text mn_cancel;
 
 sf::Text mn_setting_caption;
@@ -57,6 +60,11 @@ void fonts_settings()
 	install_text(mn_settings, mission_font, "times.TTF");
 	install_text(mn_back_to_menu, mission_font, "times.TTF");
 	
+	///////////////////////////////////////////////////////////////
+	install_text(mn_record_table, mission_font, "times.TTF");
+	mn_record_table.setString("Write: ");
+	///////////////////////////////////////////////////////////////
+
 	install_text(mn_key_up, mission_font, "times.TTF");
 	install_text(mn_key_down, mission_font, "times.TTF");
 	install_text(mn_key_left, mission_font, "times.TTF");
@@ -68,6 +76,8 @@ void fonts_settings()
 	install_text(mn_key_right_value, mission_font, "times.TTF");
 
 	install_text(mn_accept, mission_font, "times.TTF");
+	install_text(mn_caption, mission_font, "times.TTF");
+	install_text(mn_text, mission_font, "times.TTF");
 	install_text(mn_cancel, mission_font, "times.TTF");
 
 	install_text(mn_setting_caption, mission_font, "times.TTF");
@@ -81,14 +91,15 @@ void fonts_settings()
 	mn_load.setString(FontsCFG::game_menu[5]);
 	mn_settings.setString(FontsCFG::game_menu[6]);
 	mn_back_to_menu.setString(FontsCFG::game_menu[7]);
+	mn_record_table.setString(FontsCFG::game_menu[8]);
 
-	mn_key_up.setString(FontsCFG::game_menu[8]);
-	mn_key_down.setString(FontsCFG::game_menu[9]);
-	mn_key_left.setString(FontsCFG::game_menu[10]);
-	mn_key_right.setString(FontsCFG::game_menu[11]);
+	mn_key_up.setString(FontsCFG::game_menu[9]);
+	mn_key_down.setString(FontsCFG::game_menu[10]);
+	mn_key_left.setString(FontsCFG::game_menu[11]);
+	mn_key_right.setString(FontsCFG::game_menu[12]);
 	
-	mn_accept.setString(FontsCFG::game_menu[12]);
-	mn_cancel.setString(FontsCFG::game_menu[13]);
+	mn_accept.setString(FontsCFG::game_menu[13]);
+	mn_cancel.setString(FontsCFG::game_menu[14]);
 
-	mn_setting_caption.setString(FontsCFG::game_menu[14]);
+	mn_setting_caption.setString(FontsCFG::game_menu[15]);
 }

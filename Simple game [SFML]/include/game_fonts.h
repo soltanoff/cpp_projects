@@ -17,6 +17,7 @@ extern sf::Text mn_settings;
 extern sf::Text mn_change_diff;
 extern sf::Text mn_exit;
 extern sf::Text mn_back_to_menu;
+extern sf::Text mn_record_table;
 
 extern sf::Text mn_key_up;
 extern sf::Text mn_key_down;
@@ -29,6 +30,8 @@ extern sf::Text mn_key_left_value;
 extern sf::Text mn_key_right_value;
 
 extern sf::Text mn_accept;
+extern sf::Text mn_caption;
+extern sf::Text mn_text;
 extern sf::Text mn_cancel;
 
 extern sf::Text mn_setting_caption;
