@@ -3,9 +3,10 @@
 #include <SFML\Graphics.hpp>
 #include "textures_settings.h"
 
-#define FULL_HEALTH 9000
+#define FULL_HEALTH 200
 
 const char SETTINGS_FILE[]			= "settings.ini";
+const char SAVE_FILE[]				= "Save/save_game.sav";
 const short CAMERA_VIEW_X_OFFSET	= 70;
 
 namespace EnemyCFG
@@ -13,7 +14,7 @@ namespace EnemyCFG
 	const int GUN_CRITICAL_DISTANCE = 300;
 	const int GUN_MINIMAL_DISTANCE	= 60;
 
-	const int BULLET_SPEED			= 10;
+	const int BULLET_SPEED			= 100;
 	const int BULLET_DAMAGE			= 1;
 }
 
@@ -39,6 +40,7 @@ namespace FontsCFG
 		L"Загрузить игру", 
 		L"Настройки", 
 		L"Выйти в меню",
+		L"Таблица рекордов",
 
 		L"Вверх: ",
 		L"Вниз: ",
