@@ -47,9 +47,13 @@ information by pressing.
 
 - (x) Add 3 missions
 
-- Add pattern (2/3 Facade, Singleton)
+- (x) Add pattern (3/3 Facade, Singleton, Observer)
 
-- Redesign the menu
+- (x) Redesign the menu
+
+- (x) Redesign the gameplay
+
+- (x) Add save and load game
 
 - To do the refactoring of functions
 
