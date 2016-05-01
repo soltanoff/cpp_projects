@@ -9,7 +9,7 @@ sf::View view; // определяем объект вида, при помощ�
 void set_camera_view(float x, float y) // задаем слежку камеры за объектом находящемся по координатам Х и У
 {
 	//if (!(y < 1280 || x < 680))
-		view.setCenter(x + CAMERA_VIEW_X_OFFSET, y);
+		view.setCenter(x, y);
 }
 
 void view_map(float game_speed)
