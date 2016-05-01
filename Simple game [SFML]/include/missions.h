@@ -28,6 +28,7 @@ public:
 	sf::String get_mission_info();//short mission_number);
 	int get_mission_number() { return mission_number; }
 	static short get_stone_count() { return stone_count; }
+	static void set_stone_count(int value) { stone_count = value; }
 	void get_mission_text(sf::RenderWindow &window, sf::Text &text, int x, int y);//, short mission_number);
 	void get_mission_complete_text(sf::RenderWindow &window, sf::Text &text, int x, int y);//, short mission_number);
 };
