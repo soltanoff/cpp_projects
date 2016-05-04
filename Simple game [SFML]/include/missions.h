@@ -31,6 +31,7 @@ public:
 	static void set_stone_count(int value) { stone_count = value; }
 	void get_mission_text(sf::RenderWindow &window, sf::Text &text, int x, int y);//, short mission_number);
 	void get_mission_complete_text(sf::RenderWindow &window, sf::Text &text, int x, int y);//, short mission_number);
+	bool is_the_end() { return (mission_number > MissionCFG::MAX_MISSIONS_COUNT); }
 };
 
 
