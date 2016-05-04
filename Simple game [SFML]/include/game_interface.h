@@ -14,6 +14,11 @@
 #include <fstream>
 #include <string>
 
+/*
+- запрос на ввод ника при выходе
+- баг с передвижением
+- вместо свопа музыки, вставить отдельные функции по инициализации музыки 
+*/
 
 // Фасад.
 class Facade
@@ -29,8 +34,13 @@ private:
 	bool _go_to_settings;
 	bool _exit_program;
 	bool _isMessageBox;
+	bool _records_table;
+	bool _check_score;
+	bool _checked_score;
+	bool _write_nick;
 	bool _restart;
 	bool _load;
+	bool _end_game;
 	/* ============================================================================================================================= */
 	G_Config *_CONFIG;
 	Map game_map;
@@ -84,14 +94,45 @@ private:
 		int score;
 		sf::String default_map[MapCFG::MAP_HEIGHT];
 	} rr_params;
+	std::vector<rec_table> game_records;
 	/* ============================================================================================================================= */
-	bool Facade::save_game();
-	bool Facade::load_game();
+	bool save_game();
+	bool load_game();
+	bool is_end();
 	/* ============================================================================================================================= */
-	bool Facade::load_procedure();
-	bool Facade::restart_procedure();
-	bool Facade::begining_procedure();
-	bool Facade::main_procedure();
+	bool load_procedure();
+	bool restart_procedure();
+	bool begining_procedure();
+	bool main_procedure();
+	/* ============================================================================================================================= */
+	bool write_line(sf::Text &text, sf::Event event_);
+	bool draw_message(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result);
+	/* ============================================================================================================================= */
+	bool reg_score(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result);
+	bool draw_record_table(sf::RenderWindow &window, sf::String caption);
+	bool record_table_iteraction(sf::RenderWindow &window);
+	void add_record();
+	void load_records();
+	void save_records();
+	bool check_score();
+	void fill_records();
+	/* ============================================================================================================================= */
+	sf::Texture MSBX_text;
+	sf::Image MSBX_img;
+	sf::Sprite MSBX_sprite;
+	/* ============================================================================================================================= */
+	sf::Texture menuBackground, menuText;
+	sf::Image menuTxt_img;
+	sf::Sprite menuBg, menuTxt;
+	sf::View view2;
+	/* ============================================================================================================================= */
+	sf::Sound main_sound; sf::SoundBuffer main_sound_buffer;
+	sf::Sound gameplay_sound; sf::SoundBuffer gameplay_sound_buffer;
+	sf::Sound dead_sound; sf::SoundBuffer dead_sound_buffer;
+	//void swap_music();
+	void dead_music();
+	void menu_music();
+	void gameplay_music();
 	/* ============================================================================================================================= */
 public:
 	/* ============================================================================================================================= */
@@ -105,18 +146,6 @@ public:
 	bool menu(sf::RenderWindow &window);
 	bool mini_menu(sf::RenderWindow &window);
 	/* ============================================================================================================================= */
-	bool write_line(sf::Text &text, sf::Event event_);//sf::RenderWindow &window);
-	//bool draw_message(sf::RenderWindow &window);
-	bool draw_message(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result);
-
-	sf::Texture MSBX_text;
-	sf::Image MSBX_img;
-	sf::Sprite MSBX_sprite;
-
-	sf::Texture menuBackground, menuText;
-	sf::Image menuTxt_img;
-	sf::Sprite menuBg, menuTxt;
-	sf::View view2;
 };
 
 Facade::Facade()
@@ -149,7 +178,12 @@ Facade::Facade()
 	__current_frame = 0;
 	__game_speed = 0;
 
+	_end_game = false;
 	_isMessageBox = false;
+	_records_table = false;
+	_write_nick = false;
+	_check_score = false;
+	_checked_score = false;
 	_load = false;
 	_restart = false;
 	_go_to_menu = false;
@@ -158,6 +192,8 @@ Facade::Facade()
 	_next_mission = false;
 	_exit_program = false;
 	_is_init_settings = false;
+
+	/* */
 }
 
 Facade::~Facade()
@@ -181,10 +217,10 @@ bool Facade::event_handler()//(sf::Event &event_)
 		if (event_.type == sf::Event::Resized)
 		{
 			printf("resized\n");
-			view.setSize(event_.size.width, event_.size.height);
-			view.setCenter(event_.size.width / 2, event_.size.height / 2);
-			view2.setSize(event_.size.width, event_.size.height);
-			view2.setCenter(event_.size.width / 2, event_.size.height / 2);
+			view.setSize((float)event_.size.width, (float)event_.size.height);
+			view.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+			view2.setSize((float)event_.size.width, (float)event_.size.height);
+			view2.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
 			_window->setView(view);
 		}/* */
 
@@ -205,7 +241,11 @@ bool Facade::event_handler()//(sf::Event &event_)
 				_exit_program = true;
 				*/
 				//mini_menu(*_window);
-				_go_to_mini_menu = true;
+				//view.setRotation(-view.getRotation());
+				if (is_end() && !_checked_score)
+					_check_score = true;
+				else
+					_go_to_mini_menu = true;
 				break;
 			case sf::Keyboard::R:
 				if (MessageBox(NULL, "Вы уверенны что перезапустить уровень?", "Перезапуск уровня", MB_YESNO) == IDYES)
@@ -218,8 +258,14 @@ bool Facade::event_handler()//(sf::Event &event_)
 
 				//_mission_number++;
 				game_mission.mission_incr();
+				
 				if (game_mission.get_mission_number() > MissionCFG::MAX_MISSIONS_COUNT)
-					_go_to_menu = true;
+				{
+					if (!_checked_score )
+						_check_score = true;
+					else
+						_go_to_menu = true;
+				}
 				else
 				{
 					_p->set_x(_CONFIG->get_pos_x());
@@ -241,7 +287,7 @@ bool Facade::rotate_screen()
 		{
 			//_p->move(__game_speed, __current_frame, (float)0.1);
 			//set_camera_view(p.get_x(), p.get_y()); // задаем слежку камеры за игроком
-		}
+		} 
 		else
 			view_map(__game_speed); // активация просмотра карты
 		*/
@@ -253,10 +299,13 @@ bool Facade::rotate_screen()
 	}
 	else 
 	{
-		view.rotate((float)0.01);
+		dead_music();
+		view.setCenter(view.getSize().x / 2.0f, view.getSize().y / 2.0f);
+		//if (!_go_to_mini_menu) view.rotate((float)0.01);
 
-		score_text.setPosition((float)(_CONFIG->get_width() / 2.0 - 100), (float)(_CONFIG->get_height() / 2.0 - 40));
+		score_text.setPosition((float)(view.getCenter().x - 60), (float)(view.getCenter().y) - 42);
 		score_text.setString(FontsCFG::score_string + _itoa(_p->get_score(), __buffer, 10) + "\n" + FontsCFG::game_over_string);
+		
 	}
 	return true;
 }
@@ -280,6 +329,23 @@ bool Facade::init_enemy()
 
 		return true;
 	}
+
+void Facade::fill_records()
+{
+	char buffer[CHAR_BUFER];
+	records_table_name.setString("");
+	records_table_score.setString("");
+	//records = "";
+	int min_size = MAX_RECORDS_COUNT < game_records.size() ? MAX_RECORDS_COUNT : game_records.size();
+	for(int i = 0; i < min_size; i++)
+	{
+		records_table_name.setString(records_table_name.getString() + _itoa(i + 1, buffer, 10));
+		records_table_name.setString(records_table_name.getString() + ") " + game_records[i].name + "\n");
+		records_table_score.setString(records_table_score.getString() + _itoa(game_records[i].score, buffer, 10) + "\n");
+		//records += _itoa(i + 1, buffer, 10);
+		//records += ") " + game_records[i].name + "\t\t\t\t" + _itoa(game_records[i].score, buffer, 10) + "\n";
+	}
+}
 
 bool Facade::init_settings()
 {
@@ -314,9 +380,21 @@ bool Facade::init_settings()
 			__map_sprites.setTexture(__map_texture); // заливаем текстуру спрайтом
 			*/
 			
+			load_records();
+			fill_records();
 
 			fonts_settings(); // настраиваем текст
 			//sounds_settings(); // настраиваем звук
+			main_sound_buffer.loadFromFile("Sounds/main_menu.wav");
+			main_sound.setBuffer(main_sound_buffer);
+			gameplay_sound_buffer.loadFromFile("Sounds/game_sound.wav");
+			gameplay_sound.setBuffer(gameplay_sound_buffer);
+			dead_sound_buffer.loadFromFile("Sounds/dead.wav");
+			dead_sound.setBuffer(dead_sound_buffer);
+			//main_sound.play();
+			main_sound.setLoop(true);
+			gameplay_sound.setLoop(true);
+			dead_sound.setLoop(true);
 			//game_mission.set_mission_textbox(); // настраиваем окно задания
 			game_mission.set_mission_number(_CONFIG->get_default_mission());//_mission_number = _CONFIG->get_default_mission();
 			//set_new_mission(_mission_number);
@@ -336,6 +414,67 @@ bool Facade::init_settings()
 	return true;
 }
 
+void Facade::dead_music()
+{
+	if (dead_sound.getStatus() == sf::SoundSource::Status::Stopped)
+	{
+		main_sound.stop();
+		gameplay_sound.stop();
+		dead_sound.setLoop(true);
+		dead_sound.play();
+	}
+}
+
+void Facade::menu_music()
+{
+	if (main_sound.getStatus() == sf::SoundSource::Status::Stopped)
+	{
+		dead_sound.stop();
+		gameplay_sound.stop();
+		main_sound.setLoop(true);
+		main_sound.play();
+	}
+}
+
+void Facade::gameplay_music()
+{
+	if (gameplay_sound.getStatus() == sf::SoundSource::Status::Stopped)
+	{
+		main_sound.stop();
+		dead_sound.stop();
+		gameplay_sound.setLoop(true);
+		gameplay_sound.play();
+	}
+}
+/*
+void Facade::swap_music()
+{
+	if (!_restart)
+	{
+		if (main_sound.getStatus() == sf::SoundSource::Status::Playing)
+		{
+			main_sound.stop();
+			dead_sound.stop();
+			gameplay_sound.setLoop(true);
+			gameplay_sound.play();
+		}
+		else
+		{
+			gameplay_sound.stop();
+			dead_sound.stop();
+			main_sound.setLoop(true);
+			main_sound.play();
+		}
+	}
+	else
+	{
+		main_sound.stop();
+		dead_sound.stop();
+		gameplay_sound.setLoop(true);
+		gameplay_sound.play();
+	}
+}
+*/
 bool Facade::init_entities()
 {
 	if (_is_init_settings)
@@ -540,6 +679,11 @@ bool Facade::load_game()
 	fin.close();
 }
 
+bool Facade::is_end()
+{
+	return (!(_p->is_alive()) || game_mission.is_the_end());
+}
+
 bool Facade::mini_menu(sf::RenderWindow &window) 
 {
 	/*
@@ -557,18 +701,24 @@ bool Facade::mini_menu(sf::RenderWindow &window)
 	
 	int menuNum = 0;
 
-	int x = view.getCenter().x - view.getSize().x / 2;
-	int y = view.getCenter().y -view.getSize().y / 2;
+	int x = (int) (view.getCenter().x - view.getSize().x / 2);
+	int y = (int) (view.getCenter().y -view.getSize().y / 2);
 
-	mn_continue.setPosition(x + 100, y + 30);
-	mn_load.setPosition(x + 100, y + 90);
-	mn_save.setPosition(x + 100, y + 150);
-	mn_settings.setPosition(x + 100, y + 210);
-	mn_back_to_menu.setPosition(x + 100, y + 270);
+	mn_continue.setPosition((float)(x + 100), (float)(y + 30));
+	mn_load.setPosition((float)(x + 100), (float)(y + 90));
+	mn_save.setPosition((float)(x + 100), (float)(y + 150));
+	mn_settings.setPosition((float)(x + 100), (float)(y + 210));
+	mn_back_to_menu.setPosition((float)(x + 100), (float)(y + 270));
 
-	menuTxt.setPosition(x + 80, y + 20);
+	menuTxt.setPosition((float)(x + 80), (float)(y + 20));
 	//menuTxt.scale((float)0.5, (float)0.9);
 	menuTxt.setScale((float)0.84, (float)0.9);
+
+	mn_continue.setColor(sf::Color::Black);
+	mn_load.setColor(sf::Color::Black);
+	mn_save.setColor(sf::Color::Black);
+	mn_settings.setColor(sf::Color::Black);
+	mn_back_to_menu.setColor(sf::Color::Black);
 
 	//while (isMenu)
 	{
@@ -609,10 +759,10 @@ bool Facade::mini_menu(sf::RenderWindow &window)
 					if (event_.type == sf::Event::Resized)
 					{
 						printf("resized\n");
-						view.setSize(event_.size.width, event_.size.height);
-						view.setCenter(event_.size.width / 2, event_.size.height / 2);
-						view2.setSize(event_.size.width, event_.size.height);
-						view2.setCenter(event_.size.width / 2, event_.size.height / 2);
+						view.setSize((float)event_.size.width, (float)event_.size.height);
+						view.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+						view2.setSize((float)event_.size.width, (float)event_.size.height);
+						view2.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
 						window.setView(view);
 						return false;
 					}
@@ -642,6 +792,7 @@ bool Facade::mini_menu(sf::RenderWindow &window)
 								//isMenu = false; 
 								return false;
 							}*/
+							//_check_score = true;
 							_isMessageBox = true;
 							break;
 						}
@@ -682,22 +833,22 @@ bool Facade::settings_menu(sf::RenderWindow &window)
 
 	window.setView(view);
 
-	int x = view.getCenter().x - view.getSize().x / 2;
-	int y = view.getCenter().y - view.getSize().y / 2;
+	int x = (int) (view.getCenter().x - view.getSize().x / 2);
+	int y = (int) (view.getCenter().y - view.getSize().y / 2);
 
-	mn_setting_caption.setPosition(x + 200, y + 30);
-	mn_key_up.setPosition(x + 100, y + 90);
-	mn_key_down.setPosition(x + 100, y + 130);
-	mn_key_left.setPosition(x + 100, y + 170);
-	mn_key_right.setPosition(x + 100, y + 210);
+	mn_setting_caption.setPosition((float)(x + 200), (float)(y + 30));
+	mn_key_up.setPosition((float)(x + 100), (float)(y + 90));
+	mn_key_down.setPosition((float)(x + 100), (float)(y + 130));
+	mn_key_left.setPosition((float)(x + 100), (float)(y + 170));
+	mn_key_right.setPosition((float)(x + 100), (float)(y + 210));
 
-	mn_key_up_value.setPosition(x + 340, y + 90);
-	mn_key_down_value.setPosition(x + 340, y + 130);
-	mn_key_left_value.setPosition(x + 340, y + 170);
-	mn_key_right_value.setPosition(x + 340, y + 210);
+	mn_key_up_value.setPosition((float)(x + 340), (float)(y + 90));
+	mn_key_down_value.setPosition((float)(x + 340), (float)(y + 130));
+	mn_key_left_value.setPosition((float)(x + 340), (float)(y + 170));
+	mn_key_right_value.setPosition((float)(x + 340), (float)(y + 210));
 
-	mn_accept.setPosition(x + 100, y + 270);
-	mn_cancel.setPosition(x + 325, y + 270);
+	mn_accept.setPosition((float)(x + 100), (float)(y + 270));
+	mn_cancel.setPosition((float)(x + 325), (float)(y + 270));
 
 	mn_setting_caption.setColor(sf::Color::Black);
 	mn_key_up.setColor(sf::Color::Black);
@@ -740,10 +891,10 @@ bool Facade::settings_menu(sf::RenderWindow &window)
 		if (event_.type == sf::Event::Resized)
 		{
 			printf("resized\n");
-			view.setSize(event_.size.width, event_.size.height);
-			view.setCenter(event_.size.width / 2, event_.size.height / 2);
-			view2.setSize(event_.size.width, event_.size.height);
-			view2.setCenter(event_.size.width / 2, event_.size.height / 2);
+			view.setSize((float)event_.size.width, (float)event_.size.height);
+			view.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+			view2.setSize((float)event_.size.width, (float)event_.size.height);
+			view2.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
 			window.setView(view);
 		}/* */
 
@@ -799,6 +950,263 @@ bool Facade::settings_menu(sf::RenderWindow &window)
 	////////////////////////////////////////////////////
 }
 
+bool Facade::draw_record_table(sf::RenderWindow &window, sf::String caption)
+{
+	int x = (int) (view.getCenter().x - view.getSize().x / 2);
+	int y = (int) (view.getCenter().y - view.getSize().y / 2);
+
+	int menuNum = 0;
+	MSBX_sprite.setScale((float)1.0, (float)1.2);
+	MSBX_sprite.setPosition(
+		//x + view.getSize().x / 2,
+		//y + view.getSize().y / 2
+		//385, 230
+		view.getCenter().x - MSBX_sprite.getTextureRect().width / 2.0f, 
+		view.getCenter().y - MSBX_sprite.getTextureRect().height / 2.0f
+		);
+
+	window.draw(MSBX_sprite);
+
+
+	mn_accept.setColor(sf::Color::Black);
+	//mn_cancel.setColor(sf::Color::Black);
+	mn_caption.setColor(sf::Color::Black);
+	
+
+	mn_accept.setString(L"OK");
+	//mn_cancel.setString(L"Нет");
+
+	int dX = (int) (view2.getCenter().x - view.getCenter().x);
+	int dY = (int) (view2.getCenter().y - view.getCenter().y);
+	
+	mn_accept.setPosition(
+		MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f - mn_accept.getString().getSize() * 8,
+		MSBX_sprite.getPosition().y + MSBX_sprite.getTextureRect().height
+		);
+
+	/*mn_cancel.setPosition(
+		MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width - 140,
+		MSBX_sprite.getPosition().y + 120
+		);
+		*/
+	mn_caption.setPosition(
+		(MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f) - caption.getSize() * 8,
+		MSBX_sprite.getPosition().y + 10
+		);
+	/*
+	mn_text.setPosition(
+		(MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f) - main_text.getSize() * 8,
+		MSBX_sprite.getPosition().y + 60
+		);*/
+
+	records_table_name.setPosition(
+		MSBX_sprite.getPosition().x + 50,
+		MSBX_sprite.getPosition().y + 60
+		);
+
+	records_table_score.setPosition(
+		MSBX_sprite.getPosition().x + 400,
+		MSBX_sprite.getPosition().y + 60
+		);
+
+	mn_caption.setString(caption);
+	//mn_text.setString(main_text);
+	
+	/*=============================================*/
+	
+	/*=============================================*/
+	if (sf::IntRect((int)(mn_accept.getPosition().x + dX), (int)(mn_accept.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; }
+	//if (sf::IntRect(mn_cancel.getPosition().x + dX, mn_cancel.getPosition().y + dY, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }
+
+	while (window.pollEvent(event_))
+	{
+		if (event_.type == sf::Event::Closed)
+			window.close();
+
+		if (event_.type == sf::Event::Resized)
+		{
+			printf("resized\n");
+			view.setSize((float)event_.size.width, (float)event_.size.height);
+			view.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+			view2.setSize((float)event_.size.width, (float)event_.size.height);
+			view2.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+			window.setView(view);
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			switch(menuNum)
+			{
+			case 1:
+				return true;
+			case 2:
+				return true;
+			}
+		}
+	}
+	window.draw(mn_accept);
+	//window.draw(mn_cancel);
+	window.draw(mn_caption);
+	window.draw(records_table_name);
+	window.draw(records_table_score);
+	return false;
+}
+
+bool sort_elements(rec_table i, rec_table j) { return (i.score > j.score); }
+
+void Facade::load_records()
+{
+	std::ifstream fin(RECORDS_FILE, std::ios_base::in);
+	if (fin)
+	{
+		rec_table temp;
+		while (!fin.eof())
+		{
+			fin >> temp.name;
+			fin >> temp.score;
+			game_records.push_back(temp);
+		}
+	}
+}
+
+void Facade::save_records()
+{
+	std::ofstream fout(RECORDS_FILE, std::ios_base::out);
+
+	if (fout)
+	{
+		int min_size = MAX_RECORDS_COUNT < game_records.size() ? MAX_RECORDS_COUNT : game_records.size();
+		for(int i = 0; i < min_size; i++)
+		{
+			fout << game_records[i].name << "\t" << game_records[i].score;
+			if (i < MAX_RECORDS_COUNT - 1) fout << "\n";
+		}
+	}
+}
+
+void Facade::add_record()
+{
+	rec_table temp;
+	temp.name = user_nick.getString();
+	temp.score = _p->get_score();
+	game_records.push_back(temp);
+	std::sort(game_records.begin(), game_records.end(), sort_elements);
+	save_records();
+	fill_records();
+}
+
+bool Facade::reg_score(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result)
+{
+	int x = (int) (view.getCenter().x - view.getSize().x / 2);
+	int y = (int) (view.getCenter().y - view.getSize().y / 2);
+
+	int menuNum = 0;
+	MSBX_sprite.setScale((float)1.0, (float)0.6);
+	MSBX_sprite.setPosition(
+		//x + view.getSize().x / 2,
+		//y + view.getSize().y / 2
+		//385, 230
+		view.getCenter().x - MSBX_sprite.getTextureRect().width / 2.0f, 
+		view.getCenter().y - MSBX_sprite.getTextureRect().height / 2.0f
+		);
+
+	window.draw(MSBX_sprite);
+
+
+	mn_accept.setColor(sf::Color::Black);
+	mn_cancel.setColor(sf::Color::Black);
+	mn_caption.setColor(sf::Color::Black);
+	mn_text.setColor(sf::Color::Black);
+
+	mn_accept.setString(L"Да");
+	mn_cancel.setString(L"Нет");
+
+	int dX = (int) (view2.getCenter().x - view.getCenter().x);
+	int dY = (int) (view2.getCenter().y - view.getCenter().y);
+	
+	mn_accept.setPosition(
+		MSBX_sprite.getPosition().x + 90,
+		MSBX_sprite.getPosition().y + 145
+		);
+
+	mn_cancel.setPosition(
+		MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width - 140,
+		MSBX_sprite.getPosition().y + 145
+		);
+
+	mn_caption.setPosition(
+		(MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f) - caption.getSize() * 8,
+		MSBX_sprite.getPosition().y + 10
+		);
+
+	mn_text.setPosition(
+		(MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f) - main_text.getSize() * 8,
+		MSBX_sprite.getPosition().y + 60
+		);
+
+	user_nick.setPosition(
+		(MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f) - user_nick.getString().getSize() * 8,
+		MSBX_sprite.getPosition().y + 100
+		);
+
+	mn_caption.setString(caption);
+	mn_text.setString(main_text);
+
+	//if (sf::IntRect(475, 350, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; }
+	//if (sf::IntRect(755, 350, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }		
+	if (sf::IntRect((int)(mn_accept.getPosition().x + dX), (int)(mn_accept.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; }
+	if (sf::IntRect((int)(mn_cancel.getPosition().x + dX), (int)(mn_cancel.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }
+
+	while (window.pollEvent(event_))
+	{
+		if (event_.type == sf::Event::Closed)
+			window.close();
+
+		write_line(user_nick, event_);
+
+		if (event_.type == sf::Event::Resized)
+		{
+			printf("resized\n");
+			view.setSize((float)event_.size.width, (float)event_.size.height);
+			view.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+			view2.setSize((float)event_.size.width, (float)event_.size.height);
+			view2.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+			window.setView(view);
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			switch(menuNum)
+			{
+			case 1:
+				if (user_nick.getString().getSize() > 1)
+				{
+					add_record();
+					result = true;
+					return true;
+				}
+				else
+					return false;
+			case 2:
+				result = false;
+				return true;
+			}
+		}
+	}
+	window.draw(mn_accept);
+	window.draw(mn_cancel);
+	window.draw(mn_caption);
+	window.draw(mn_text);
+	window.draw(user_nick);
+	return false;
+}
+
+bool Facade::check_score()
+{
+	
+	return false;
+}
+
 bool Facade::menu(sf::RenderWindow &window) 
 {
 	/*
@@ -824,18 +1232,18 @@ bool Facade::menu(sf::RenderWindow &window)
 	//view.setCenter(_CONFIG->get_width() / 2, _CONFIG->get_height() / 2);
 	window.setView(view);
 
-	int x = view.getCenter().x - view.getSize().x / 2;
-	int y = view.getCenter().y - view.getSize().y / 2;
+	int x = (int) (view.getCenter().x - view.getSize().x / 2);
+	int y = (int) (view.getCenter().y - view.getSize().y / 2);
 
-	mn_new_game.setPosition(x + 100, y + 30);
-	mn_load.setPosition(x + 100, y + 90);
-	mn_change_diff.setPosition(x + 100, y + 150);
-	mn_settings.setPosition(x + 100, y + 210);
-	mn_exit.setPosition(x + 100, y + 330);
-	mn_record_table.setPosition(x + 100, y + 270);
+	mn_new_game.setPosition((float)(x + 100), (float)(y + 30));
+	mn_load.setPosition((float)(x + 100), (float)(y + 90));
+	mn_change_diff.setPosition((float)(x + 100), (float)(y + 150));
+	mn_settings.setPosition((float)(x + 100), (float)(y + 210));
+	mn_exit.setPosition((float)(x + 100), (float)(y + 330));
+	mn_record_table.setPosition((float)(x + 100), (float)(y + 270));
 
-	menuBg.setPosition(x + 80, y + 140);
-	menuTxt.setPosition(x + 80, y + 20);//80, 20);
+	menuBg.setPosition((float)(x + 80), (float)(y + 140));
+	menuTxt.setPosition((float)(x + 80), (float)(y + 20));//80, 20);
 	menuTxt.scale((float)0.84, (float)1.1);
 
 	while (isMenu)
@@ -855,15 +1263,15 @@ bool Facade::menu(sf::RenderWindow &window)
 		}
 		else
 		{
-			if (!_isMessageBox)
+			if (!_isMessageBox && !_records_table)
 			{
 				menuTxt.setScale((float)0.84, (float)1.1);
 				mn_change_diff.setString(L"Уровень сложности: " + FontsCFG::game_difficult[_game_difficulty]);
 
-				mn_new_game.setColor(sf::Color::White);
-				mn_load.setColor(sf::Color::Yellow);
-				mn_change_diff.setColor(sf::Color::Red);
-				mn_settings.setColor(sf::Color::Green);
+				mn_new_game.setColor(sf::Color::Black);
+				mn_load.setColor(sf::Color::Black);
+				mn_change_diff.setColor(sf::Color::Black);
+				mn_settings.setColor(sf::Color::Black);
 				mn_exit.setColor(sf::Color::Black);
 			
 				//if (!isInput) mn_record_table.setColor(sf::Color::Black);
@@ -897,10 +1305,10 @@ bool Facade::menu(sf::RenderWindow &window)
 					if (event_.type == sf::Event::Resized)
 					{
 						printf("resized\n");
-						view.setSize(event_.size.width, event_.size.height);
-						view.setCenter(event_.size.width / 2, event_.size.height / 2);
-						view2.setSize(event_.size.width, event_.size.height);
-						view2.setCenter(event_.size.width / 2, event_.size.height / 2);
+						view.setSize((float)event_.size.width, (float)event_.size.height);
+						view.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+						view2.setSize((float)event_.size.width, (float)event_.size.height);
+						view2.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
 						window.setView(view);
 					}/* */
 
@@ -909,6 +1317,8 @@ bool Facade::menu(sf::RenderWindow &window)
 						switch(menuNum)
 						{
 						case 1:
+							//swap_music();
+
 							_p->set_health(FULL_HEALTH);
 							isMenu = false;
 							break;
@@ -935,7 +1345,10 @@ bool Facade::menu(sf::RenderWindow &window)
 							_isMessageBox = true;
 							break;
 						case 6:
-							isInput = true;
+							//records_table_rows.setString(records);
+							fill_records();
+							_records_table = true;
+							//isInput = true;
 							break;
 						}
 					}
@@ -963,6 +1376,11 @@ bool Facade::menu(sf::RenderWindow &window)
 				isMenu = false; 
 			}
 		}
+		if (_records_table)
+		{
+			//_records_table = record_table_iteraction(window);
+			_records_table = !draw_record_table(window, L"Таблица рекордов");
+		}
 
 		window.display();
 	}
@@ -972,8 +1390,8 @@ bool Facade::menu(sf::RenderWindow &window)
 
 bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result)
 {
-	int x = view.getCenter().x - view.getSize().x / 2;
-	int y = view.getCenter().y - view.getSize().y / 2;
+	int x = (int) (view.getCenter().x - view.getSize().x / 2);
+	int y = (int) (view.getCenter().y - view.getSize().y / 2);
 
 	int menuNum = 0;
 	MSBX_sprite.setScale((float)1.0, (float)0.5);
@@ -996,8 +1414,8 @@ bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::Stri
 	mn_accept.setString(L"Да");
 	mn_cancel.setString(L"Нет");
 
-	int dX = view2.getCenter().x - view.getCenter().x;
-	int dY = view2.getCenter().y - view.getCenter().y;
+	int dX = (int) (view2.getCenter().x - view.getCenter().x);
+	int dY = (int) (view2.getCenter().y - view.getCenter().y);
 	
 	mn_accept.setPosition(
 		MSBX_sprite.getPosition().x + 90,
@@ -1024,8 +1442,8 @@ bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::Stri
 
 	//if (sf::IntRect(475, 350, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; }
 	//if (sf::IntRect(755, 350, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }		
-	if (sf::IntRect(mn_accept.getPosition().x + dX, mn_accept.getPosition().y + dY, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; printf("%i\t%i\n", sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y); }
-	if (sf::IntRect(mn_cancel.getPosition().x + dX, mn_cancel.getPosition().y + dY, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }
+	if (sf::IntRect((int)(mn_accept.getPosition().x + dX), (int)(mn_accept.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; }
+	if (sf::IntRect((int)(mn_cancel.getPosition().x + dX), (int)(mn_cancel.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }
 
 	while (window.pollEvent(event_))
 	{
@@ -1035,10 +1453,10 @@ bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::Stri
 		if (event_.type == sf::Event::Resized)
 		{
 			printf("resized\n");
-			view.setSize(event_.size.width, event_.size.height);
-			view.setCenter(event_.size.width / 2, event_.size.height / 2);
-			view2.setSize(event_.size.width, event_.size.height);
-			view2.setCenter(event_.size.width / 2, event_.size.height / 2);
+			view.setSize((float)event_.size.width, (float)event_.size.height);
+			view.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
+			view2.setSize((float)event_.size.width, (float)event_.size.height);
+			view2.setCenter((float)(event_.size.width / 2), (float)(event_.size.height / 2));
 			window.setView(view);
 		}
 
@@ -1060,6 +1478,16 @@ bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::Stri
 	window.draw(mn_caption);
 	window.draw(mn_text);
 	return false;
+}
+
+bool Facade::record_table_iteraction(sf::RenderWindow &window)
+{
+	sf::String str;
+	char buff[CHAR_BUFER];
+	str = L"Ваши очки: ";
+	str += _itoa(_p->get_score(), buff, 10);
+
+	return !reg_score(window, str, L"Введите ваш ник: ", _write_nick);
 }
 
 bool Facade::load_procedure()
@@ -1131,10 +1559,9 @@ bool Facade::begining_procedure()
 
 bool Facade::main_procedure()
 {
-	
 	/* =================================================================== */
 	this->set_game_speed();
-	this->event_handler();
+	if (!_go_to_mini_menu && !_check_score) this->event_handler();
 	//view_control(game_speed); // демонстрация возможностей камеры
 	_window->setView(view); // задаем параметры камеры ДО очистки экрана
 	_window->clear(sf::Color(129, 181, 221));
@@ -1157,8 +1584,8 @@ bool Facade::main_procedure()
 			game_mission.get_mission_complete_text(
 				(*_window), 
 				mission_text, 
-				view.getCenter().x,
-				view.getCenter().y
+				(int)view.getCenter().x,
+				(int)view.getCenter().y
 				//_CONFIG->get_width() / 2, 
 				//_CONFIG->get_height() / 2//, 
 				);//this->_mission_number);
@@ -1166,8 +1593,8 @@ bool Facade::main_procedure()
 			game_mission.get_mission_text(
 				(*_window), 
 				mission_text, 
-				view.getCenter().x,
-				view.getCenter().y
+				(int)view.getCenter().x,
+				(int)view.getCenter().y
 				//_CONFIG->get_width() / 2, 
 				//_CONFIG->get_height() / 2//, 
 				);//this->_mission_number);
@@ -1199,6 +1626,14 @@ bool Facade::main_procedure()
 	if (_go_to_mini_menu)
 		_go_to_mini_menu = mini_menu(*_window);
 
+	if (_check_score)
+	{
+		if (!record_table_iteraction(*_window))
+		{
+			_checked_score = true;
+			_check_score = false;
+		}
+	}
 	_window->display();
 	return false;
 }
@@ -1216,25 +1651,35 @@ bool Facade::start_engine()
 			rr_params.health = FULL_HEALTH;
 			rr_params.score = 0;
 			game_map.map_reserve(rr_params.default_map);
-
 			while (!_exit_program)
 			{
 				if (_load)
 				{
+					//swap_music();
 					if (!load_procedure())
 						continue;
 				}
 				else
 				{
 					if (!_restart)
+					{
+						menu_music();
+						//swap_music();
 						begining_procedure();
+					}
 					else
+					{
+						//swap_music();
 						restart_procedure();
+					}
 				
 					game_mission.set_new_mission(&game_map);//, _mission_number);
 					_p->set_x(_CONFIG->get_pos_x());
 					_p->set_y(_CONFIG->get_pos_y());
 				}
+				_checked_score = false;
+				_end_game = false;
+				gameplay_music();
 				while (_window->isOpen())
 				{
 					if (main_procedure())
