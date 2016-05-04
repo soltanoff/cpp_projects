@@ -232,12 +232,12 @@ bool Player::move(float game_speed, float &current_frame, float obj_speed)
 			));
 		moved = true;
 	}
-
+	/*
 	if (moved)
 	{
 		printf("[Player] (%f, \t%f)\n", this->get_x(), this->get_y());
 	}
-
+	*/
 	this->update(game_speed);
 	this->map_iteraction();
 
