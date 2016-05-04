@@ -7,6 +7,10 @@ sf::Font mission_font;
 sf::Text score_text; // создаем объект текст. закидываем в объект текст строку, шрифт, размер шрифта(в пикселях);//сам объект текст (не строка)
 sf::Text mission_text;
 
+sf::Text records_table_name;
+sf::Text records_table_score;
+sf::Text user_nick;
+
 sf::Text mn_new_game;
 sf::Text mn_change_diff;
 sf::Text mn_exit;
@@ -50,6 +54,16 @@ void fonts_settings()
 {
 	install_text(score_text, main_font, "main_font.TTF");//times_new_roman
 	install_text(mission_text, mission_font, "times.TTF");
+
+	records_table_name.setColor(sf::Color::Black);
+	install_text(records_table_name, mission_font, "times.TTF");
+	
+	records_table_score.setColor(sf::Color::Black);
+	install_text(records_table_score, mission_font, "times.TTF");
+
+	user_nick.setColor(sf::Color::Blue);
+	install_text(user_nick, mission_font, "times.TTF");
+	user_nick.setString("your_nick");
 
 	install_text(mn_new_game, mission_font, "times.TTF");
 	install_text(mn_change_diff, mission_font, "times.TTF");

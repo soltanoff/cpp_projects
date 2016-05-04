@@ -9,6 +9,10 @@ extern sf::Font mission_font;
 extern sf::Text score_text;
 extern sf::Text mission_text;;
 
+extern sf::Text records_table_name;
+extern sf::Text records_table_score;
+extern sf::Text user_nick;
+
 extern sf::Text mn_new_game;
 extern sf::Text mn_continue;
 extern sf::Text mn_save;
