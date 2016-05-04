@@ -1,4 +1,4 @@
-#ifndef G_BULLET
+﻿#ifndef G_BULLET
 #define G_BULLET
 #include "g_character.h"
 #include "player.h"
