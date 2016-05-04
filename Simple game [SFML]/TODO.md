@@ -55,6 +55,10 @@ information by pressing.
 
 - (x) Add save and load game
 
+- (x) Add sound in game
+
+- (x) Add table of records
+
 - To do the refactoring of functions
 
 
