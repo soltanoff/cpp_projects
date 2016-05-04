@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+п»ї#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <vector>
 #include <time.h>
@@ -351,7 +351,7 @@ private:
 	WSADATA wsaData;
 	int iResult;
 
-	SOCKET m_socket; // создаем сокет
+	SOCKET m_socket; // СЃРѕР·РґР°РµРј СЃРѕРєРµС‚
 	sockaddr_in service; 
 
 	char sendbuf[ServerCfg::BUFF_SIZE];
@@ -429,14 +429,14 @@ public:
 	int init()
 	{
 		/* ================================================================= */
-		// ИНИЦИАЛИЗАЦИЯ СОКЕТА
-		//WSADATA wsaData; // содержит информацию о реализации сокетов Windows
+		// В»РЊВ»Г·В»СР‹В»В«СГ·В»СЏ вЂ”СњВ в‰€вЂњС
+		//WSADATA wsaData; // СЃРѕРґРµСЂР¶РёС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЂРµР°Р»РёР·Р°С†РёРё СЃРѕРєРµС‚РѕРІ Windows
 		iResult = WSAStartup(MAKEWORD(2,2), &wsaData); 
-		// MAKEWORD(2,2) данной функции запрашивает версию WinSock системы и 
-		// устанавливает ее как наивысшую допустимую версию сокетов Windows, 
-		// которая может использоваться.
+		// MAKEWORD(2,2) РґР°РЅРЅРѕР№ С„СѓРЅРєС†РёРё Р·Р°РїСЂР°С€РёРІР°РµС‚ РІРµСЂСЃРёСЋ WinSock СЃРёСЃС‚РµРјС‹ Рё 
+		// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РµРµ РєР°Рє РЅР°РёРІС‹СЃС€СѓСЋ РґРѕРїСѓСЃС‚РёРјСѓСЋ РІРµСЂСЃРёСЋ СЃРѕРєРµС‚РѕРІ Windows, 
+		// РєРѕС‚РѕСЂР°В¤ РјРѕР¶РµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃВ¤.
 
-		if (iResult != NO_ERROR) // Выявление ошибок 
+		if (iResult != NO_ERROR) // В¬С‹В¤РІР»РµРЅРёРµ РѕС€РёР±РѕРє 
 		{
 			printf("[ERROR: WSADATA] Error at WSAStartup()\n");
 			WSACleanup();
@@ -444,15 +444,15 @@ public:
 			return -1;
 		}
 
-		//SOCKET m_socket; // создаем сокет
+		//SOCKET m_socket; // СЃРѕР·РґР°РµРј СЃРѕРєРµС‚
 		m_socket = socket(AF_INET, SOCK_STREAM, ServerCfg::PROTOCOL);
-		// В качестве параметров используются семейство интернет-адресов (IP), 
-		// потоковые сокеты и протокол TCP/IP. 
+		// В¬ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂРѕРІ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃВ¤ СЃРµРјРµР№СЃС‚РІРѕ РёРЅС‚РµСЂРЅРµС‚-Р°РґСЂРµСЃРѕРІ (IP), 
+		// РїРѕС‚РѕРєРѕРІС‹Рµ СЃРѕРєРµС‚С‹ Рё РїСЂРѕС‚РѕРєРѕР» TCP/IP. 
 
-		if (m_socket == INVALID_SOCKET) // Выявление ошибок
+		if (m_socket == INVALID_SOCKET) // В¬С‹В¤РІР»РµРЅРёРµ РѕС€РёР±РѕРє
 		{
 			printf("[ERROR: SOCKET] Error at socket(): %ld\n", WSAGetLastError());
-			// WSAGetLastError возвращает номер последней возникнувшей ошибки
+			// WSAGetLastError РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµР№ РІРѕР·РЅРёРєРЅСѓРІС€РµР№ РѕС€РёР±РєРё
 			WSACleanup();
 			system("pause");
 			return -1;
@@ -462,13 +462,13 @@ public:
 
 	int try_open_server()
 	{
-		// service содержит информация о семействе адресов, 
-		// IP адрес и номер порта
-		service.sin_family = AF_INET; // семейство адресов Интернет
-		service.sin_addr.s_addr = INADDR_ANY;//inet_addr(ServerCfg::LOCALHOST); // локальный IP
-		service.sin_port = htons(ServerCfg::PORT); // номер порта
+		// service СЃРѕРґРµСЂР¶РёС‚ РёРЅС„РѕСЂРјР°С†РёВ¤ Рѕ СЃРµРјРµР№СЃС‚РІРµ Р°РґСЂРµСЃРѕРІ, 
+		// IP Р°РґСЂРµСЃ Рё РЅРѕРјРµСЂ РїРѕСЂС‚Р°
+		service.sin_family = AF_INET; // СЃРµРјРµР№СЃС‚РІРѕ Р°РґСЂРµСЃРѕРІ В»РЅС‚РµСЂРЅРµС‚
+		service.sin_addr.s_addr = INADDR_ANY;//inet_addr(ServerCfg::LOCALHOST); // Р»РѕРєР°Р»СЊРЅС‹Р№ IP
+		service.sin_port = htons(ServerCfg::PORT); // РЅРѕРјРµСЂ РїРѕСЂС‚Р°
 
-		// Выявление ошибок
+		// В¬С‹В¤РІР»РµРЅРёРµ РѕС€РёР±РѕРє
 		if (bind(m_socket, (SOCKADDR*) &service, sizeof(service)) == SOCKET_ERROR) 
 		{
 			printf("[ERROR: SOCKADDR] bind() failed.\n");
@@ -478,7 +478,7 @@ public:
 			return -1;
 		}
 		/* ================================================================= */
-		// ПРОСЛУШИВАНИЕ СОКЕТА ДЛЯ ВХОДЯЩЕГО СОЕДИНЕНИЯ
+		// С•вЂ“СњвЂ”Р‹вЂќРЋВ»В¬СРЊВ»в‰€ вЂ”СњВ в‰€вЂњС Ж’Р‹СЏ В¬вЂ™СњЖ’СЏСћв‰€в€љСњ вЂ”Сњв‰€Ж’В»РЊв‰€РЊВ»СЏ
 		if (listen(m_socket, ServerCfg::BACKLOG) == SOCKET_ERROR)
 		{
 			printf("[ERROR: LISTEN] Error listening on socket.\n");
