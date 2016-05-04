@@ -6,12 +6,13 @@
 int main()
 {
 	//*
-	Facade game;
-	game.init_settings();
-	game.init_entities();
+	Facade *game = new Facade();
+	game->init_settings();
+	game->init_entities();
 
-	game.start_engine();
+	game->start_engine();
 	
+	delete game;
 	//sf::RenderWindow window(sf::VideoMode(1280, 800), "menu test");
 	//menu(window);//вызов меню
 	return 0;
