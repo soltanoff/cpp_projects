@@ -3,11 +3,14 @@
 #include <SFML\Graphics.hpp>
 #include "textures_settings.h"
 
-#define FULL_HEALTH 200
+#define FULL_HEALTH 20
 
 const char SETTINGS_FILE[]			= "settings.ini";
 const char SAVE_FILE[]				= "Save/save_game.sav";
 const short CAMERA_VIEW_X_OFFSET	= 70;
+const char RECORDS_FILE[]			= "rec.db";
+const int MAX_RECORDS_COUNT			= 7;
+const int CHAR_BUFER				= 1024; 
 
 namespace EnemyCFG
 {
@@ -77,4 +80,10 @@ namespace MapCFG
 	const char MAP_HEATLHFLOWER		= 'h';
 	const char MAP_BUSH				= 'b';
 }
+
+struct rec_table
+{
+	std::string name;
+	int score;
+};
 #endif /* MAIN_SETTINGS */
