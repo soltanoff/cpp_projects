@@ -3,7 +3,7 @@
 #include <SFML\Graphics.hpp>
 #include "textures_settings.h"
 
-#define FULL_HEALTH 20
+#define FULL_HEALTH 50
 
 const char SETTINGS_FILE[]			= "settings.ini";
 const char SAVE_FILE[]				= "Save/save_game.sav";
