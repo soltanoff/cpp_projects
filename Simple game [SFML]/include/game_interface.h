@@ -34,6 +34,9 @@ private:
 	bool _go_to_settings;
 	bool _exit_program;
 	bool _isMessageBox;
+	bool _isRestartBox;
+	bool _isSave;
+	bool _isLoad;
 	bool _records_table;
 	bool _check_score;
 	bool _checked_score;
@@ -106,7 +109,7 @@ private:
 	bool main_procedure();
 	/* ============================================================================================================================= */
 	bool write_line(sf::Text &text, sf::Event event_);
-	bool draw_message(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result);
+	bool draw_message(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result, bool is_ok = false);
 	/* ============================================================================================================================= */
 	bool reg_score(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result);
 	bool draw_record_table(sf::RenderWindow &window, sf::String caption);
@@ -178,6 +181,9 @@ Facade::Facade()
 	__current_frame = 0;
 	__game_speed = 0;
 
+	_isSave = false;
+	_isLoad = false;
+	_isRestartBox = false;
 	_end_game = false;
 	_isMessageBox = false;
 	_records_table = false;
@@ -224,53 +230,57 @@ bool Facade::event_handler()//(sf::Event &event_)
 			_window->setView(view);
 		}/* */
 
-		if (event_.type == sf::Event::KeyPressed)
+		if (!_isRestartBox)
 		{
-			switch(event_.key.code)
+			if (event_.type == sf::Event::KeyPressed)
 			{
-			case sf::Keyboard::Tab:
-				__is_view_map = !__is_view_map;
-				break;
-			case sf::Keyboard::LShift:
-				__view_info = !__view_info;
-				break;
-			case sf::Keyboard::Escape:
-				/*
-				if (MessageBox(NULL, "Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
-					_window->close();
-				_exit_program = true;
-				*/
-				//mini_menu(*_window);
-				//view.setRotation(-view.getRotation());
-				if (is_end() && !_checked_score)
-					_check_score = true;
-				else
-					_go_to_mini_menu = true;
-				break;
-			case sf::Keyboard::R:
-				if (MessageBox(NULL, "Вы уверенны что перезапустить уровень?", "Перезапуск уровня", MB_YESNO) == IDYES)
-					_restart = true;
-				break;
-			}
-			if (_next_mission && event_.key.code == sf::Keyboard::Space)
-			{
-				_next_mission = false;
-
-				//_mission_number++;
-				game_mission.mission_incr();
-				
-				if (game_mission.get_mission_number() > MissionCFG::MAX_MISSIONS_COUNT)
+				switch(event_.key.code)
 				{
-					if (!_checked_score )
+				case sf::Keyboard::Tab:
+					__is_view_map = !__is_view_map;
+					break;
+				case sf::Keyboard::LShift:
+					__view_info = !__view_info;
+					break;
+				case sf::Keyboard::Escape:
+					/*
+					if (MessageBox(NULL, "Вы уверенны что хотите выйти?", "Выход из игры", MB_YESNO) == IDYES)
+						_window->close();
+					_exit_program = true;
+					*/
+					//mini_menu(*_window);
+					//view.setRotation(-view.getRotation());
+					if (is_end() && !_checked_score)
 						_check_score = true;
 					else
-						_go_to_menu = true;
+						_go_to_mini_menu = true;
+					break;
+				case sf::Keyboard::R:
+					//if (MessageBox(NULL, "Вы уверенны что перезапустить уровень?", "Перезапуск уровня", MB_YESNO) == IDYES)
+						//_restart = true;
+					_isRestartBox = true;
+					break;
 				}
-				else
+				if (_next_mission && event_.key.code == sf::Keyboard::Space)
 				{
-					_p->set_x(_CONFIG->get_pos_x());
-					_p->set_y(_CONFIG->get_pos_y());
-					game_mission.set_new_mission(&game_map);//, _mission_number);
+					_next_mission = false;
+
+					//_mission_number++;
+					game_mission.mission_incr();
+				
+					if (game_mission.get_mission_number() > MissionCFG::MAX_MISSIONS_COUNT)
+					{
+						if (!_checked_score )
+							_check_score = true;
+						else
+							_go_to_menu = true;
+					}
+					else
+					{
+						_p->set_x(_CONFIG->get_pos_x());
+						_p->set_y(_CONFIG->get_pos_y());
+						game_mission.set_new_mission(&game_map);//, _mission_number);
+					}
 				}
 			}
 		}
@@ -607,11 +617,12 @@ bool Facade::save_game()
 		for(int i = 0; i < MapCFG::MAP_HEIGHT; i++)
 			fout << rr_params.copy_map[i].toAnsiString() << "\n";
 
-		MessageBox(
+		/*MessageBox(
 			NULL, 
 			"Игра успешно сохранена!", 
 			"Сохранение игры", 
-			MB_OK);
+			MB_OK);*/
+
 		return true;
 	}
 	else
@@ -650,20 +661,20 @@ bool Facade::load_game()
 			for(int i = 0; i < MapCFG::MAP_HEIGHT; i++)
 				fin.getline(save_params.copy_map[i], MapCFG::MAP_WIDTH + 2);
 
-			MessageBox(
+			/*MessageBox(
 				NULL, 
 				"Игра успешно загружена!", 
 				"Загрузка игры", 
-				MB_OK);
+				MB_OK);*/
 			return true;
 		}
 		catch(...)
 		{
-			MessageBox(
+			/*MessageBox(
 				NULL, 
 				"При загрузке произошли ошибки. Игра не загружена!", 
 				"Ошибка загрузки игры", 
-				MB_OK);
+				MB_OK);*/
 			return false;
 		}
 	}
@@ -731,7 +742,7 @@ bool Facade::mini_menu(sf::RenderWindow &window)
 		}
 		else
 		{
-			if (!_isMessageBox)
+			if (!_isMessageBox && !_isLoad && !_isSave)
 			{
 				mn_continue.setColor(sf::Color::Black);
 				mn_load.setColor(sf::Color::Black);
@@ -776,11 +787,13 @@ bool Facade::mini_menu(sf::RenderWindow &window)
 							break;
 						case 2:
 							//isMenu = false;
-							_load = true;
-							return false;
+							//_load = true;
+							//return false;
+							_isLoad = true;
 							break;
 						case 3:
-							save_game();
+							//save_game();
+							_isSave = true;
 							break;
 						case 4:
 							_go_to_settings = true;
@@ -815,6 +828,25 @@ bool Facade::mini_menu(sf::RenderWindow &window)
 				_go_to_menu = true;
 				//isMenu = false; 
 				return false; 
+			}
+		}
+		if (_isLoad)
+		{
+			bool exit(false);
+			_isLoad = !draw_message(window, L"Загрузка игры", L"Игра успешно загружена!", exit, true);
+			if (exit)
+			{
+				_load = true;
+				return false; 
+			}
+		}
+		if (_isSave)
+		{
+			bool exit(false);
+			_isSave = !draw_message(window, L"Сохранение игры", L"Игра успешно сохранена!", exit, true);
+			if (exit)
+			{
+				save_game();
 			}
 		}
 		//window.display();
@@ -1388,7 +1420,7 @@ bool Facade::menu(sf::RenderWindow &window)
 	////////////////////////////////////////////////////
 }
 
-bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result)
+bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::String main_text, bool &result, bool is_ok)
 {
 	int x = (int) (view.getCenter().x - view.getSize().x / 2);
 	int y = (int) (view.getCenter().y - view.getSize().y / 2);
@@ -1411,21 +1443,31 @@ bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::Stri
 	mn_caption.setColor(sf::Color::Black);
 	mn_text.setColor(sf::Color::Black);
 
-	mn_accept.setString(L"Да");
-	mn_cancel.setString(L"Нет");
-
 	int dX = (int) (view2.getCenter().x - view.getCenter().x);
 	int dY = (int) (view2.getCenter().y - view.getCenter().y);
-	
-	mn_accept.setPosition(
-		MSBX_sprite.getPosition().x + 90,
-		MSBX_sprite.getPosition().y + 120
-		);
+	if (!is_ok)
+	{
+		mn_accept.setString(L"Да");
+		mn_cancel.setString(L"Нет");
 
-	mn_cancel.setPosition(
-		MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width - 140,
-		MSBX_sprite.getPosition().y + 120
-		);
+		mn_accept.setPosition(
+			MSBX_sprite.getPosition().x + 90,
+			MSBX_sprite.getPosition().y + 120
+			);
+
+		mn_cancel.setPosition(
+			MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width - 140,
+			MSBX_sprite.getPosition().y + 120
+			);
+	}
+	else
+	{
+		mn_accept.setString(L"ОК");
+		mn_accept.setPosition(
+			(MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f) - 16,
+			MSBX_sprite.getPosition().y + 120
+			);
+	}
 
 	mn_caption.setPosition(
 		(MSBX_sprite.getPosition().x + MSBX_sprite.getTextureRect().width / 2.0f) - caption.getSize() * 8,
@@ -1443,9 +1485,9 @@ bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::Stri
 	//if (sf::IntRect(475, 350, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; }
 	//if (sf::IntRect(755, 350, 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }		
 	if (sf::IntRect((int)(mn_accept.getPosition().x + dX), (int)(mn_accept.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_accept.setColor(sf::Color::Blue); menuNum = 1; }
-	if (sf::IntRect((int)(mn_cancel.getPosition().x + dX), (int)(mn_cancel.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }
+	if (!is_ok && sf::IntRect((int)(mn_cancel.getPosition().x + dX), (int)(mn_cancel.getPosition().y + dY), 150, 50).contains(sf::Mouse::getPosition(window))) { mn_cancel.setColor(sf::Color::Blue); menuNum = 2; }
 
-	while (window.pollEvent(event_))
+	//while (window.pollEvent(event_))
 	{
 		if (event_.type == sf::Event::Closed)
 			window.close();
@@ -1474,7 +1516,7 @@ bool Facade::draw_message(sf::RenderWindow &window, sf::String caption, sf::Stri
 		}
 	}
 	window.draw(mn_accept);
-	window.draw(mn_cancel);
+	if (!is_ok) window.draw(mn_cancel);
 	window.draw(mn_caption);
 	window.draw(mn_text);
 	return false;
@@ -1560,15 +1602,15 @@ bool Facade::begining_procedure()
 bool Facade::main_procedure()
 {
 	/* =================================================================== */
-	this->set_game_speed();
-	if (!_go_to_mini_menu && !_check_score) this->event_handler();
 	//view_control(game_speed); // демонстрация возможностей камеры
 	_window->setView(view); // задаем параметры камеры ДО очистки экрана
 	_window->clear(sf::Color(129, 181, 221));
+	this->set_game_speed();
+	if (!_go_to_mini_menu && !_check_score) this->event_handler();
 	/* =================================================================== */
 	game_map.draw_map((*_window));//, __map_sprites); // Отрисовка карты
 	/* =================================================================== */
-	if (_go_to_mini_menu || __view_info)
+	if (_go_to_mini_menu || __view_info || _isRestartBox)
 		_entity_list.notify((*_window), __game_speed, true, __current_frame, (*_p));
 	else
 		_entity_list.notify((*_window), __game_speed, false, __current_frame, (*_p));
@@ -1634,6 +1676,18 @@ bool Facade::main_procedure()
 			_check_score = false;
 		}
 	}
+
+	if (_isRestartBox)
+	{
+		bool exit(false);
+		_isRestartBox = !draw_message(*_window, L"Перезапуск уровня", L"Хотите перезапустить уровень?", exit);
+		if (exit)
+		{
+			_restart = true;
+			//isMenu = false; 
+		}
+	}
+
 	_window->display();
 	return false;
 }
