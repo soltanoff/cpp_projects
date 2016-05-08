@@ -17,7 +17,7 @@ namespace EnemyCFG
 	const int GUN_CRITICAL_DISTANCE = 300;
 	const int GUN_MINIMAL_DISTANCE	= 60;
 
-	const int BULLET_SPEED			= 100;
+	const int BULLET_SPEED			= 320;
 	const int BULLET_DAMAGE			= 1;
 }
 
