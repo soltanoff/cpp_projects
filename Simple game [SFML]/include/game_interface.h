@@ -14,12 +14,6 @@
 #include <fstream>
 #include <string>
 
-/*
-- запрос на ввод ника при выходе
-- баг с передвижением
-- вместо свопа музыки, вставить отдельные функции по инициализации музыки 
-*/
-
 // Фасад.
 class Facade
 {
@@ -204,6 +198,9 @@ Facade::Facade()
 
 Facade::~Facade()
 {
+	main_sound.stop();
+	gameplay_sound.stop();
+	dead_sound.stop();
 	delete _p;
 //	delete _enemy;
 //	delete _enemy_2;
@@ -379,7 +376,9 @@ bool Facade::init_settings()
 				sf::VideoMode(_CONFIG->get_width(), _CONFIG->get_height()), 
 				//sf::VideoMode(800, 600), 
 				"Test",
-				sf::Style::Default);
+				sf::Style::Default,
+				sf::ContextSettings::ContextSettings()
+				);
 				//sf::Style::Close);
 				//_CONFIG->is_fullscreen() ? sf::Style::Fullscreen: sf::Style::None);
 			// рестартим камеру и задаем стандартный размер
@@ -587,7 +586,13 @@ bool Facade::write_line(sf::Text &text, sf::Event event_)
 		if (event_.key.code == sf::Keyboard::BackSpace)
 		{
 			if (text.getString().getSize() > 0)
-				text.setString(text.getString().substring(0, text.getString().getSize() - 1));
+			{
+				sf::String temp = text.getString();
+				temp.erase(text.getString().getSize() - 1);
+				text.setString(temp);
+				//text.setString();
+				//text.setString(text.getString().substring(0, text.getString().getSize() - 1));
+			}	
 		}
 		/* ============================================================================================== */
 	}
