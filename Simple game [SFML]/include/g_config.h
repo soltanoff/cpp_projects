@@ -18,6 +18,7 @@ private:
 	int _height;
 	int _width;
 	int _time_div;
+	int _bullet_speed;
 	sf::Keyboard::Key _up, _down, _left, _right;
 	/* ============================================================================================================================= */
 	G_Config() {}
@@ -34,6 +35,7 @@ public:
 	inline bool is_fullscreen() const { return _fullscreen; }
 	inline float get_pos_x() const { return _pos_x; }
 	inline float get_pos_y() const { return _pos_y; }
+	inline int get_bullet_speed() const { return _bullet_speed; }
 	inline int get_width() const { return _width; }
 	inline int get_height() const { return _height; }
 	inline int get_time_div() const { return _time_div; }
@@ -62,6 +64,8 @@ public:
 		
 		_time_div = pt.get<int>("config.time_div", 800);
 		
+		_bullet_speed = pt.get<int>("config.bullet_speed", 400);//EnemyCFG::BULLET_SPEED);
+
 		_up = (sf::Keyboard::Key)pt.get<int>("config.up", 22);
 		_down = (sf::Keyboard::Key)pt.get<int>("config.down", 18);
 		_left = (sf::Keyboard::Key)pt.get<int>("config.left", 0);

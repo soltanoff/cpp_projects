@@ -1,5 +1,6 @@
 ﻿#ifndef G_BULLET
 #define G_BULLET
+#include "g_config.h"
 #include "g_character.h"
 #include "player.h"
 #include "main_settings.h"
@@ -12,6 +13,7 @@ class Bullet : public G_Character
 private:
 	/* ============================================================================================================================= */
 	inline void map_iteraction();
+	int bullet_speed;
 	/* ============================================================================================================================= */
 public:
 	/* ============================================================================================================================= */
@@ -27,6 +29,8 @@ public:
 		this->entity_sprite.setOrigin((float)(this->entity_sprite.getTextureRect().width / 2.0), (float)(this->entity_sprite.getTextureRect().height / 2.0));
 		this->dx = dX;
 		this->dy = dY;
+		G_Config *cfg = G_Config::instance();
+		this->bullet_speed = cfg->get_bullet_speed();
 	}
 	/* ============================================================================================================================= */
 	inline void player_iteraction(G_Character &p);
@@ -83,6 +87,8 @@ void Bullet::player_iteraction(G_Character &p)
 	}
 }
 
+extern int BULLET_SPEED;
+
 void Bullet::update(float game_speed)
 {
 	if (game_speed >= 1)
@@ -91,8 +97,8 @@ void Bullet::update(float game_speed)
 		//this->y += dy / game_speed / EnemyCFG::BULLET_SPEED;
 			
 		this->entity_sprite.setPosition(
-			this->get_x() + dx / game_speed / EnemyCFG::BULLET_SPEED, 
-			this->get_y() + dy / game_speed / EnemyCFG::BULLET_SPEED
+			this->get_x() + dx / game_speed / bullet_speed,//EnemyCFG::BULLET_SPEED, 
+			this->get_y() + dy / game_speed / bullet_speed//EnemyCFG::BULLET_SPEED
 			);
 		this->map_iteraction();
 	}
