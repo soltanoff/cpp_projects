@@ -18,7 +18,7 @@ namespace ServerCfg
 	const int BACKLOG = 1;
 	const int BUFF_SIZE = 1024;
 	const short MAX_ATTEMPTS = 2;
-	const int BAN_TIME = 5 * 60;
+	const int BAN_TIME = 1 * 60;
 	const char BANSTATUS[][10] = { "ERROR:111", "ERROR:112" };
 }
 
@@ -411,6 +411,9 @@ private:
 		strcpy(sendbuf, ServerCfg::BANSTATUS[1]);
 
 		bytesSent = send(AcceptSocket, sendbuf, strlen(sendbuf), 0);
+		ServerThreads::clientIPs.push_back(inet_ntoa(ClientInfo.sin_addr));
+
+		ServerThreads::clientSockets.push_back(AcceptSocket);
 		closesocket(bytesSent);
 	}
 
