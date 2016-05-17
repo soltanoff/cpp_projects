@@ -136,17 +136,19 @@ namespace ServerThreads
 			attempt--;
 			if (!attempt)
 			{
+				
 				strcpy(sendbuf, ServerCfg::BANSTATUS[0]);
 				bytesSent = send(clientSockets[clientNumber], sendbuf, strlen(sendbuf), 0);
 				printf("[Client #%i] Have been banned.\n", clientNumber + 1, bytesSent, sendbuf);
-				/* =================ADD BANLIST==================== */
+				// =================ADD BANLIST==================== 
 				IpBan iBan;
 
 				strcpy(iBan.ip, clientIPs[clientNumber]);
 				iBan.t = time(NULL);
-
+				
 				banList.push_back(iBan);
 				/* ================================================ */
+				g_lock.unlock();
 				return -1;
 			}
 			strcpy(sendbuf, "Password is incorrect! You have ");
@@ -396,7 +398,7 @@ private:
 		strcpy(sendbuf, "ACCEPT");
 
 		bytesSent = send(AcceptSocket, sendbuf, strlen(sendbuf), 0);
-
+		
 		ServerThreads::clientIPs.push_back(inet_ntoa(ClientInfo.sin_addr));
 
 		ServerThreads::clientSockets.push_back(AcceptSocket);
@@ -541,8 +543,8 @@ int main()
 
 	Server s;
 	s.init();
-	s.try_open_server();
-	s.main_func();
+	if (s.try_open_server() >= 0)
+		s.main_func();
 	system("pause");
 	return 0;
 }
