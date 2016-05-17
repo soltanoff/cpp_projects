@@ -287,6 +287,27 @@ private:
 				printf("[SERVER] Hello, user.\n");
 		}
 	}
+
+	bool cmp(char* str1, const char* str2)
+    {
+        int size = 0;
+        if (strlen(str1) > strlen(str2)) size = strlen(str2);
+        else size = strlen(str1);
+
+        bool result = false;
+
+        for (int i = 0; i < size; i++)
+        {
+            if (str1[i] == str2[i])
+                result = true;
+            else
+            {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
 public:
 	Client()
 	{
@@ -383,7 +404,6 @@ public:
 			printf("[ERROR: SOCKADDR] Connection failed.\n");
 			closesocket(m_socket);
 			WSACleanup();
-			system("pause");
 			return -1;
 		}
 		bytesRecv = recv_(recvbuf);//recv(m_socket, recvbuf, ServerCfg::BUFF_SIZE, 0 );
@@ -395,7 +415,7 @@ public:
 		{
 			while(true)
 			{
-				if (strcmp(recvbuf, ServerCfg::BANSTATUS[1]) == 0)
+				if (cmp(recvbuf, ServerCfg::BANSTATUS[1]))
 				{
 					printf("[SERVER] You have been banned from this server.\n");
 					break;
@@ -443,8 +463,8 @@ int main()
 	
 	Client c;
 	c.init();
-	c.try_connect();
-	c.main_func();
+	if (c.try_connect() >= 0)
+		c.main_func();
 	system("pause");
 	return 0;
 }
