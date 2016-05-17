@@ -1,4 +1,4 @@
-﻿#include <vector>
+#include <vector>
 #include <time.h>
 #include <string>
 //#include <winsock.h>
@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <QString>
+#include <string.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -23,12 +23,12 @@
 namespace ServerCfg
 {
     const char LOCALHOST[] = "127.0.0.1";
-    const u_short PORT = 8081;
+    const u_short PORT = 8080;
     const int PROTOCOL = IPPROTO_TCP;
     const int BACKLOG = 1;
     const int BUFF_SIZE = 1024;
     const short MAX_ATTEMPTS = 2;
-    const int BAN_TIME = 5 * 60;
+    const int BAN_TIME = 1 * 60;
     const char BANSTATUS[][10] = { "ERROR:111", "ERROR:112" };
 }
 
@@ -156,7 +156,7 @@ namespace ServerThreads
                 iBan.t = time(NULL);
 
                 banList.push_back(iBan);
-				g_lock.unlock();
+                g_lock.unlock();
                 /* ================================================ */
                 return -1;
             }
@@ -173,6 +173,32 @@ namespace ServerThreads
         g_lock.unlock();
         return 0;
     }
+    void reverse(char s[])
+     {
+         int i, j;
+         char c;
+
+         for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+             c = s[i];
+             s[i] = s[j];
+             s[j] = c;
+         }
+     }
+    void itoa(int n, char s[])
+    {
+         int i, sign;
+
+         if ((sign = n) < 0)  /* записываем знак */
+             n = -n;          /* делаем n положительным числом */
+         i = 0;
+         do {       /* генерируем цифры в обратном порядке */
+             s[i++] = n % 10 + '0';   /* берем следующую цифру */
+         } while ((n /= 10) > 0);     /* удаляем */
+         if (sign < 0)
+             s[i++] = '-';
+         s[i] = '\0';
+         reverse(s);
+    }
 
     bool get_banlist(int &bytesSent, int clientNumber)
     {
@@ -183,11 +209,15 @@ namespace ServerThreads
         for (int i = 0; i < banList.size(); i++)
         {
             time_t t = time(NULL);
-            strcat(str, QString::number(i).toStdString().c_str());
+            //strcat(str, QString::number(i).toStdString().c_str());
+            itoa(i, buf);
+            strcat(str, buf);
             strcat(str, ") IP: ");
             strcat(str, banList[i].ip);
             strcat(str, "\t pardon: ");
-            strcat(str, QString::number(t - banList[i].t).toStdString().c_str());//itoa((t - banList[i].t), buf, 10));
+            //strcat(str, QString::number(t - banList[i].t).toStdString().c_str());//itoa((t - banList[i].t), buf, 10));
+            itoa(t - banList[i].t, buf);
+            strcat(str, buf);
             strcat(str, "\n");
         }
         strcat(str, "\0");
@@ -422,6 +452,9 @@ private:
 
         bytesSent = send(AcceptSocket, sendbuf, strlen(sendbuf), 0);
         //closesocket(bytesSent);
+        ServerThreads::clientIPs.push_back(inet_ntoa(ClientInfo.sin_addr));
+
+        ServerThreads::clientSockets.push_back(AcceptSocket);
     }
 
 public:
@@ -555,7 +588,7 @@ int main()
     Server s;
     s.init();
     if (s.try_open_server() >= 0)
-		s.main_func();
+        s.main_func();
     system("pause");
     return 0;
 }
