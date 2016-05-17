@@ -1,14 +1,15 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <iostream>
 #include <time.h>
 #include <string>
 #include <cstring>
 
-#include <QTextStream>
+//#include <QTextStream>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 #define SOCKET int
 #define SOCKET_ERROR -1
@@ -17,7 +18,7 @@
 namespace ServerCfg
 {
     const char LOCALHOST[] = "127.0.0.1";
-    const u_short PORT = 8081;
+    const u_short PORT = 8080;
     const int PROTOCOL = IPPROTO_TCP;
     const int BACKLOG = 1;
     const int BUFF_SIZE = 1024;
@@ -81,17 +82,19 @@ private:
         first = true;
         }
 
-        QTextStream s(stdin);
-        QString value = s.readLine();
-        //std::cin.getline(sendbuf, 256);
+        //QTextStream s(stdin);
+        //QString value = s.readLine();
+        std::cin.getline(sendbuf, 256);
 
-        if (strcmp(value.toStdString().c_str(), "exit") == 0)
+        //if (strcmp(value.toStdString().c_str(), "exit") == 0)
+        if (strcmp(sendbuf, "exit") == 0)
         {
             throw 0;
         }
         //std::cin >> sendbuf;
         //std::cin.getline(sendbuf, 1024, '\n');
-        bytesSent = send_(value.toStdString().c_str());
+        //bytesSent = send_(value.toStdString().c_str());
+        bytesSent = send_(sendbuf);
         if (bytesSent < 0)
             throw 0;
     }
@@ -412,7 +415,7 @@ public:
         // service содержит информаци¤ о семействе адресов,
         // IP адрес и номер порта
         service.sin_family = AF_INET; // семейство адресов »нтернет
-        service.sin_addr.s_addr = htonl(INADDR_ANY);//inet_addr(ipaddres); // локальный IP
+        service.sin_addr.s_addr = inet_addr(ipaddres); // локальный IP
         service.sin_port = htons(ServerCfg::PORT); // номер порта
 
         // ¬ы¤вление ошибок
@@ -437,6 +440,7 @@ public:
                 if (cmp(recvbuf, ServerCfg::BANSTATUS[1]))
                 {
                     printf("[SERVER] You have been banned from this server.\n");
+                    shutdown(m_socket, 1);
                     break;
                 }
                 /* ========================================================================== */
@@ -482,8 +486,8 @@ int main()
 
     Client c;
     c.init();
-    if (c.try_connect() >= 0)
-		c.main_func();
+    c.try_connect();
+    c.main_func();
     //system("pause");
     return 0;
 }
