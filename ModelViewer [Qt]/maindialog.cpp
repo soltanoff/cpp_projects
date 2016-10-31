@@ -35,10 +35,12 @@ MainDialog::MainDialog(QWidget *parent) :
     );
 }
 
+
 void MainDialog::setSpeedValue(int value)
 {
     this->ui->lcdSpeed->display(value);
 }
+
 
 void MainDialog::getSceneFile()
 {
@@ -60,6 +62,7 @@ void MainDialog::getSceneFile()
     );
 }
 
+
 void MainDialog::viewModel()
 {
     ViewSettings params;
@@ -78,6 +81,7 @@ void MainDialog::viewModel()
     this->m_viewer = new SceneViewer(params);
     this->m_viewer->exec(this->ui->edtSceneFile->text());
 }
+
 
 MainDialog::~MainDialog()
 {
