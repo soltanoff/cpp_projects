@@ -19,7 +19,6 @@ public:
     SceneWalker(Qt3DRender::QSceneLoader *loader) : m_loader(loader) { }
     ~SceneWalker();
     void onStatusChanged();
-
 private:
     void walkEntity(Qt3DCore::QEntity *e, int depth = 0);
     Qt3DRender::QSceneLoader *m_loader;

@@ -15,6 +15,7 @@ void SceneWalker::onStatusChanged()
     walkEntity(root);
 }
 
+
 void SceneWalker::walkEntity(Qt3DCore::QEntity *e, int depth)
 {
     Qt3DCore::QNodeVector nodes = e->childNodes();
@@ -30,6 +31,7 @@ void SceneWalker::walkEntity(Qt3DCore::QEntity *e, int depth)
         }
     }
 }
+
 
 SceneWalker::~SceneWalker()
 {
