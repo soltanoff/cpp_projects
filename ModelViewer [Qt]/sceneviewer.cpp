@@ -16,6 +16,7 @@ SceneViewer::SceneViewer(ViewSettings params)
     this->setSceneLoader();
 }
 
+
 void SceneViewer::setCameraSettings(float speed=250.0f)
 {
     // Scene Camera
@@ -30,6 +31,7 @@ void SceneViewer::setCameraSettings(float speed=250.0f)
     this->m_camController->setLookSpeed(speed);
     this->m_camController->setCamera(this->m_camera);
 }
+
 
 void SceneViewer::setSceneLoader()
 {
@@ -46,6 +48,7 @@ void SceneViewer::setSceneLoader()
     this->m_sceneLoaderEntity->addComponent(this->m_sceneLoader);
 }
 
+
 int SceneViewer::exec(QString file)
 {
     if (file.isEmpty())
@@ -58,6 +61,7 @@ int SceneViewer::exec(QString file)
 
     return 0;
 }
+
 
 SceneViewer::~SceneViewer()
 {
